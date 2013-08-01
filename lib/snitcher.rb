@@ -2,6 +2,11 @@ require "net/https"
 
 module Snitcher
 
+  # Snitches using the snitch token set in .snitches_on(token)
+  def snitch!
+    snitcher.checkin
+  end
+
   class Snitch
     attr_reader :token
 
@@ -10,15 +15,23 @@ module Snitcher
     end
 
     def checkin
-      http = Net::HTTP.new("nosnch.in", 443)
       http.use_ssl = true
 
       response = http.request(Net::HTTP::Get.new("/#{@token}"))
       response.code_type == Net::HTTPOK
     end
+
+    def http
+      @http ||= Net::HTTP.new("nosnch.in", 443)
+    end
+
+    def http=(http)
+      @http=http
+    end
   end
 
-  class << self
+  module ClassMethods
+
     def by_token(token)
       Snitch.new(token)
     end
@@ -27,5 +40,27 @@ module Snitcher
       by_token(token).checkin
     end
     alias_method :snitch, :checkin
+
+    def checks_in_on(token)
+      @snitcher = Snitch.new(token)
+    end
+    alias_method :snitches_on, :checks_in_on
+
+    def snitcher
+      unless @snitcher
+        raise ConfigError.new "call snitches_on in the containing class with a snitch token"
+      end
+      @snitcher
+    end
   end
+
+  def snitcher
+    self.class.snitcher
+  end
+
+  def self.included(klazz)
+    klazz.extend(ClassMethods)
+  end
+
+  class ConfigError < Exception; end
 end
