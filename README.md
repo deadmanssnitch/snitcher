@@ -14,8 +14,8 @@ Snitcher.snitch("c2354d53d2")
 ## Usage as a mixin
 ```ruby
 class SnitchingThing
-  include Snitcher
-  snitch_on "token1234"
+  include Snitcher::Snitchable
+  snitches_on "token1234"
 
   def method_that_does_work
     # I JUST DID A BUNCH OF WORK
