@@ -2,10 +2,8 @@ require "net/https"
 
 module Snitcher
 
-  # Snitches using the snitch token set in .snitches_on(token)
-
-
   module Snitchable
+    # Snitches using the snitch token set in .snitches_on(token)
     def snitch!
       snitcher.checkin
     end
@@ -22,7 +20,7 @@ module Snitcher
 
       def snitcher
         unless @snitcher
-          raise ConfigError.new "call snitches_on in the containing class with a snitch token"
+          raise "Call snitches_on in the containing class with a snitch token!"
         end
         @snitcher
       end
@@ -68,6 +66,4 @@ module Snitcher
     end
     alias_method :snitch, :checkin
   end
-
-  class ConfigError < Exception; end
 end

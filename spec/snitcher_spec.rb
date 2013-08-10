@@ -1,23 +1,24 @@
-require './lib/snitcher'
+require_relative "spec_helper"
+require 'snitcher'
 require 'ostruct'
-
 require 'minitest/autorun'
-class PoorlyConfiguredSnitcher
-  include Snitcher::Snitchable
-
-end
-
-class WorkingSnitcher
-  include Snitcher::Snitchable
-  snitches_on "abc123youandme"
-end
-
 
 describe Snitcher::Snitchable do
+  class PoorlyConfiguredSnitcher
+    include Snitcher::Snitchable
+
+  end
+
+  class WorkingSnitcher
+    include Snitcher::Snitchable
+    snitches_on "abc123youandme"
+  end
+
+
   describe "When a snitch token was not set" do
     it "requires you to set the token with checks_in_on or snitches_on" do
       snitcher = PoorlyConfiguredSnitcher.new
-      proc { snitcher.snitch! }.must_raise Snitcher::ConfigError
+      proc { snitcher.snitch! }.must_raise RuntimeError
     end
   end
 
