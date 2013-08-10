@@ -11,6 +11,22 @@ Notify Dead Man's Snitch that a thing happened:
 Snitcher.snitch("c2354d53d2")
 ```
 
+## Usage as a mixin
+```ruby
+class SnitchingThing
+  include Snitcher::Snitchable
+  snitches_on "token1234"
+
+  def method_that_does_work
+    # I JUST DID A BUNCH OF WORK
+
+    # I should probably tell somebody I'm done!
+    snitch!
+    # Yay! Now deadmanssnitch is aware I'm done!
+  end
+```
+
+
 ## Note on Patches/Pull Requests
 
 * Fork the project.
