@@ -1,31 +1,11 @@
 require "net/https"
 
 module Snitcher
+  def self.snitch(token)
+    http = Net::HTTP.new("nosnch.in", 443)
+    http.use_ssl = true
 
-  class Snitch
-    attr_reader :token
-
-    def initialize(token)
-      @token = token
-    end
-
-    def checkin
-      http = Net::HTTP.new("nosnch.in", 443)
-      http.use_ssl = true
-
-      response = http.request(Net::HTTP::Get.new("/#{@token}"))
-      response.code_type == Net::HTTPOK
-    end
-  end
-
-  class << self
-    def by_token(token)
-      Snitch.new(token)
-    end
-
-    def checkin(token)
-      by_token(token).checkin
-    end
-    alias_method :snitch, :checkin
+    response = http.request(Net::HTTP::Get.new("/#{token}"))
+    response.is_a?(Net::HTTPSuccess)
   end
 end
