@@ -1,7 +1,9 @@
 require "net/https"
 
 module Snitcher
-  def self.snitch(token)
+  extend self
+
+  def snitch(token)
     http = Net::HTTP.new("nosnch.in", 443)
     http.use_ssl = true
 

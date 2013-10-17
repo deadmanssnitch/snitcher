@@ -1,13 +1,13 @@
 require "spec_helper"
 
 describe Snitcher do
+  let(:token) { SecureRandom.hex(5) }
+
+  before do
+    stub_request(:get, /nosnch\.in/)
+  end
+
   describe ".snitch" do
-    let(:token) { SecureRandom.hex(5) }
-
-    before do
-      stub_request(:get, /nosnch\.in/)
-    end
-
     it "pings DMS with the given token" do
       Snitcher.snitch(token)
 
@@ -32,6 +32,26 @@ describe Snitcher do
       it "returns false" do
         expect(Snitcher.snitch(token)).to eq(false)
       end
+    end
+  end
+
+  describe "inclusion" do
+    let(:snitching_class) { Class.new { include Snitcher } }
+
+    it "snitches" do
+      snitching_class.new.snitch(token)
+
+      expect(a_request(:get, "https://nosnch.in/#{token}")).to have_been_made.once
+    end
+  end
+
+  describe "extension" do
+    let(:snitching_class) { Class.new { extend Snitcher } }
+
+    it "snitches" do
+      snitching_class.snitch(token)
+
+      expect(a_request(:get, "https://nosnch.in/#{token}")).to have_been_made.once
     end
   end
 end
