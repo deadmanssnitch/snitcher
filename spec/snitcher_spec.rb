@@ -16,7 +16,7 @@ describe Snitcher do
 
     context "when successful" do
       before do
-        stub_request(:get, "https://nosnch.in/#{token}").to_return(status: 200)
+        stub_request(:get, "https://nosnch.in/#{token}").to_return(:status => 200)
       end
 
       it "returns true" do
@@ -26,7 +26,7 @@ describe Snitcher do
 
     context "when unsuccessful" do
       before do
-        stub_request(:get, "https://nosnch.in/#{token}").to_return(status: 404)
+        stub_request(:get, "https://nosnch.in/#{token}").to_return(:status => 404)
       end
 
       it "returns false" do
