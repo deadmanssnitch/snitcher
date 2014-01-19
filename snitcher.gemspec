@@ -4,9 +4,9 @@ Gem::Specification.new do |spec|
   spec.name    = "snitcher"
   spec.version = "0.1.0"
 
-  spec.author   = "Chris Gaffney"
-  spec.email    = "gaffneyc@gmail.com"
-  spec.homepage = "https://github.com/gaffneyc/snitcher"
+  spec.author   = "Collective Idea"
+  spec.email    = "info@collectiveidea.com"
+  spec.homepage = "https://github.com/collectiveidea/snitcher"
   spec.summary  = "Simple API client for deadmanssnitch.com"
   spec.license  = "MIT"
 
