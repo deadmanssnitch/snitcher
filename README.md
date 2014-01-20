@@ -38,7 +38,7 @@ For the best chance of having your changes merged, please:
 
 1. fork the project
 2. push your changes, with tests
-3. submit a pull request with at least on animated GIF
+3. submit a pull request with at least one animated GIF
 
 ## Thanks
 
