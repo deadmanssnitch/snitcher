@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+
+require "optparse"
+require "snitcher"
+
+option_parser = OptionParser.new do |parser|
+  parser.banner = "Usage: snitch TOKEN"
+
+  parser.on("-h", "--help", "Show this message") do
+    puts parser.help
+    exit 0
+  end
+end
+
+token = ARGV[0]
+
+if token
+  print "Snitching #{token} ... "
+
+  if Snitcher.snitch(token)
+    puts "succeeded."
+    exit 0
+  else
+    warn "failed."
+    exit 1
+  end
+else
+  puts option_parser.help
+end
