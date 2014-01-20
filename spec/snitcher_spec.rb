@@ -1,5 +1,7 @@
 require "spec_helper"
 
+require "securerandom"
+
 describe Snitcher do
   let(:token) { SecureRandom.hex(5) }
 
