@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |spec|
   spec.name    = "snitcher"
-  spec.version = "0.1.0"
+  spec.version = "0.2.0"
 
   spec.author   = "Collective Idea"
   spec.email    = "info@collectiveidea.com"
