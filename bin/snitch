@@ -3,12 +3,18 @@
 require "optparse"
 require "snitcher"
 
+params = {}
+
 option_parser = OptionParser.new do |parser|
   parser.banner = "Usage: snitch TOKEN"
 
   parser.on("-h", "--help", "Show this message") do
     puts parser.help
     exit 0
+  end
+
+  parser.on("-m", "--message", "Include a message with the check-in") do |msg|
+    params[:message] = msg
   end
 end
 
@@ -17,7 +23,11 @@ token = ARGV[0]
 if token
   print "Snitching #{token} ... "
 
-  if Snitcher.snitch(token)
+  opts = {
+    :message => params[:message]
+  }
+
+  if Snitcher.snitch(token, opts)
     puts "succeeded."
     exit 0
   else

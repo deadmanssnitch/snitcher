@@ -35,6 +35,14 @@ describe Snitcher do
         expect(Snitcher.snitch(token)).to eq(false)
       end
     end
+
+    describe "with message" do
+      it "includes the message as a query param" do
+        Snitcher.snitch(token, :message => "A thing just happened")
+
+        expect(a_request(:get, "https://nosnch.in/#{token}?m=A%20thing%20just%20happened"))
+      end
+    end
   end
 
   describe "inclusion" do
