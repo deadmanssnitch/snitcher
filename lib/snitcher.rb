@@ -1,14 +1,19 @@
 require "uri"
+require "timeout"
 require "net/http"
 
 module Snitcher
   extend self
 
   def snitch(token, opts = {})
-    uri = URI.parse("https://nosnch.in/#{token}")
+    uri     = URI.parse("https://nosnch.in/#{token}")
+    timeout = opts.fetch(:timeout, 2)
 
     opts = {
-      :use_ssl => uri.port == 443
+      :open_timeout => timeout,
+      :read_timeout => timeout,
+      :ssl_timeout  => timeout,
+      :use_ssl      => uri.port == 443
     }
 
     Net::HTTP.start(uri.host, uri.port, opts) do |http|
@@ -19,5 +24,7 @@ module Snitcher
       response = http.request(Net::HTTP::Get.new(uri.request_uri))
       response.is_a?(Net::HTTPSuccess)
     end
+  rescue ::Timeout::Error
+    false
   end
 end

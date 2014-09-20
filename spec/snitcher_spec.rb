@@ -43,6 +43,16 @@ describe Snitcher do
         expect(a_request(:get, "https://nosnch.in/#{token}?m=A%20thing%20just%20happened"))
       end
     end
+
+    describe "timeout" do
+      before do
+        stub_request(:get, "https://nosnch.in/#{token}").to_raise(::Timeout::Error)
+      end
+
+      it "returns false when timed out" do
+        expect(Snitcher.snitch(token)).to eq(false)
+      end
+    end
   end
 
   describe "inclusion" do
