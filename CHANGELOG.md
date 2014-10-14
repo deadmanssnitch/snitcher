@@ -1,3 +1,9 @@
+## 0.3.0 / 2014-10-14
+
+* [FEATURE] Add support for the message parameter during check-in
+* [FEATUER] Add support for timeouts during check-in
+* [ENHANCEMENT] Improve documentation
+
 ## 0.2.0 / 2014-01-20
 
 * [FEATURE] Add "snitch" executable ([@laserlemon](https://github.com/laserlemon))
