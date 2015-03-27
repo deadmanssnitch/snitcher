@@ -16,6 +16,16 @@ describe Snitcher do
       expect(a_request(:get, "https://nosnch.in/#{token}")).to have_been_made.once
     end
 
+    it "includes a custom user-agent" do
+      Snitcher.snitch(token)
+
+      expect(
+        a_request(:get, "https://nosnch.in/#{token}").with(
+          headers: { "User-Agent" => /\ASnitcher;.*; v#{Snitcher::VERSION}\z/ },
+        )
+      ).to have_been_made
+    end
+
     context "when successful" do
       before do
         stub_request(:get, "https://nosnch.in/#{token}").to_return(status: 200)

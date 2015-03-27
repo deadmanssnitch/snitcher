@@ -34,10 +34,22 @@ module Snitcher
         uri.query = URI.encode_www_form(:m => message)
       end
 
-      response = http.request(Net::HTTP::Get.new(uri.request_uri))
+      request = Net::HTTP::Get.new(uri.request_uri)
+      request["User-Agent"] = user_agent
+
+      response = http.request(request)
       response.is_a?(Net::HTTPSuccess)
     end
   rescue ::Timeout::Error
     false
+  end
+
+  private
+
+  def user_agent
+    # RUBY_ENGINE was not added until 1.9.3
+    engine = defined?(::RUBY_ENGINE) ? ::RUBY_ENGINE : "Ruby"
+
+    "Snitcher; #{engine}/#{RUBY_VERSION}; #{RUBY_PLATFORM}; v#{VERSION}"
   end
 end

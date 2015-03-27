@@ -1,3 +1,6 @@
+## 0.3.1 / TBD
+* [ENHANCEMENT] Add a custom User-Agent
+
 ## 0.3.0 / 2014-10-14
 
 * [FEATURE] Add support for the message parameter during check-in

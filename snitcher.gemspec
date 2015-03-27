@@ -1,8 +1,11 @@
 # encoding: UTF-8
 
+$:.unshift File.expand_path("../lib", __FILE__)
+require "snitcher/version"
+
 Gem::Specification.new do |spec|
   spec.name    = "snitcher"
-  spec.version = "0.3.0"
+  spec.version = Snitcher::VERSION
 
   spec.author   = "Collective Idea"
   spec.email    = "info@collectiveidea.com"
