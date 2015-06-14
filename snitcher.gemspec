@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version = Snitcher::VERSION
 
   spec.author   = "Collective Idea"
-  spec.email    = "info@collectiveidea.com"
-  spec.homepage = "https://github.com/collectiveidea/snitcher"
+  spec.email    = "hi@deadmanssnitch.com"
+  spec.homepage = "https://github.com/deadmanssnitch/snitcher"
   spec.summary  = "Simple API client for deadmanssnitch.com"
   spec.license  = "MIT"
 
