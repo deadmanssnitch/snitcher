@@ -53,3 +53,5 @@ module Snitcher
     "Snitcher; #{engine}/#{RUBY_VERSION}; #{RUBY_PLATFORM}; v#{VERSION}"
   end
 end
+
+require "snitcher/version"
