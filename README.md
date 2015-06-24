@@ -3,10 +3,9 @@
 Simple API client for [Dead Man's Snitch](https://deadmanssnitch.com)
 
 [![Gem Version](https://badge.fury.io/rb/snitcher.png)](http://badge.fury.io/rb/snitcher)
-[![Build Status](https://travis-ci.org/collectiveidea/snitcher.png?branch=master)](https://travis-ci.org/collectiveidea/snitcher)
-[![Code Climate](https://codeclimate.com/github/collectiveidea/snitcher.png)](https://codeclimate.com/github/collectiveidea/snitcher)
-[![Coverage Status](https://coveralls.io/repos/collectiveidea/snitcher/badge.png)](https://coveralls.io/r/collectiveidea/snitcher)
-[![Dependency Status](https://gemnasium.com/collectiveidea/snitcher.png)](https://gemnasium.com/collectiveidea/snitcher)
+[![Build Status](https://travis-ci.org/deadmanssnitch/snitcher.png?branch=master)](https://travis-ci.org/deadmanssnitch/snitcher)
+[![Code Climate](https://codeclimate.com/github/deadmanssnitch/snitcher.png)](https://codeclimate.com/github/deadmanssnitch/snitcher)
+[![Coverage Status](https://coveralls.io/repos/deadmanssnitch/snitcher/badge.png)](https://coveralls.io/r/deadmanssnitch/snitcher)
 
 ![Snitches get Stitches](doc/get_them_stitches.jpg)
 
