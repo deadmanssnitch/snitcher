@@ -44,6 +44,31 @@ $ snitch c2354d53d2 -m "Finished in 23.8 seconds."
 $ snitch c2354d53d2 --message "Finished in 23.8 seconds."
 ```
 
+## API Access
+
+### Setup
+
+```ruby
+require "snitcher/api"
+
+Snitcher::API.configure do
+  api_key: "FOO"
+end
+```
+
+Alternatively you can use the client directly:
+```ruby
+require "snitcher/api"
+
+client = Snitcher::API::Client.new(api_key: "FOO")
+```
+
+### Listing Snitches
+
+```ruby
+Snitcher.snitches
+```
+
 ## Contributing
 
 Snitcher is open source and contributions from the community are encouraged! No
