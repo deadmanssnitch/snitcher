@@ -19,8 +19,9 @@ module Snitcher
   #
   # Returns true if the check-in succeeded or false if it failed
   def snitch(token, opts = {})
-    uri     = URI.parse("https://nosnch.in/#{token}")
-    timeout = opts.fetch(:timeout, 2)
+    uri       = URI.parse("https://nosnch.in/#{token}")
+    uri.query = URI.encode_www_form(:m => opts[:message]) if opts[:message]
+    timeout   = opts.fetch(:timeout, 2)
 
     opts = {
       :open_timeout => timeout,
@@ -30,10 +31,6 @@ module Snitcher
     }
 
     Net::HTTP.start(uri.host, uri.port, opts) do |http|
-      if message = opts[:message]
-        uri.query = URI.encode_www_form(:m => message)
-      end
-
       request = Net::HTTP::Get.new(uri.request_uri)
       request["User-Agent"] = user_agent
 
