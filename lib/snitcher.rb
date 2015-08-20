@@ -27,7 +27,7 @@ module Snitcher
       open_timeout: timeout,
       read_timeout: timeout,
       ssl_timeout:  timeout,
-      use_ssl:      uri.scheme == "https"
+      use_ssl:      use_ssl?(uri)
     }
 
     Net::HTTP.start(uri.host, uri.port, opts) do |http|
@@ -42,6 +42,10 @@ module Snitcher
   end
 
   private
+
+  def use_ssl?(uri)
+    uri.scheme == "https"
+  end
 
   def user_agent
     # RUBY_ENGINE was not added until 1.9.3
