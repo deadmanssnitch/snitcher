@@ -27,7 +27,7 @@ module Snitcher
       open_timeout: timeout,
       read_timeout: timeout,
       ssl_timeout:  timeout,
-      use_ssl:      uri.port == 443
+      use_ssl:      uri.scheme == "https"
     }
 
     Net::HTTP.start(uri.host, uri.port, opts) do |http|

@@ -33,7 +33,7 @@ class Snitcher::API::Client
       ssl_timeout:  timeout,
 
       # Enable HTTPS if necessary
-      use_ssl:      uri.scheme == "https",
+      use_ssl:      use_ssl?(uri)
     }
 
     Net::HTTP.start(uri.host, uri.port, http_options) do |http|
@@ -87,6 +87,10 @@ class Snitcher::API::Client
   end
 
   private 
+
+  def use_ssl?(uri)
+    uri.scheme == "https"
+  end
 
   def user_agent
     # RUBY_ENGINE was not added until 1.9.3
