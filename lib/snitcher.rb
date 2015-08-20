@@ -20,14 +20,14 @@ module Snitcher
   # Returns true if the check-in succeeded or false if it failed
   def snitch(token, opts = {})
     uri       = URI.parse("https://nosnch.in/#{token}")
-    uri.query = URI.encode_www_form(:m => opts[:message]) if opts[:message]
+    uri.query = URI.encode_www_form(m: opts[:message]) if opts[:message]
     timeout   = opts.fetch(:timeout, 2)
 
     opts = {
-      :open_timeout => timeout,
-      :read_timeout => timeout,
-      :ssl_timeout  => timeout,
-      :use_ssl      => uri.port == 443
+      open_timeout: timeout,
+      read_timeout: timeout,
+      ssl_timeout:  timeout,
+      use_ssl:      uri.port == 443
     }
 
     Net::HTTP.start(uri.host, uri.port, opts) do |http|

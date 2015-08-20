@@ -28,12 +28,12 @@ class Snitcher::API::Client
 
     http_options = {
       # Configure all the timeouts
-      :open_timeout => timeout,
-      :read_timeout => timeout,
-      :ssl_timeout  => timeout,
+      open_timeout: timeout,
+      read_timeout: timeout,
+      ssl_timeout:  timeout,
 
       # Enable HTTPS if necessary
-      :use_ssl      => uri.scheme == "https",
+      use_ssl:      uri.scheme == "https",
     }
 
     Net::HTTP.start(uri.host, uri.port, http_options) do |http|

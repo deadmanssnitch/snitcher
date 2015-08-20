@@ -24,7 +24,7 @@ if token
   print "Snitching #{token} ... "
 
   opts = {
-    :message => params[:message]
+    message: params[:message]
   }
 
   if Snitcher.snitch(token, opts)
