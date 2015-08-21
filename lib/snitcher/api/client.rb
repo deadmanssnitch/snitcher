@@ -127,7 +127,7 @@ class Snitcher::API::Client
 
   # Public: Get a single snitch by unique token
   #
-  # token - The unique token of the snitch to get
+  # token - The unique token of the snitch to get. Should be a string.
   #
   # Examples
   #
@@ -153,6 +153,44 @@ class Snitcher::API::Client
     get "/snitches/#{token}"
   end
 
+  # Public: Retrieve snitches that match all of the tags in a list
+  #
+  # tags - An array of strings. Each string is a tag.
+  #
+  # Examples
+  #
+  #   Get the snitches that match a list of tags
+  #     @client.tagged_snitches(["production","critical"])
+  #     => [
+  #          {
+  #            "token": "c2354d53d3",
+  #            "href": "/v1/snitches/c2354d53d3",
+  #            "name": "Daily Backups",
+  #            "tags": [
+  #              "production",
+  #              "critical"
+  #            ],
+  #            "status": "pending",
+  #            "checked_in_at": "2014-01-01T12:00:00.000Z",
+  #            "type": {
+  #              "interval": "daily"
+  #            }
+  #          },
+  #          {
+  #            "token": "c2354d53d4",
+  #            "href": "/v1/snitches/c2354d53d4",
+  #            "name": "Hourly Emails",
+  #            "tags": [
+  #              "production",
+  #              "critical"
+  #            ],
+  #            "status": "healthy",
+  #            "checked_in_at": "2014-01-01T12:00:00.000Z",
+  #            "type": {
+  #              "interval": "hourly"
+  #            }
+  #          }
+  #        ]  
   def tagged_snitches(tags=[])
     tag_params = strip_and_join_params(tags)
 

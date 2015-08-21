@@ -184,14 +184,16 @@ describe Snitcher::API::Client do
   end
 
   describe "#tagged_snitches" do
-    let(:tags)  { ["star-belly", "plain-belly"] }
-    let(:url)   { "#{scheme}#{api_key}:@#{api_url}/snitches?tags=star-belly,plain-belly" }
+    let(:tags)  { ["sneetch", "belly"] }
+    let(:url)   { "#{scheme}#{api_key}:@#{api_url}/snitches?tags=sneetch,belly" }
     let(:body)  { '[
                      {
                        "token": "c2354d53d2",
                        "href": "/v1/snitches/c2354d53d2",
                        "name": "Best Kind of Sneetch on the Beach",
                        "tags": [
+                         "sneetch",
+                         "belly",
                          "star-belly"
                        ],
                        "status": "pending",
@@ -205,6 +207,8 @@ describe Snitcher::API::Client do
                        "href": "/v1/snitches/c2354d53d3",
                        "name": "Have None Upon Thars",
                        "tags": [
+                         "sneetch",
+                         "belly",
                          "plain-belly"
                        ],
                        "status": "pending",
