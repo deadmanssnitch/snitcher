@@ -133,8 +133,30 @@ class Snitcher::API::Client
   #
   #   Get the snitch with token "c2354d53d2"
   #     @client.snitch("c2354d53d2")
+  #     => [
+  #          {
+  #            "token": "c2354d53d3",
+  #            "href": "/v1/snitches/c2354d53d3",
+  #            "name": "Daily Backups",
+  #            "tags": [
+  #              "production",
+  #              "critical"
+  #            ],
+  #            "status": "pending",
+  #            "checked_in_at": "2014-01-01T12:00:00.000Z",
+  #            "type": {
+  #              "interval": "daily"
+  #            }
+  #          }
+  #        ]
   def snitch(token)
     get "/snitches/#{token}"
+  end
+
+  def tagged_snitches(tags=[])
+    tag_params = strip_and_join_params(tags)
+
+    get "/snitches?tags=#{tag_params}"
   end
 
   def create_snitch(attributes)
@@ -144,6 +166,10 @@ class Snitcher::API::Client
   end
 
   private 
+
+  def strip_and_join_params(params)
+    params.uniq.join(",")
+  end
 
   def initialize_opts(options, uri)
     timeout = options.fetch(:timeout, 5)

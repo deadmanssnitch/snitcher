@@ -182,4 +182,54 @@ describe Snitcher::API::Client do
       end
     end
   end
+
+  describe "#tagged_snitches" do
+    let(:tags)  { ["star-belly", "plain-belly"] }
+    let(:url)   { "#{scheme}#{api_key}:@#{api_url}/snitches?tags=star-belly,plain-belly" }
+    let(:body)  { '[
+                     {
+                       "token": "c2354d53d2",
+                       "href": "/v1/snitches/c2354d53d2",
+                       "name": "Best Kind of Sneetch on the Beach",
+                       "tags": [
+                         "star-belly"
+                       ],
+                       "status": "pending",
+                       "checked_in_at": null,
+                       "type": {
+                         "interval": "hourly"
+                       }
+                     },
+                     {
+                       "token": "c2354d53d3",
+                       "href": "/v1/snitches/c2354d53d3",
+                       "name": "Have None Upon Thars",
+                       "tags": [
+                         "plain-belly"
+                       ],
+                       "status": "pending",
+                       "checked_in_at": null,
+                       "type": {
+                         "interval": "hourly"
+                       }
+                     }
+                   ]'
+                }
+
+    before do
+      stub_request(:get, stub_url).to_return(:body => body, :status => 200)
+    end
+
+    it "pings API with the api_key" do
+      client.tagged_snitches(tags)
+
+      expect(a_request(:get, url)).to have_been_made.once
+    end
+
+    context "when successful" do
+      it "returns the snitches" do
+        expect(client.tagged_snitches(tags)).to eq(JSON.parse(body))
+      end
+    end
+  end
 end
