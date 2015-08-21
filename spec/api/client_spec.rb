@@ -21,6 +21,53 @@ describe Snitcher::API::Client do
   let(:unauthorized_hash) { { message: "Unauthorized access" } }
   let(:timeout_hash) { { message: "Request timed out" } }
 
+  describe "#get" do
+    let(:url)       { "#{scheme}#{api_key}:@#{api_url}/foo" }
+
+    before do
+      stub_request(:get, stub_url).to_return(:body => '{"bar": "baz"}', 
+        :status => 200)
+    end
+
+    it "includes a custom user-agent" do
+      client.get("foo")
+
+      expect(a_request(:get, url).with(headers: 
+              { "User-Agent" => /\ASnitcher;.*; v#{Snitcher::VERSION}\z/ })
+            ).to have_been_made
+    end
+
+    context "when unathorized" do
+      before do
+        stub_request(:get, stub_url).to_return(:status => 403)
+      end
+
+      it "returns the unauthorized hash" do
+        expect(client.get("foo")).to eq(unauthorized_hash)
+      end
+    end
+
+    context "when unsuccessful" do
+      before do
+        stub_request(:get, stub_url).to_return(:status => 404)
+      end
+
+      it "returns the failure hash" do
+        expect(client.get("foo")[:message]).to include("Response unsuccessful")
+      end
+    end
+
+    describe "timeout" do
+      before do
+        stub_request(:get, stub_url).to_raise(Timeout::Error)
+      end
+
+      it "returns the timeout hash" do
+        expect(client.get("foo")).to eq(timeout_hash)
+      end
+    end
+  end
+
   describe "#api_key" do
     let(:username)  { "alice@example.com" }
     let(:password)  { "password" }
@@ -40,50 +87,11 @@ describe Snitcher::API::Client do
         url)).to have_been_made.once
     end
 
-    it "includes a custom user-agent" do
-      client.api_key
-
-      expect(
-              a_request(:get, url).with(headers: 
-                { "User-Agent" => /\ASnitcher;.*; v#{Snitcher::VERSION}\z/ })
-            ).to have_been_made
-    end
-
     context "when successful" do
       it "returns the api_key hash" do
         api_hash = { "api_key" => "_caeEiZXnEyEzXXYVh2NhQ" }
 
         expect(client.api_key).to eq(api_hash)
-      end
-    end
-
-    context "when unathorized" do
-      before do
-        stub_request(:get, stub_url).to_return(:status => 403)
-      end
-
-      it "returns the unauthorized hash" do
-        expect(client.api_key).to eq(unauthorized_hash)
-      end
-    end
-
-    context "when unsuccessful" do
-      before do
-        stub_request(:get, stub_url).to_return(:status => 404)
-      end
-
-      it "returns the failure hash" do
-        expect(client.api_key[:message]).to include("Response unsuccessful")
-      end
-    end
-
-    describe "timeout" do
-      before do
-        stub_request(:get, stub_url).to_raise(Timeout::Error)
-      end
-
-      it "returns the timeout hash" do
-        expect(client.api_key).to eq(timeout_hash)
       end
     end
   end
@@ -119,47 +127,9 @@ describe Snitcher::API::Client do
       expect(a_request(:get, url)).to have_been_made.once
     end
 
-    it "includes a custom user-agent" do
-      client.snitches
-
-      expect(a_request(:get, url).with(headers: 
-              { "User-Agent" => /\ASnitcher;.*; v#{Snitcher::VERSION}\z/ })
-            ).to have_been_made
-    end
-
     context "when successful" do
       it "returns the hash of snitches" do
         expect(client.snitches).to eq(JSON.parse(body))
-      end
-    end
-
-    context "when unathorized" do
-      before do
-        stub_request(:get, stub_url).to_return(:status => 403)
-      end
-
-      it "returns the unauthorized hash" do
-        expect(client.snitches).to eq(unauthorized_hash)
-      end
-    end
-
-    context "when unsuccessful" do
-      before do
-        stub_request(:get, stub_url).to_return(:status => 404)
-      end
-
-      it "returns the failure hash" do
-        expect(client.snitches[:message]).to include("Response unsuccessful")
-      end
-    end
-
-    describe "timeout" do
-      before do
-        stub_request(:get, stub_url).to_raise(Timeout::Error)
-      end
-
-      it "returns the timeout hash" do
-        expect(client.snitches).to eq(timeout_hash)
       end
     end
   end
