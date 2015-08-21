@@ -168,7 +168,8 @@ class Snitcher::API::Client
   private 
 
   def strip_and_join_params(params)
-    params.uniq.join(",")
+    good_params = params.map { |p| p.strip }
+    good_params.compact.uniq.join(",")
   end
 
   def initialize_opts(options, uri)
