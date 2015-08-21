@@ -13,10 +13,17 @@ class Snitcher::API::Client
   #
   # options:
   #   api_key: access key available at https://deadmanssnitch.com/users/edit
-  #   api_endpoint: 
+  #   username: the username associated with a Snitcher account
+  #   password: the password associated with a Snitcher account
+  #
   def initialize(options = {})
     @api_key      = options[:api_key]
-    #@api_endpoint = URI.parse("https://api.deadmanssnitch.com/api/v1/")
+    @username     = options[:username]
+    @password     = options[:password]
+
+    ## Use in production
+    # @api_endpoint = URI.parse("https://api.deadmanssnitch.com/v1/")
+    ## Use in development for testing
     @api_endpoint = URI.parse("http://api.dms.dev:3000/v1/")
   end
 
@@ -24,38 +31,56 @@ class Snitcher::API::Client
     uri     = @api_endpoint.dup
     # Given path will be relative to the api endpoint.
     path    = "/#{uri.path}/#{path}".gsub(/\/+/, "/")
-    timeout = options.fetch(:timeout, 5)
 
-    http_options = {
-      # Configure all the timeouts
-      open_timeout: timeout,
-      read_timeout: timeout,
-      ssl_timeout:  timeout,
-
-      # Enable HTTPS if necessary
-      use_ssl:      use_ssl?(uri)
-    }
+    http_options = initialize_opts(options, uri)
 
     Net::HTTP.start(uri.host, uri.port, http_options) do |http|
       # Set up the request
       request = Net::HTTP::Get.new(path)
-      request["User-Agent"]    = user_agent
-      request["Authorization"] = authorization
+      request["User-Agent"] = user_agent
 
-      pp path
-      pp request
+      set_up_authorization(request, options)
+
+      # pp path
+      # pp request
 
       response = http.request(request)
-      pp response
+      # pp response
 
       case response
       when Net::HTTPSuccess
-        # Yeah!
         JSON.parse(response.body)
+      when Net::HTTPForbidden
+        {
+          message: "Unauthorized access"
+        }
       else
-        # BOO!
+        {
+          message: "Response unsuccessful",
+          response: response
+        }
       end
     end
+  rescue Timeout::Error
+    {
+      message: "Request timed out"
+    }
+  end
+
+  # Public: Retrieve API key based on username and password
+  #
+  # username - The username associated with a Deadman's Snitch account
+  # password - The password associated with a Deadman's Snitch account
+  #
+  # Examples
+  #
+  #   Get the api_key for user alice@example.com
+  #     Snitcher::API.api_key("alice@example.com", "password")
+  #
+  # When the request is unsuccessful, the endpoint returns a hash 
+
+  def api_key
+    get "/api_key"
   end
 
   # Public: List snitches on the account
@@ -63,7 +88,7 @@ class Snitcher::API::Client
   # Examples
   #
   #   Get a list of all snitches
-  #   Snitcher::API.snitches
+  #     Snitcher::API.snitches
   def snitches
     get "/snitches"
   end
@@ -75,7 +100,7 @@ class Snitcher::API::Client
   # Examples
   #
   #   Get the snitch with token "c2354d53d2"
-  #   Snitcher::API.snitch("c2354d53d2")
+  #     Snitcher::API.snitch("c2354d53d2")
   def snitch(token)
     get "/snitches/#{token}"
   end
@@ -88,6 +113,20 @@ class Snitcher::API::Client
 
   private 
 
+  def initialize_opts(options, uri)
+    timeout = options.fetch(:timeout, 5)
+
+    {
+      # Configure all the timeouts
+      open_timeout: timeout,
+      read_timeout: timeout,
+      ssl_timeout:  timeout,
+
+      # Enable HTTPS if necessary
+      use_ssl:      use_ssl?(uri)
+    }
+  end
+
   def use_ssl?(uri)
     uri.scheme == "https"
   end
@@ -97,6 +136,14 @@ class Snitcher::API::Client
     engine = defined?(::RUBY_ENGINE) ? ::RUBY_ENGINE : "Ruby"
 
     "Snitcher; #{engine}/#{RUBY_VERSION}; #{RUBY_PLATFORM}; v#{::Snitcher::VERSION}"
+  end
+
+  def set_up_authorization(request, options)
+    unless @api_key.nil?
+      request["Authorization"] = authorization
+    else
+      request.basic_auth @username, @password
+    end
   end
 
   def authorization
