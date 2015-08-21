@@ -4,21 +4,23 @@ require "snitcher/api/client"
 require "securerandom"
 
 describe Snitcher::API::Client do
+  let(:options) { { api_key: "_caeEiZXnEyEzXXYVh2NhQ" }}
+  let(:client)    { Snitcher::API::Client.new(options)}
+
+  ## Use these in development for testing
+  let(:api_url)   { "api.dms.dev:3000/v1/api_key" }
+  let(:stub_url)  { /api\.dms\.dev/ }
+  let(:scheme)    { "http://" }
+
+  ## Use these in production
+  # let(:api_url) { "api.deadmanssnitch.com/v1/api_key" }
+  # let(:stub_url)  { /deadmanssnitch\.com/ }
+  # let(:scheme)    { "https://" }
+
   describe ".api_key" do
     let(:username)  { "alice@example.com" }
     let(:password)  { "password" }
-    let(:options)   { {username: username, password: password} }
-    let(:client)    { Snitcher::API::Client.new(options)}
-
-    ## Use these in development for testing
-    let(:api_url)   { "api.dms.dev:3000/v1/api_key" }
-    let(:stub_url)  { /api\.dms\.dev/ }
-    let(:scheme)    { "http://" }
-
-    ## Use these in production
-    # let(:api_url) { "api.deadmanssnitch.com/v1/api_key" }
-    # let(:stub_url)  { /deadmanssnitch\.com/ }
-    # let(:scheme)    { "https://" }
+    let(:options)   { { username: username, password: password } }
 
     before do
       stub_request(:get, stub_url).
