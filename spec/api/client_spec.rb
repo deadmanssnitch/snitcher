@@ -83,8 +83,7 @@ describe Snitcher::API::Client do
     it "pings API with the username and password" do
       client.api_key
 
-      expect(a_request(:get, 
-        url)).to have_been_made.once
+      expect(a_request(:get, url)).to have_been_made.once
     end
 
     context "when successful" do
@@ -130,8 +129,7 @@ describe Snitcher::API::Client do
                 }
 
     before do
-      stub_request(:get, stub_url).
-        to_return(:body => body, :status => 200)
+      stub_request(:get, stub_url).to_return(:body => body, :status => 200)
     end
 
     it "pings API with the api_key" do
@@ -143,6 +141,44 @@ describe Snitcher::API::Client do
     context "when successful" do
       it "returns the hash of snitches" do
         expect(client.snitches).to eq(JSON.parse(body))
+      end
+    end
+  end
+
+  describe "#snitch" do
+    let(:token) { "c2354d53d2" }
+    let(:url)   { "#{scheme}#{api_key}:@#{api_url}/snitches/#{token}" }
+    let(:body)  { '[
+                     {
+                       "token": "c2354d53d2",
+                       "href": "/v1/snitches/c2354d53d2",
+                       "name": "Cool Test Snitch",
+                       "tags": [
+                         "testing",
+                         "api"
+                       ],
+                       "status": "pending",
+                       "checked_in_at": null,
+                       "type": {
+                         "interval": "hourly"
+                       }
+                     }
+                   ]'
+                }
+
+    before do
+      stub_request(:get, stub_url).to_return(:body => body, :status => 200)
+    end
+
+    it "pings API with the api_key" do
+      client.snitch(token)
+
+      expect(a_request(:get, url)).to have_been_made.once
+    end
+
+    context "when successful" do
+      it "returns the snitch" do
+        expect(client.snitch(token)).to eq(JSON.parse(body))
       end
     end
   end

@@ -95,8 +95,8 @@ class Snitcher::API::Client
   #     @client.snitches
   #     => [
   #          {
-  #            "token": "c2354d53d2",
-  #            "href": "/v1/snitches/c2354d53d2",
+  #            "token": "c2354d53d3",
+  #            "href": "/v1/snitches/c2354d53d3",
   #            "name": "Daily Backups",
   #            "tags": [
   #              "production",
@@ -109,8 +109,8 @@ class Snitcher::API::Client
   #            }
   #          },
   #          {
-  #            "token": "c2354d53d2",
-  #            "href": "/v1/snitches/c2354d53d2",
+  #            "token": "c2354d53d4",
+  #            "href": "/v1/snitches/c2354d53d4",
   #            "name": "Hourly Emails",
   #            "tags": [
   #            ],
