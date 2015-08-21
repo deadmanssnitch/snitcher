@@ -100,12 +100,25 @@ describe Snitcher::API::Client do
     let(:url)   { "#{scheme}#{api_key}:@#{api_url}/snitches" }
     let(:body)  { '[
                      {
-                       "token": "abd0683eb4",
-                       "href": "/v1/snitches/abd0683eb4",
+                       "token": "agr0683qp4",
+                       "href": "/v1/snitches/agr0683qp4",
                        "name": "Cool Test Snitch",
                        "tags": [
                          "testing",
                          "api"
+                       ],
+                       "status": "pending",
+                       "checked_in_at": null,
+                       "type": {
+                         "interval": "hourly"
+                       }
+                     },
+                     {
+                       "token": "xyz8574uy2",
+                       "href": "/v1/snitches/xyz8574uy2",
+                       "name": "Even Cooler Test Snitch",
+                       "tags": [
+                         "testing"
                        ],
                        "status": "pending",
                        "checked_in_at": null,
