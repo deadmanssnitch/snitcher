@@ -16,6 +16,14 @@ class Snitcher::API::Client
   #   username: the username associated with a Snitcher account
   #   password: the password associated with a Snitcher account
   #
+  # Example
+  #
+  #   Get the api_key for user alice@example.com
+  #     @client = Snitcher::API::Client.new({api_key: "abc123"})
+  #     => #<Snitcher::API::Client:0x007fa3750af418 @api_key=abc123 
+  #          @username=nil, @password=nil, @api_endpoint=#<URI::HTTPS 
+  #          https://api.deadmanssnitch.com/v1/>>
+  #
   def initialize(options = {})
     @api_key      = options[:api_key]
     @username     = options[:username]
@@ -75,9 +83,10 @@ class Snitcher::API::Client
   # Examples
   #
   #   Get the api_key for user alice@example.com
-  #     Snitcher::API.api_key("alice@example.com", "password")
+  #     @client.api_key("alice@example.com", "password")
   #
-  # When the request is unsuccessful, the endpoint returns a hash 
+  # When the request is unsuccessful, the endpoint returns a hash
+  # with a message indicating the nature of the failure.
 
   def api_key
     get "/api_key"
@@ -88,7 +97,7 @@ class Snitcher::API::Client
   # Examples
   #
   #   Get a list of all snitches
-  #     Snitcher::API.snitches
+  #     @client.snitches
   def snitches
     get "/snitches"
   end
@@ -100,7 +109,7 @@ class Snitcher::API::Client
   # Examples
   #
   #   Get the snitch with token "c2354d53d2"
-  #     Snitcher::API.snitch("c2354d53d2")
+  #     @client.snitch("c2354d53d2")
   def snitch(token)
     get "/snitches/#{token}"
   end
