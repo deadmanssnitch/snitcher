@@ -59,20 +59,13 @@ class Snitcher::API::Client
       when Net::HTTPSuccess
         JSON.parse(response.body)
       when Net::HTTPForbidden
-        {
-          message: "Unauthorized access"
-        }
+        { message: "Unauthorized access" }
       else
-        {
-          message: "Response unsuccessful",
-          response: response
-        }
+        { message: "Response unsuccessful", response: response }
       end
     end
   rescue Timeout::Error
-    {
-      message: "Request timed out"
-    }
+    { message: "Request timed out" }
   end
 
   # Public: Retrieve API key based on username and password
@@ -84,10 +77,12 @@ class Snitcher::API::Client
   #
   #   Get the api_key for user alice@example.com
   #     @client.api_key("alice@example.com", "password")
+  #     => {
+  #           "api_key" => "_caeEiZXnEyEzXXYVh2NhQ"
+  #        }
   #
   # When the request is unsuccessful, the endpoint returns a hash
   # with a message indicating the nature of the failure.
-
   def api_key
     get "/api_key"
   end
@@ -98,6 +93,34 @@ class Snitcher::API::Client
   #
   #   Get a list of all snitches
   #     @client.snitches
+  #     => [
+  #          {
+  #            "token": "c2354d53d2",
+  #            "href": "/v1/snitches/c2354d53d2",
+  #            "name": "Daily Backups",
+  #            "tags": [
+  #              "production",
+  #              "critical"
+  #            ],
+  #            "status": "pending",
+  #            "checked_in_at": "2014-01-01T12:00:00.000Z",
+  #            "type": {
+  #              "interval": "daily"
+  #            }
+  #          },
+  #          {
+  #            "token": "c2354d53d2",
+  #            "href": "/v1/snitches/c2354d53d2",
+  #            "name": "Hourly Emails",
+  #            "tags": [
+  #            ],
+  #            "status": "healthy",
+  #            "checked_in_at": "2014-01-01T12:00:00.000Z",
+  #            "type": {
+  #              "interval": "hourly"
+  #            }
+  #          }
+  #        ]
   def snitches
     get "/snitches"
   end
