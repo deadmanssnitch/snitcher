@@ -35,34 +35,29 @@ class Snitcher::API::Client
     @api_endpoint = URI.parse("http://api.dms.dev:3000/v1/")
   end
 
-  def get(path, options = {})
-    uri     = @api_endpoint.dup
-    # Given path will be relative to the api endpoint.
-    path    = "/#{uri.path}/#{path}".gsub(/\/+/, "/")
-
+  def get(path, options={})
+    uri, path = set_uri_and_path(path)
     http_options = initialize_opts(options, uri)
 
     Net::HTTP.start(uri.host, uri.port, http_options) do |http|
-      # Set up the request
       request = Net::HTTP::Get.new(path)
       request["User-Agent"] = user_agent
+      execute_request(http, request)
+    end
+  rescue Timeout::Error
+    { message: "Request timed out" }
+  end
 
-      set_up_authorization(request, options)
+  def post(path, data={}, options={})
+    uri, path = set_uri_and_path(path)
+    http_options = initialize_opts(options, uri)
 
-      # pp path
-      # pp request
-
-      response = http.request(request)
-      # pp response
-
-      case response
-      when Net::HTTPSuccess
-        JSON.parse(response.body)
-      when Net::HTTPForbidden
-        { message: "Unauthorized access" }
-      else
-        { message: "Response unsuccessful", response: response }
-      end
+    Net::HTTP.start(uri.host, uri.port, http_options) do |http|
+      request = Net::HTTP::Post.new(path)
+      request.set_form_data(data)
+      request["User-Agent"] = user_agent
+      request["Content-Type"] = "application/json"
+      execute_request(http, request)
     end
   rescue Timeout::Error
     { message: "Request timed out" }
@@ -102,7 +97,7 @@ class Snitcher::API::Client
   #              "production",
   #              "critical"
   #            ],
-  #            "status": "pending",
+  #            "status": "healthy",
   #            "checked_in_at": "2014-01-01T12:00:00.000Z",
   #            "type": {
   #              "interval": "daily"
@@ -143,7 +138,7 @@ class Snitcher::API::Client
   #              "critical"
   #            ],
   #            "status": "pending",
-  #            "checked_in_at": "2014-01-01T12:00:00.000Z",
+  #            "checked_in_at": "",
   #            "type": {
   #              "interval": "daily"
   #            }
@@ -171,7 +166,7 @@ class Snitcher::API::Client
   #              "critical"
   #            ],
   #            "status": "pending",
-  #            "checked_in_at": "2014-01-01T12:00:00.000Z",
+  #            "checked_in_at": "",
   #            "type": {
   #              "interval": "daily"
   #            }
@@ -197,13 +192,65 @@ class Snitcher::API::Client
     get "/snitches?tags=#{tag_params}"
   end
 
-  def create_snitch(attributes)
+  # Public: Create a snitch using passed-in values. Returns the new snitch.
+  #
+  # attributes - A hash of the snitch properties. It should include these keys:
+  #              "name"     - String value is the name of the snitch.
+  #              "interval" - String value representing how often the snitch
+  #                           is expected to fire. Options are "hourly", 
+  #                           "daily", "weekly", and "monthly".
+  #              "notes"    - Optional string value for recording additional 
+  #                           information about the snitch
+  #              "tags"     - Optional array of string tags.
+  #
+  # Examples
+  #
+  #   Create a new snitch
+  #     attributes = {
+  #                     "name":     "Daily Backups",
+  #                     "interval": "daily",
+  #                     "notes":    "Customer and supplier tables",
+  #                     "tags":     ["backups", "maintenance"]
+  #                  }
+  #     @client.create_snitch(attributes)
+  #     => [
+  #          {
+  #            "token": "c2354d53d3",
+  #            "href": "/v1/snitches/c2354d53d3",
+  #            "name": "Daily Backups",
+  #            "tags": [
+  #              "backups",
+  #              "maintenance"
+  #            ],
+  #            "status": "pending",
+  #            "checked_in_at": "",
+  #            "type": {
+  #              "interval": "daily"
+  #            },
+  #            "notes": "Customer and supplier tables"
+  #          }
+  #        ]  
+  def create_snitch(attributes={})
+    data_hash = { "name" =>  attributes[:name], 
+                  "type" =>  {"interval": attributes[:interval]}, 
+                  "notes" => attributes[:notes] || "",
+                  "tags" =>  [attributes[:tags] || []]
+                }
+
+    post("/snitches", data_hash)
   end
 
   def delete_snitch(token)
   end
 
   private 
+
+  def set_uri_and_path(path)
+    uri     = @api_endpoint.dup
+    # Given path will be relative to the api endpoint.
+    path    = "/#{uri.path}/#{path}".gsub(/\/+/, "/")
+    return uri, path
+  end
 
   def strip_and_join_params(params)
     good_params = params.map { |p| p.strip }
@@ -214,12 +261,9 @@ class Snitcher::API::Client
     timeout = options.fetch(:timeout, 5)
 
     {
-      # Configure all the timeouts
       open_timeout: timeout,
       read_timeout: timeout,
       ssl_timeout:  timeout,
-
-      # Enable HTTPS if necessary
       use_ssl:      use_ssl?(uri)
     }
   end
@@ -235,7 +279,7 @@ class Snitcher::API::Client
     "Snitcher; #{engine}/#{RUBY_VERSION}; #{RUBY_PLATFORM}; v#{::Snitcher::VERSION}"
   end
 
-  def set_up_authorization(request, options)
+  def set_up_authorization(request)
     unless @api_key.nil?
       request["Authorization"] = authorization
     else
@@ -245,5 +289,22 @@ class Snitcher::API::Client
 
   def authorization
     "Basic #{Base64.strict_encode64("#{@api_key}:")}"
+  end
+
+  def execute_request(http, request)
+    set_up_authorization(request)
+    response = http.request(request)
+    evaluate_response(response)
+  end
+
+  def evaluate_response(response)
+    case response
+    when Net::HTTPSuccess
+      JSON.parse(response.body)
+    when Net::HTTPForbidden
+      { message: "Unauthorized access" }
+    else
+      { message: "Response unsuccessful", response: response }
+    end
   end
 end

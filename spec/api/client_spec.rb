@@ -1,6 +1,6 @@
 require "spec_helper"
 require "snitcher/api/client"
-
+require "base64"
 require "securerandom"
 
 describe Snitcher::API::Client do
@@ -68,6 +68,67 @@ describe Snitcher::API::Client do
     end
   end
 
+  describe "#post" do
+    let(:url)       { "#{scheme}#{api_key}:@#{api_url}/foo" }
+    let(:data_hash) {
+                      { "name" =>  "One Fish", 
+                        "type" =>  {"interval": "monthly"}, 
+                        "notes" => "Two Fish",
+                        "tags" =>  ["red_fish", "blue_fish"]
+                      }
+                    }
+
+    before do
+      stub_request(:post, stub_url).to_return(:body => '{"bar": "baz"}', 
+        :status => 200)
+    end
+
+    it "includes a custom user-agent" do
+      client.post("foo", data_hash)
+
+      expect(a_request(:post, url).with(headers: 
+              { "User-Agent" => /\ASnitcher;.*; v#{Snitcher::VERSION}\z/ })
+            ).to have_been_made
+    end
+
+    it "includes a json content type header" do
+      client.post("foo", data_hash)
+
+      expect(a_request(:post, url).with(headers: 
+              { "Content-Type" => "application/json" })).to have_been_made
+    end
+
+    context "when unathorized" do
+      before do
+        stub_request(:post, stub_url).to_return(:status => 403)
+      end
+
+      it "returns the unauthorized hash" do
+        expect(client.post("foo")).to eq(unauthorized_hash)
+      end
+    end
+
+    context "when unsuccessful" do
+      before do
+        stub_request(:post, stub_url).to_return(:status => 404)
+      end
+
+      it "returns the failure hash" do
+        expect(client.post("foo")[:message]).to include("Response unsuccessful")
+      end
+    end
+
+    describe "timeout" do
+      before do
+        stub_request(:post, stub_url).to_raise(Timeout::Error)
+      end
+
+      it "returns the timeout hash" do
+        expect(client.post("foo")).to eq(timeout_hash)
+      end
+    end
+  end
+
   describe "#api_key" do
     let(:username)  { "alice@example.com" }
     let(:password)  { "password" }
@@ -107,7 +168,7 @@ describe Snitcher::API::Client do
                          "api"
                        ],
                        "status": "pending",
-                       "checked_in_at": null,
+                       "checked_in_at": "",
                        "type": {
                          "interval": "hourly"
                        }
@@ -120,7 +181,7 @@ describe Snitcher::API::Client do
                          "testing"
                        ],
                        "status": "pending",
-                       "checked_in_at": null,
+                       "checked_in_at": "",
                        "type": {
                          "interval": "hourly"
                        }
@@ -158,7 +219,7 @@ describe Snitcher::API::Client do
                          "api"
                        ],
                        "status": "pending",
-                       "checked_in_at": null,
+                       "checked_in_at": "",
                        "type": {
                          "interval": "hourly"
                        }
@@ -197,7 +258,7 @@ describe Snitcher::API::Client do
                          "star-belly"
                        ],
                        "status": "pending",
-                       "checked_in_at": null,
+                       "checked_in_at": "",
                        "type": {
                          "interval": "hourly"
                        }
@@ -212,7 +273,7 @@ describe Snitcher::API::Client do
                          "plain-belly"
                        ],
                        "status": "pending",
-                       "checked_in_at": null,
+                       "checked_in_at": "",
                        "type": {
                          "interval": "hourly"
                        }
@@ -233,6 +294,52 @@ describe Snitcher::API::Client do
     context "when successful" do
       it "returns the snitches" do
         expect(client.tagged_snitches(tags)).to eq(JSON.parse(body))
+      end
+    end
+  end
+
+  describe "#create_snitch" do
+    let(:data)  { 
+                  {
+                    "name":     "Daily Backups",
+                    "interval": "daily",
+                    "notes":    "Customer and supplier tables",
+                    "tags":     ["backups", "maintenance"]
+                   } 
+                }
+    let(:url)   { "#{scheme}#{api_key}:@#{api_url}/snitches" }
+    let(:body)  { '[
+                     {
+                       "token": "c2354d53d2",
+                       "href": "/v1/snitches/c2354d53d2",
+                       "name": "Daily Backups",
+                       "tags": [
+                         "backups",
+                         "maintenance"
+                       ],
+                       "status": "pending",
+                       "checked_in_at": "",
+                       "type": {
+                         "interval": "daily"
+                       },
+                       "notes": "Customer and supplier tables"
+                     }
+                   ]'
+                }
+
+    before do
+      stub_request(:post, stub_url).to_return(:body => body, :status => 200)
+    end
+
+    it "pings API with the api_key" do
+      client.create_snitch(data)
+
+      expect(a_request(:post, url)).to have_been_made.once
+    end
+
+    context "when successful" do
+      it "returns the new snitch" do
+        expect(client.create_snitch(data)).to eq(JSON.parse(body))
       end
     end
   end
