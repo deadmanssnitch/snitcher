@@ -18,8 +18,9 @@ describe Snitcher::API::Client do
   # let(:stub_url)  { /deadmanssnitch\.com/ }
   # let(:scheme)    { "https://" }
 
+  let(:snitch_url)        { "#{scheme}#{api_key}:@#{api_url}/snitches" }
   let(:unauthorized_hash) { { message: "Unauthorized access" } }
-  let(:timeout_hash) { { message: "Request timed out" } }
+  let(:timeout_hash)      { { message: "Request timed out" } }
 
   describe "#api_key" do
     let(:username)  { "alice@example.com" }
@@ -29,7 +30,7 @@ describe Snitcher::API::Client do
 
     before do
       stub_request(:get, stub_url).
-        to_return(:body => "{\n  \"api_key\": \"_caeEiZXnEyEzXXYVh2NhQ\"\n}\n", 
+        to_return(:body => "{\n  \"api_key\": \"_caeEiZXnEyEzXXYVh2NhQ\"\n}\n",
                   :status => 200)
     end
 
@@ -49,7 +50,7 @@ describe Snitcher::API::Client do
   end
 
   describe "#snitches" do
-    let(:url)   { "#{scheme}#{api_key}:@#{api_url}/snitches" }
+    let(:url)   { snitch_url }
     let(:body)  { '[
                      {
                        "token": "agr0683qp4",
@@ -100,7 +101,7 @@ describe Snitcher::API::Client do
 
   describe "#snitch" do
     let(:token) { "c2354d53d2" }
-    let(:url)   { "#{scheme}#{api_key}:@#{api_url}/snitches/#{token}" }
+    let(:url)   { "#{snitch_url}/#{token}" }
     let(:body)  { '[
                      {
                        "token": "c2354d53d2",
@@ -138,7 +139,7 @@ describe Snitcher::API::Client do
 
   describe "#tagged_snitches" do
     let(:tags)  { ["sneetch", "belly"] }
-    let(:url)   { "#{scheme}#{api_key}:@#{api_url}/snitches?tags=sneetch,belly" }
+    let(:url)   { "#{snitch_url}?tags=sneetch,belly" }
     let(:body)  { '[
                      {
                        "token": "c2354d53d2",
@@ -191,15 +192,15 @@ describe Snitcher::API::Client do
   end
 
   describe "#create_snitch" do
-    let(:data)  { 
+    let(:data)  {
                   {
                     "name":     "Daily Backups",
                     "interval": "daily",
                     "notes":    "Customer and supplier tables",
                     "tags":     ["backups", "maintenance"]
-                   } 
+                   }
                 }
-    let(:url)   { "#{scheme}#{api_key}:@#{api_url}/snitches" }
+    let(:url)   { snitch_url }
     let(:body)  { '[
                      {
                        "token": "c2354d53d2",
@@ -238,13 +239,13 @@ describe Snitcher::API::Client do
 
   describe "#edit_snitch" do
     let(:token) { "c2354d53d2" }
-    let(:data)  { 
+    let(:data)  {
                   {
                     "interval": "hourly",
                     "notes":    "We need this more often",
-                   } 
+                   }
                 }
-    let(:url)   { "#{scheme}#{api_key}:@#{api_url}/snitches/#{token}" }
+    let(:url)   { "#{snitch_url}/#{token}" }
     let(:body)  { '[
                      {
                        "token": "c2354d53d2",
@@ -284,7 +285,7 @@ describe Snitcher::API::Client do
   describe "#add_tags" do
     let(:token) { "c2354d53d2" }
     let(:tags)  { ["red", "green"] }
-    let(:url)   { "#{scheme}#{api_key}:@#{api_url}/snitches/#{token}/tags" }
+    let(:url)   { "#{snitch_url}/#{token}/tags" }
     let(:body)  { '[
                      "red",
                      "green"
@@ -304,6 +305,32 @@ describe Snitcher::API::Client do
     context "when successful" do
       it "returns an array of the snitch's tags" do
         expect(client.add_tags(token, tags)).to eq(JSON.parse(body))
+      end
+    end
+  end
+
+  describe "#remove_tag" do
+    let(:token) { "c2354d53d2" }
+    let(:tag)   { "critical" }
+    let(:url)   { "#{snitch_url}/#{token}/tags/#{tag}" }
+    let(:body)  { '[
+                     "production"
+                   ]'
+                }
+
+    before do
+      stub_request(:delete, stub_url).to_return(:body => body, :status => 200)
+    end
+
+    it "pings API with the api_key" do
+      client.remove_tag(token, tag)
+
+      expect(a_request(:delete, url)).to have_been_made.once
+    end
+
+    context "when successful" do
+      it "returns an array of the snitch's remaining tags" do
+        expect(client.remove_tag(token, tag)).to eq(JSON.parse(body))
       end
     end
   end

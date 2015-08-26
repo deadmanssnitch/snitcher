@@ -254,7 +254,7 @@ class Snitcher::API::Client
   # Public: Add one or more tags to an existing snitch, identified by token.
   #         Returns an array of the snitch's tags.
   #
-  # token - The unique token of the snitch to get. Should be a string.
+  # token - The unique token of the snitch to edit. Should be a string.
   # tags -  Array of string tags. Will append these tags to any existing tags.
   #
   # Examples
@@ -271,7 +271,23 @@ class Snitcher::API::Client
     post("/snitches/#{token}/tags", tags)
   end
 
+  # Public: Remove a tag from an existing snitch, identified by token.
+  #         Returns an array of the snitch's remaining tags.
+  #
+  # token - The unique token of the snitch to edit. Should be a string.
+  # tag -   Tag to be removed from a snitch's tags. Should be a string
+  #
+  # Examples
+  #
+  #   Assume a snitch that already has the tags "critical" and "production"
+  #     token = "c2354d53d2"
+  #     tag =   "production"
+  #     @client.remove_tag(token, tag)
+  #     => [
+  #           "critical"
+  #        ]
   def remove_tag(token, tag)
+    delete("/snitches/#{token}/tags/#{tag}")
   end
 
   def remove_all_tags(token)
@@ -397,6 +413,20 @@ class Snitcher::API::Client
     Net::HTTP.start(uri.host, uri.port, http_options) do |http|
       request = Net::HTTP::Patch.new(path)
       request.set_form_data(data)
+      request["User-Agent"] = user_agent
+      request["Content-Type"] = "application/json"
+      execute_request(http, request)
+    end
+  rescue Timeout::Error
+    { message: "Request timed out" }
+  end
+
+  def delete(path, options={})
+    uri, path = set_uri_and_path(path)
+    http_options = initialize_opts(options, uri)
+
+    Net::HTTP.start(uri.host, uri.port, http_options) do |http|
+      request = Net::HTTP::Delete.new(path)
       request["User-Agent"] = user_agent
       request["Content-Type"] = "application/json"
       execute_request(http, request)
