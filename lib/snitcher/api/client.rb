@@ -20,8 +20,8 @@ class Snitcher::API::Client
   #
   #   Get the api_key for user alice@example.com
   #     @client = Snitcher::API::Client.new({api_key: "abc123"})
-  #     => #<Snitcher::API::Client:0x007fa3750af418 @api_key=abc123 
-  #          @username=nil, @password=nil, @api_endpoint=#<URI::HTTPS 
+  #     => #<Snitcher::API::Client:0x007fa3750af418 @api_key=abc123
+  #          @username=nil, @password=nil, @api_endpoint=#<URI::HTTPS
   #          https://api.deadmanssnitch.com/v1/>>
   #
   def initialize(options = {})
@@ -157,7 +157,7 @@ class Snitcher::API::Client
   #              "interval": "hourly"
   #            }
   #          }
-  #        ]  
+  #        ]
   def tagged_snitches(tags=[])
     tag_params = strip_and_join_params(tags)
 
@@ -169,9 +169,9 @@ class Snitcher::API::Client
   # attributes - A hash of the snitch properties. It should include these keys:
   #              "name"     - String value is the name of the snitch.
   #              "interval" - String value representing how often the snitch
-  #                           is expected to fire. Options are "hourly", 
+  #                           is expected to fire. Options are "hourly",
   #                           "daily", "weekly", and "monthly".
-  #              "notes"    - Optional string value for recording additional 
+  #              "notes"    - Optional string value for recording additional
   #                           information about the snitch
   #              "tags"     - Optional array of string tags.
   #
@@ -201,13 +201,13 @@ class Snitcher::API::Client
   #            },
   #            "notes": "Customer and supplier tables"
   #          }
-  #        ]  
+  #        ]
   def create_snitch(attributes={})
     post("/snitches", data_hash(attributes))
   end
 
-  # Public: Edit an existing snitch, identified by token, using passed-in 
-  #         values. Only changes those values included in the attributes 
+  # Public: Edit an existing snitch, identified by token, using passed-in
+  #         values. Only changes those values included in the attributes
   #         hash; other attributes are not changed. Returns the updated snitch.
   #
   # token -       The unique token of the snitch to get. Should be a string.
@@ -215,9 +215,9 @@ class Snitcher::API::Client
   #               values you want to change. Options include these keys:
   #               "name"     - String value is the name of the snitch.
   #               "interval" - String value representing how often the snitch
-  #                            is expected to fire. Options are "hourly", 
+  #                            is expected to fire. Options are "hourly",
   #                            "daily", "weekly", and "monthly".
-  #               "notes"    - String value for recording additional 
+  #               "notes"    - String value for recording additional
   #                            information about the snitch
   #               "tags"     - Array of string tags.
   #
@@ -232,8 +232,8 @@ class Snitcher::API::Client
   #     @client.edit_snitch(token, attributes)
   #     => [
   #          {
-  #            "token": "c2354d53d3",
-  #            "href": "/v1/snitches/c2354d53d3",
+  #            "token": "c2354d53d2",
+  #            "href": "/v1/snitches/c2354d53d2",
   #            "name": "Monthly Backups",
   #            "tags": [
   #              "backups",
@@ -246,12 +246,29 @@ class Snitcher::API::Client
   #            },
   #            "notes": "Customer and supplier tables"
   #          }
-  #        ]  
+  #        ]
   def edit_snitch(token, attributes={})
     patch("/snitches/#{token}", data_hash(attributes))
   end
 
+  # Public: Add one or more tags to an existing snitch, identified by token.
+  #         Returns an array of the snitch's tags.
+  #
+  # token - The unique token of the snitch to get. Should be a string.
+  # tags -  Array of string tags. Will append these tags to any existing tags.
+  #
+  # Examples
+  #
+  #   Add tags to an existing snitch.
+  #     token = "c2354d53d2"
+  #     tags =  [ "red", "green" ]
+  #     @client.add_tags(token, tags)
+  #     => [
+  #           "red",
+  #           "green"
+  #        ]
   def add_tags(token, tags=[])
+    post("/snitches/#{token}/tags", tags)
   end
 
   def remove_tag(token, tag)
