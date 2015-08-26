@@ -35,34 +35,6 @@ class Snitcher::API::Client
     @api_endpoint = URI.parse("http://api.dms.dev:3000/v1/")
   end
 
-  def get(path, options={})
-    uri, path = set_uri_and_path(path)
-    http_options = initialize_opts(options, uri)
-
-    Net::HTTP.start(uri.host, uri.port, http_options) do |http|
-      request = Net::HTTP::Get.new(path)
-      request["User-Agent"] = user_agent
-      execute_request(http, request)
-    end
-  rescue Timeout::Error
-    { message: "Request timed out" }
-  end
-
-  def post(path, data={}, options={})
-    uri, path = set_uri_and_path(path)
-    http_options = initialize_opts(options, uri)
-
-    Net::HTTP.start(uri.host, uri.port, http_options) do |http|
-      request = Net::HTTP::Post.new(path)
-      request.set_form_data(data)
-      request["User-Agent"] = user_agent
-      request["Content-Type"] = "application/json"
-      execute_request(http, request)
-    end
-  rescue Timeout::Error
-    { message: "Request timed out" }
-  end
-
   # Public: Retrieve API key based on username and password
   #
   # username - The username associated with a Deadman's Snitch account
@@ -231,19 +203,84 @@ class Snitcher::API::Client
   #          }
   #        ]  
   def create_snitch(attributes={})
-    data_hash = { "name" =>  attributes[:name], 
-                  "type" =>  {"interval": attributes[:interval]}, 
-                  "notes" => attributes[:notes] || "",
-                  "tags" =>  [attributes[:tags] || []]
-                }
+    post("/snitches", data_hash(attributes))
+  end
 
-    post("/snitches", data_hash)
+  # Public: Edit an existing snitch, identified by token, using passed-in 
+  #         values. Only changes those values included in the attributes 
+  #         hash; other attributes are not changed. Returns the updated snitch.
+  #
+  # token -       The unique token of the snitch to get. Should be a string.
+  # attributes -  A hash of the snitch properties. It should only include those
+  #               values you want to change. Options include these keys:
+  #               "name"     - String value is the name of the snitch.
+  #               "interval" - String value representing how often the snitch
+  #                            is expected to fire. Options are "hourly", 
+  #                            "daily", "weekly", and "monthly".
+  #               "notes"    - String value for recording additional 
+  #                            information about the snitch
+  #               "tags"     - Array of string tags.
+  #
+  # Examples
+  #
+  #   Edit an existing snitch using values passed in a hash.
+  #     token      = "c2354d53d2"
+  #     attributes = {
+  #                     "name":     "Monthly Backups",
+  #                     "interval": "monthly"
+  #                  }
+  #     @client.edit_snitch(token, attributes)
+  #     => [
+  #          {
+  #            "token": "c2354d53d3",
+  #            "href": "/v1/snitches/c2354d53d3",
+  #            "name": "Monthly Backups",
+  #            "tags": [
+  #              "backups",
+  #              "maintenance"
+  #            ],
+  #            "status": "pending",
+  #            "checked_in_at": "",
+  #            "type": {
+  #              "interval": "monthly"
+  #            },
+  #            "notes": "Customer and supplier tables"
+  #          }
+  #        ]  
+  def edit_snitch(token, attributes={})
+    patch("/snitches/#{token}", data_hash(attributes))
+  end
+
+  def add_tags(token, tags=[])
+  end
+
+  def remove_tag(token, tag)
+  end
+
+  def remove_all_tags(token)
+  end
+
+  def replace_tags(token, tags=[])
+  end
+
+  def pause_snitch(token)
   end
 
   def delete_snitch(token)
   end
 
-  private 
+  private
+
+  def data_hash(attributes={})
+    data = []
+    data << ["name", attributes["name"]] if attributes.has_key?("name")
+    data << ["notes", attributes[:notes]] if attributes.has_key?("notes")
+    data << ["tags", attributes[:tags]] if attributes.has_key?("tags")
+    if attributes.has_key?("interval")
+      data << ["type", {"interval": attributes["interval"]}]
+    end
+    data.to_h
+  end
 
   def set_uri_and_path(path)
     uri     = @api_endpoint.dup
@@ -306,5 +343,48 @@ class Snitcher::API::Client
     else
       { message: "Response unsuccessful", response: response }
     end
+  end
+
+  def get(path, options={})
+    uri, path = set_uri_and_path(path)
+    http_options = initialize_opts(options, uri)
+
+    Net::HTTP.start(uri.host, uri.port, http_options) do |http|
+      request = Net::HTTP::Get.new(path)
+      request["User-Agent"] = user_agent
+      execute_request(http, request)
+    end
+  rescue Timeout::Error
+    { message: "Request timed out" }
+  end
+
+  def post(path, data={}, options={})
+    uri, path = set_uri_and_path(path)
+    http_options = initialize_opts(options, uri)
+
+    Net::HTTP.start(uri.host, uri.port, http_options) do |http|
+      request = Net::HTTP::Post.new(path)
+      request.set_form_data(data)
+      request["User-Agent"] = user_agent
+      request["Content-Type"] = "application/json"
+      execute_request(http, request)
+    end
+  rescue Timeout::Error
+    { message: "Request timed out" }
+  end
+
+  def patch(path, data={}, options={})
+    uri, path = set_uri_and_path(path)
+    http_options = initialize_opts(options, uri)
+
+    Net::HTTP.start(uri.host, uri.port, http_options) do |http|
+      request = Net::HTTP::Patch.new(path)
+      request.set_form_data(data)
+      request["User-Agent"] = user_agent
+      request["Content-Type"] = "application/json"
+      execute_request(http, request)
+    end
+  rescue Timeout::Error
+    { message: "Request timed out" }
   end
 end

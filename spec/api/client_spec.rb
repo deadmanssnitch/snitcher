@@ -21,114 +21,6 @@ describe Snitcher::API::Client do
   let(:unauthorized_hash) { { message: "Unauthorized access" } }
   let(:timeout_hash) { { message: "Request timed out" } }
 
-  describe "#get" do
-    let(:url)       { "#{scheme}#{api_key}:@#{api_url}/foo" }
-
-    before do
-      stub_request(:get, stub_url).to_return(:body => '{"bar": "baz"}', 
-        :status => 200)
-    end
-
-    it "includes a custom user-agent" do
-      client.get("foo")
-
-      expect(a_request(:get, url).with(headers: 
-              { "User-Agent" => /\ASnitcher;.*; v#{Snitcher::VERSION}\z/ })
-            ).to have_been_made
-    end
-
-    context "when unathorized" do
-      before do
-        stub_request(:get, stub_url).to_return(:status => 403)
-      end
-
-      it "returns the unauthorized hash" do
-        expect(client.get("foo")).to eq(unauthorized_hash)
-      end
-    end
-
-    context "when unsuccessful" do
-      before do
-        stub_request(:get, stub_url).to_return(:status => 404)
-      end
-
-      it "returns the failure hash" do
-        expect(client.get("foo")[:message]).to include("Response unsuccessful")
-      end
-    end
-
-    describe "timeout" do
-      before do
-        stub_request(:get, stub_url).to_raise(Timeout::Error)
-      end
-
-      it "returns the timeout hash" do
-        expect(client.get("foo")).to eq(timeout_hash)
-      end
-    end
-  end
-
-  describe "#post" do
-    let(:url)       { "#{scheme}#{api_key}:@#{api_url}/foo" }
-    let(:data_hash) {
-                      { "name" =>  "One Fish", 
-                        "type" =>  {"interval": "monthly"}, 
-                        "notes" => "Two Fish",
-                        "tags" =>  ["red_fish", "blue_fish"]
-                      }
-                    }
-
-    before do
-      stub_request(:post, stub_url).to_return(:body => '{"bar": "baz"}', 
-        :status => 200)
-    end
-
-    it "includes a custom user-agent" do
-      client.post("foo", data_hash)
-
-      expect(a_request(:post, url).with(headers: 
-              { "User-Agent" => /\ASnitcher;.*; v#{Snitcher::VERSION}\z/ })
-            ).to have_been_made
-    end
-
-    it "includes a json content type header" do
-      client.post("foo", data_hash)
-
-      expect(a_request(:post, url).with(headers: 
-              { "Content-Type" => "application/json" })).to have_been_made
-    end
-
-    context "when unathorized" do
-      before do
-        stub_request(:post, stub_url).to_return(:status => 403)
-      end
-
-      it "returns the unauthorized hash" do
-        expect(client.post("foo")).to eq(unauthorized_hash)
-      end
-    end
-
-    context "when unsuccessful" do
-      before do
-        stub_request(:post, stub_url).to_return(:status => 404)
-      end
-
-      it "returns the failure hash" do
-        expect(client.post("foo")[:message]).to include("Response unsuccessful")
-      end
-    end
-
-    describe "timeout" do
-      before do
-        stub_request(:post, stub_url).to_raise(Timeout::Error)
-      end
-
-      it "returns the timeout hash" do
-        expect(client.post("foo")).to eq(timeout_hash)
-      end
-    end
-  end
-
   describe "#api_key" do
     let(:username)  { "alice@example.com" }
     let(:password)  { "password" }
@@ -340,6 +232,51 @@ describe Snitcher::API::Client do
     context "when successful" do
       it "returns the new snitch" do
         expect(client.create_snitch(data)).to eq(JSON.parse(body))
+      end
+    end
+  end
+
+  describe "#edit_snitch" do
+    let(:token) { "c2354d53d2" }
+    let(:data)  { 
+                  {
+                    "interval": "hourly",
+                    "notes":    "We need this more often",
+                   } 
+                }
+    let(:url)   { "#{scheme}#{api_key}:@#{api_url}/snitches/#{token}" }
+    let(:body)  { '[
+                     {
+                       "token": "c2354d53d2",
+                       "href": "/v1/snitches/c2354d53d2",
+                       "name": "The Backups",
+                       "tags": [
+                         "backups",
+                         "maintenance"
+                       ],
+                       "status": "pending",
+                       "checked_in_at": "",
+                       "type": {
+                         "interval": "hourly"
+                       },
+                       "notes": "We need this more often"
+                     }
+                   ]'
+                }
+
+    before do
+      stub_request(:patch, stub_url).to_return(:body => body, :status => 200)
+    end
+
+    it "pings API with the api_key" do
+      client.edit_snitch(token, data)
+
+      expect(a_request(:patch, url)).to have_been_made.once
+    end
+
+    context "when successful" do
+      it "returns the modified snitch" do
+        expect(client.edit_snitch(token, data)).to eq(JSON.parse(body))
       end
     end
   end
