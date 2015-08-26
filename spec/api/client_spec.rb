@@ -432,4 +432,26 @@ describe Snitcher::API::Client do
       end
     end
   end
+
+  describe "#delete_snitch" do
+    let(:token) { "c2354d53d2" }
+    let(:url)   { "#{snitch_url}/#{token}" }
+    let(:body)  { '{}' }
+
+    before do
+      stub_request(:delete, stub_url).to_return(:body => body, :status => 200)
+    end
+
+    it "pings API with the api_key" do
+      client.delete_snitch(token)
+
+      expect(a_request(:delete, url)).to have_been_made.once
+    end
+
+    context "when successful" do
+      it "returns an empty response" do
+        expect(client.delete_snitch(token)).to eq(JSON.parse(body))
+      end
+    end
+  end
 end

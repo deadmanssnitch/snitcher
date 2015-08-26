@@ -358,7 +358,7 @@ class Snitcher::API::Client
 
   # Public: Pauses a snitch. The return is empty.
   #
-  # token - The unique token of the snitch to edit. Should be a string.
+  # token - The unique token of the snitch to pause. Should be a string.
   #
   # Examples
   #
@@ -370,7 +370,18 @@ class Snitcher::API::Client
     post("/snitches/#{token}/pause")
   end
 
+  # Public: Deletes a snitch. The return is empty.
+  #
+  # token - The unique token of the snitch to delete. Should be a string.
+  #
+  # Examples
+  #
+  #   Delete a snitch.
+  #     token = "c2354d53d3"
+  #     @client.delete_snitch(token)
+  #     => {}
   def delete_snitch(token)
+    delete("/snitches/#{token}")
   end
 
   private
