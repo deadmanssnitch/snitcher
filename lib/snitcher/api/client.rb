@@ -335,7 +335,7 @@ class Snitcher::API::Client
   #
   #   Remove all of a snitch's tags.
   #     token = "c2354d53d3"
-  #     @client.move_all_tags(token)
+  #     @client.remove_all_tags(token)
   #     => [
   #          {
   #            "token": "c2354d53d3",
@@ -356,7 +356,18 @@ class Snitcher::API::Client
     patch("/snitches/#{token}", attributes)
   end
 
+  # Public: Pauses a snitch. The return is empty.
+  #
+  # token - The unique token of the snitch to edit. Should be a string.
+  #
+  # Examples
+  #
+  #   Pause a snitch.
+  #     token = "c2354d53d3"
+  #     @client.pause_snitch(token)
+  #     => {}
   def pause_snitch(token)
+    post("/snitches/#{token}/pause")
   end
 
   def delete_snitch(token)
