@@ -323,10 +323,37 @@ class Snitcher::API::Client
   def replace_tags(token, tags=[])
     attributes = {"tags" => tags}
 
-    patch("/snitches/#{token}", tags)
+    patch("/snitches/#{token}", attributes)
   end
 
+  # Public: Remove all of a snitch's tags.
+  #         Returns the updated snitch.
+  #
+  # token - The unique token of the snitch to edit. Should be a string.
+  #
+  # Examples
+  #
+  #   Remove all of a snitch's tags.
+  #     token = "c2354d53d3"
+  #     @client.move_all_tags(token)
+  #     => [
+  #          {
+  #            "token": "c2354d53d3",
+  #            "href": "/v1/snitches/c2354d53d3",
+  #            "name": "Daily Backups",
+  #            "tags": [ ],
+  #            "status": "pending",
+  #            "checked_in_at": "",
+  #            "type": {
+  #              "interval": "daily"
+  #            },
+  #            "notes": "Customer and supplier tables"
+  #          }
+  #        ]
   def remove_all_tags(token)
+    attributes = {"tags" => []}
+
+    patch("/snitches/#{token}", attributes)
   end
 
   def pause_snitch(token)

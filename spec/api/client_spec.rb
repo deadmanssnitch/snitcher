@@ -374,4 +374,40 @@ describe Snitcher::API::Client do
       end
     end
   end
+
+  describe "#remove_all_tags" do
+    let(:token) { "c2354d53d2" }
+    let(:url)   { "#{snitch_url}/#{token}" }
+    let(:body)  { '[
+                     {
+                       "token": "c2354d53d2",
+                       "href": "/v1/snitches/c2354d53d2",
+                       "name": "Daily Backups",
+                       "tags": [ ],
+                       "status": "pending",
+                       "checked_in_at": "",
+                       "type": {
+                         "interval": "daily"
+                       },
+                       "notes": "Sales data."
+                     }
+                   ]'
+                }
+
+    before do
+      stub_request(:patch, stub_url).to_return(:body => body, :status => 200)
+    end
+
+    it "pings API with the api_key" do
+      client.remove_all_tags(token)
+
+      expect(a_request(:patch, url)).to have_been_made.once
+    end
+
+    context "when successful" do
+      it "returns the updated snitch" do
+        expect(client.remove_all_tags(token)).to eq(JSON.parse(body))
+      end
+    end
+  end
 end
