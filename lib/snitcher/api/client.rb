@@ -32,9 +32,9 @@ class Snitcher::API::Client
     ## Use in production
     # @api_endpoint = URI.parse("https://api.deadmanssnitch.com/v1/")
     ## Use in development for testing
-    @api_endpoint = URI.parse("http://api.dms.dev:3000/v1/")
+    # @api_endpoint = URI.parse("http://api.dms.dev:3000/v1/")
 
-    # @api_endpoint = URI.parse("http://staging-api.deadmanssnitch.com/v1/")
+    @api_endpoint = URI.parse("http://staging-api.deadmanssnitch.com/v1/")
   end
 
   # Public: Retrieve API key based on username and password
@@ -347,36 +347,6 @@ class Snitcher::API::Client
     attributes = {"tags": tags}
 
     edit_snitch(token, attributes)
-  end
-
-  # Public: Remove all of a snitch's tags.
-  #         Returns the updated snitch.
-  #
-  # token - The unique token of the snitch to edit. Should be a string.
-  #
-  # Examples
-  #
-  #   Remove all of a snitch's tags.
-  #     token = "c2354d53d3"
-  #     @client.remove_all_tags(token)
-  #     => [
-  #          {
-  #            "token": "c2354d53d3",
-  #            "href": "/v1/snitches/c2354d53d3",
-  #            "name": "Daily Backups",
-  #            "tags": [ ],
-  #            "status": "pending",
-  #            "checked_in_at": "",
-  #            "type": {
-  #              "interval": "daily"
-  #            },
-  #            "notes": "Customer and supplier tables"
-  #          }
-  #        ]
-  def remove_all_tags(token)
-    attributes = {"tags" => []}
-
-    patch("/snitches/#{token}", attributes)
   end
 
   # Public: Pauses a snitch. The return is empty.
