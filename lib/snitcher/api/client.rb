@@ -32,9 +32,9 @@ class Snitcher::API::Client
     ## Use in production
     # @api_endpoint = URI.parse("https://api.deadmanssnitch.com/v1/")
     ## Use in development for testing
-    # @api_endpoint = URI.parse("http://api.dms.dev:3000/v1/")
+    @api_endpoint = URI.parse("http://api.dms.dev:3000/v1/")
 
-    @api_endpoint = URI.parse("http://staging-api.deadmanssnitch.com/v1/")
+    # @api_endpoint = URI.parse("http://staging-api.deadmanssnitch.com/v1/")
   end
 
   # Public: Retrieve API key based on username and password
@@ -281,7 +281,7 @@ class Snitcher::API::Client
   end
 
   # Public: Remove a tag from an existing snitch, identified by token.
-  #         Returns an array of the snitch's remaining tags.
+  #         Returns a hash with the message: "Response complete".
   #
   # token - The unique token of the snitch to edit. Should be a string.
   # tag -   Tag to be removed from a snitch's tags. Should be a string
@@ -292,8 +292,22 @@ class Snitcher::API::Client
   #     token = "c2354d53d2"
   #     tag =   "production"
   #     @client.remove_tag(token, tag)
+  #     => { :message => "Response complete" }
+  #     @client.snitch(token)
   #     => [
-  #           "critical"
+  #          {
+  #            "token": "c2354d53d2",
+  #            "href": "/v1/snitches/c2354d53d2",
+  #            "name": "Daily Backups",
+  #            "tags": [
+  #              "critical"
+  #            ],
+  #            "status": "pending",
+  #            "checked_in_at": "",
+  #            "type": {
+  #              "interval": "daily"
+  #            }
+  #          }
   #        ]
   def remove_tag(token, tag)
     delete("/snitches/#{token}/tags/#{tag}")
@@ -330,9 +344,9 @@ class Snitcher::API::Client
   #          }
   #        ]
   def replace_tags(token, tags=[])
-    attributes = {"tags" => tags}
+    attributes = {"tags": tags}
 
-    patch("/snitches/#{token}", attributes)
+    edit_snitch(token, attributes)
   end
 
   # Public: Remove all of a snitch's tags.
@@ -396,15 +410,18 @@ class Snitcher::API::Client
   private
 
   def data_json(attributes={})
-    JSON.generate({"name": attributes[:name], "notes": attributes[:notes], "tags": attributes[:tags], "type": {"interval": attributes[:interval]}})
-    # strings = []
-    # strings << ["'name': '#{attributes[:name]}'"] if attributes.has_key?(:name)
-    # strings << ["'notes': '#{attributes[:notes]}'"] if attributes.has_key?(:notes)
-    # strings << ["'tags': '#{attributes[:tags]}'"] if attributes.has_key?(:tags)
-    # if attributes.has_key?(:interval)
-    #   strings << ["'type': {'interval': '#{attributes[:interval]}'"]
-    # end
-    # strings.to_h
+    JSON.generate(data_hash(attributes))
+  end
+
+  def data_hash(attributes={})
+    attr_hash = Hash.new
+    attr_hash["name"] = attributes[:name] if attributes.has_key?(:name)
+    attr_hash["notes"] = attributes[:notes] if attributes.has_key?(:notes)
+    attr_hash["tags"] = attributes[:tags] if attributes.has_key?(:tags)
+    if attributes.has_key?(:interval)
+      attr_hash["type"] = {"interval": attributes[:interval]}
+    end
+    attr_hash
   end
 
   def set_uri_and_path(path)
@@ -461,6 +478,8 @@ class Snitcher::API::Client
 
   def evaluate_response(response)
     case response
+    when Net::HTTPNoContent
+      { message: "Response complete" }
     when Net::HTTPSuccess
       JSON.parse(response.body)
     when Net::HTTPForbidden

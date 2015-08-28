@@ -318,13 +318,10 @@ describe Snitcher::API::Client do
     let(:token) { "c2354d53d2" }
     let(:tag)   { "critical" }
     let(:url)   { "#{snitch_url}/#{token}/tags/#{tag}" }
-    let(:body)  { '[
-                     "production"
-                   ]'
-                }
+    let(:body)  { '{:message=>"Response complete"}' }
 
     before do
-      stub_request(:delete, stub_url).to_return(:body => body, :status => 200)
+      stub_request(:delete, stub_url).to_return(:body => body, :status => 204)
     end
 
     it "pings API with the api_key" do
@@ -335,12 +332,12 @@ describe Snitcher::API::Client do
 
     context "when successful" do
       it "returns an array of the snitch's remaining tags" do
-        expect(client.remove_tag(token, tag)).to eq(JSON.parse(body))
+        expect(client.remove_tag(token, tag)[:message]).to eq("Response complete")
       end
     end
   end
 
-  describe "#replace_tag" do
+  describe "#replace_tags" do
     let(:token) { "c2354d53d2" }
     let(:tags)  { ["red", "green"] }
     let(:url)   { "#{snitch_url}/#{token}" }
