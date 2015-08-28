@@ -358,7 +358,7 @@ class Snitcher::API::Client
   #   Pause a snitch.
   #     token = "c2354d53d3"
   #     @client.pause_snitch(token)
-  #     => {}
+  #     => { :message => "Response complete" }
   def pause_snitch(token)
     post("/snitches/#{token}/pause")
   end
@@ -372,7 +372,7 @@ class Snitcher::API::Client
   #   Delete a snitch.
   #     token = "c2354d53d3"
   #     @client.delete_snitch(token)
-  #     => {}
+  #     => { :message => "Response complete" }
   def delete_snitch(token)
     delete("/snitches/#{token}")
   end
