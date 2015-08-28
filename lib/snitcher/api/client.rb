@@ -32,7 +32,9 @@ class Snitcher::API::Client
     ## Use in production
     # @api_endpoint = URI.parse("https://api.deadmanssnitch.com/v1/")
     ## Use in development for testing
-    @api_endpoint = URI.parse("http://api.dms.dev:3000/v1/")
+    # @api_endpoint = URI.parse("http://api.dms.dev:3000/v1/")
+
+    @api_endpoint = URI.parse("http://staging-api.deadmanssnitch.com/v1/")
   end
 
   # Public: Retrieve API key based on username and password
@@ -43,7 +45,9 @@ class Snitcher::API::Client
   # Examples
   #
   #   Get the api_key for user alice@example.com
-  #     @client.api_key("alice@example.com", "password")
+  #     @client = Snitcher::API::Client.new({username: "alice@example.com",
+  #                 password: "password"})
+  #     @client.api_key
   #     => {
   #           "api_key" => "_caeEiZXnEyEzXXYVh2NhQ"
   #        }
@@ -113,7 +117,10 @@ class Snitcher::API::Client
   #            "checked_in_at": "",
   #            "type": {
   #              "interval": "daily"
-  #            }
+  #            },
+  #            "check_in_url" => "https://s.nosnch.in/c2354d53d3",
+  #            "created_at" => "2015-08-15T12:15:00.234Z",
+  #            "notes" => "Important user data."
   #          }
   #        ]
   def snitch(token)
@@ -180,7 +187,7 @@ class Snitcher::API::Client
   #   Create a new snitch
   #     attributes = {
   #                     "name":     "Daily Backups",
-  #                     "interval": "daily",
+  #                     "interval":  "daily",
   #                     "notes":    "Customer and supplier tables",
   #                     "tags":     ["backups", "maintenance"]
   #                  }
@@ -199,11 +206,13 @@ class Snitcher::API::Client
   #            "type": {
   #              "interval": "daily"
   #            },
+  #            "check_in_url": "https://s.nosnch.in/c2354d53d3",
+  #            "created_at"=>"2015-08-27T18:30:23.737Z",
   #            "notes": "Customer and supplier tables"
   #          }
   #        ]
   def create_snitch(attributes={})
-    post("/snitches", data_hash(attributes))
+    post("/snitches", data_json(attributes))
   end
 
   # Public: Edit an existing snitch, identified by token, using passed-in
@@ -217,9 +226,9 @@ class Snitcher::API::Client
   #               "interval" - String value representing how often the snitch
   #                            is expected to fire. Options are "hourly",
   #                            "daily", "weekly", and "monthly".
-  #               "notes"    - String value for recording additional
+  #               "notes"    - Optional string value for recording additional
   #                            information about the snitch
-  #               "tags"     - Array of string tags.
+  #               "tags"     - Optional array of string tags.
   #
   # Examples
   #
@@ -248,7 +257,7 @@ class Snitcher::API::Client
   #          }
   #        ]
   def edit_snitch(token, attributes={})
-    patch("/snitches/#{token}", data_hash(attributes))
+    patch("/snitches/#{token}", data_json(attributes))
   end
 
   # Public: Add one or more tags to an existing snitch, identified by token.
@@ -386,15 +395,16 @@ class Snitcher::API::Client
 
   private
 
-  def data_hash(attributes={})
-    data = []
-    data << ["name", attributes["name"]] if attributes.has_key?("name")
-    data << ["notes", attributes[:notes]] if attributes.has_key?("notes")
-    data << ["tags", attributes[:tags]] if attributes.has_key?("tags")
-    if attributes.has_key?("interval")
-      data << ["type", {"interval": attributes["interval"]}]
-    end
-    data.to_h
+  def data_json(attributes={})
+    JSON.generate({"name": attributes[:name], "notes": attributes[:notes], "tags": attributes[:tags], "type": {"interval": attributes[:interval]}})
+    # strings = []
+    # strings << ["'name': '#{attributes[:name]}'"] if attributes.has_key?(:name)
+    # strings << ["'notes': '#{attributes[:notes]}'"] if attributes.has_key?(:notes)
+    # strings << ["'tags': '#{attributes[:tags]}'"] if attributes.has_key?(:tags)
+    # if attributes.has_key?(:interval)
+    #   strings << ["'type': {'interval': '#{attributes[:interval]}'"]
+    # end
+    # strings.to_h
   end
 
   def set_uri_and_path(path)
@@ -455,6 +465,8 @@ class Snitcher::API::Client
       JSON.parse(response.body)
     when Net::HTTPForbidden
       { message: "Unauthorized access" }
+    when Net::HTTPUnprocessableEntity
+      { message: "Unprocessable - #{response.body}"}
     else
       { message: "Response unsuccessful", response: response }
     end
@@ -479,7 +491,7 @@ class Snitcher::API::Client
 
     Net::HTTP.start(uri.host, uri.port, http_options) do |http|
       request = Net::HTTP::Post.new(path)
-      request.set_form_data(data)
+      request.body = "#{data}"
       request["User-Agent"] = user_agent
       request["Content-Type"] = "application/json"
       execute_request(http, request)
@@ -488,13 +500,13 @@ class Snitcher::API::Client
     { message: "Request timed out" }
   end
 
-  def patch(path, data={}, options={})
+  def patch(path, data, options={})
     uri, path = set_uri_and_path(path)
     http_options = initialize_opts(options, uri)
 
     Net::HTTP.start(uri.host, uri.port, http_options) do |http|
       request = Net::HTTP::Patch.new(path)
-      request.set_form_data(data)
+      request.body = data
       request["User-Agent"] = user_agent
       request["Content-Type"] = "application/json"
       execute_request(http, request)
