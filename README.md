@@ -46,6 +46,18 @@ $ snitch c2354d53d2 --message "Finished in 23.8 seconds."
 
 ## API Access
 
+### Retrieving Your API Key At Command Line
+
+```ruby
+require "snitcher/api"
+
+client = Snitcher::API::Client.new(username: "jane@example.com",
+  password: "password")
+client.api_key
+```
+
+Returns a hash with an api_key key, whose value is your api_key.
+
 ### Setup
 
 ```ruby
@@ -68,6 +80,107 @@ client = Snitcher::API::Client.new(api_key: "FOO")
 ```ruby
 Snitcher.snitches
 ```
+
+Returns an array of hashes. Each hash represents a snitch.
+
+### Retrieve a Single Snitch
+
+```ruby
+token = c2354d53d2
+Snitcher.snitch(token)
+```
+
+Returns a hash that represents a snitch.
+
+### Retrieve Snitches That Match a Set of Tags
+
+```ruby
+tags = ["critical", "sales"]
+Snitcher.tagged_snitches(tags)
+```
+
+Returns an array of hashes. Each hash represents a snitch.
+
+### Create a Snitch
+
+Required attributes are name and interval. Optional attributes are notes and tags.
+
+```ruby
+attributes = { "name": "Nightly User Data Backups",
+               "interval": "daily",
+               "notes": "User login and usage data",
+               "tags": ["users", "critical"]
+             }
+Snitcher.create_snitch(attributes)
+```
+
+Returns a hash representing the newly-created snitch.
+
+### Edit a Snitch
+
+You only need to pass the edit_snitch function the attributes you want to change. The rest of a snitch's attributes will remain the same.
+
+```ruby
+token = c2354d53d2
+new_attributes = { "name": "Important Nightly User Data Backups" }
+Snitcher.edit_snitch(token, new_attributes)
+```
+
+Returns a hash representing the edited snitch.
+
+### Adding Tags to a Snitch
+
+This function adds tags to a snitch, retaining whatever tags it already has.
+
+```ruby
+token = c2354d53d2
+tags = ["spring_campaign", "support"]
+Snitcher.add_tags(c2354d53d2, tags)
+```
+
+Returns an array of all of the snitch's tags.
+
+### Deleting a Tag From a Snitch
+
+This function is for deleting a single tag from a snitch.
+
+```ruby
+token = c2354d53d2
+tag = "support"
+Snitcher.remove_tag(token, tag)
+```
+
+Returns a hash with a message key, whose value is "Response complete".
+
+### Replace Tags on a Snitch
+
+Replaces all of a snitch's tags with an array of new tags.
+
+```ruby
+token = c2354d53d2
+tags = ["csv", "server_a"]
+Snitcher.replace_tags(token, tags)
+```
+
+Returns a hash representing the updated snitch.
+
+### Pause a Snitch
+
+```ruby
+token = c2354d53d2
+Snitcher.pause_snitch(token)
+```
+
+Returns a hash with a message key, whose value is "Response complete".
+
+### Delete a Snitch
+
+```ruby
+token = c2354d53d2
+Snitcher.delete_snitch(token)
+```
+
+Returns a hash with a message key, whose value is "Response complete".
 
 ## Contributing
 

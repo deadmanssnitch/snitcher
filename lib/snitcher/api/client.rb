@@ -49,7 +49,7 @@ class Snitcher::API::Client
   #                 password: "password"})
   #     @client.api_key
   #     => {
-  #           "api_key" => "_caeEiZXnEyEzXXYVh2NhQ"
+  #          "api_key" => "_caeEiZXnEyEzXXYVh2NhQ"
   #        }
   #
   # When the request is unsuccessful, the endpoint returns a hash
@@ -349,7 +349,8 @@ class Snitcher::API::Client
     edit_snitch(token, attributes)
   end
 
-  # Public: Pauses a snitch. The return is empty.
+  # Public: Pauses a snitch. The return is a hash with the message "Response
+  #         complete".
   #
   # token - The unique token of the snitch to pause. Should be a string.
   #
@@ -363,7 +364,8 @@ class Snitcher::API::Client
     post("/snitches/#{token}/pause")
   end
 
-  # Public: Deletes a snitch. The return is empty.
+  # Public: Deletes a snitch. The return is a hash with the message "Response
+  #         complete".
   #
   # token - The unique token of the snitch to delete. Should be a string.
   #
