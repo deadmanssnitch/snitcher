@@ -9,14 +9,14 @@ describe Snitcher::API::Client do
   let(:client)    { Snitcher::API::Client.new(options) }
 
   ## Use these in development for testing
-  let(:api_url)   { "api.dms.dev:3000/v1" }
-  let(:stub_url)  { /api\.dms\.dev/ }
-  let(:scheme)    { "http://" }
+  # let(:api_url)   { "api.dms.dev:3000/v1" }
+  # let(:stub_url)  { /api\.dms\.dev/ }
+  # let(:scheme)    { "http://" }
 
   ## Use these in production
-  # let(:api_url) { "api.deadmanssnitch.com/v1" }
-  # let(:stub_url)  { /deadmanssnitch\.com/ }
-  # let(:scheme)    { "https://" }
+  let(:api_url) { "api.deadmanssnitch.com/v1" }
+  let(:stub_url)  { /deadmanssnitch\.com/ }
+  let(:scheme)    { "https://" }
 
   let(:snitch_url)        { "#{scheme}#{api_key}:@#{api_url}/snitches" }
   let(:unauthorized_hash) { { message: "Unauthorized access" } }
@@ -318,10 +318,13 @@ describe Snitcher::API::Client do
     let(:token) { "c2354d53d2" }
     let(:tag)   { "critical" }
     let(:url)   { "#{snitch_url}/#{token}/tags/#{tag}" }
-    let(:body)  { '{:message=>"Response complete"}' }
+    let(:body)  { '[
+                     "critical"
+                   ]'
+                }
 
     before do
-      stub_request(:delete, stub_url).to_return(:body => body, :status => 204)
+      stub_request(:delete, stub_url).to_return(:body => body, :status => 200)
     end
 
     it "pings API with the api_key" do
@@ -332,7 +335,7 @@ describe Snitcher::API::Client do
 
     context "when successful" do
       it "returns an array of the snitch's remaining tags" do
-        expect(client.remove_tag(token, tag)[:message]).to eq("Response complete")
+        expect(client.remove_tag(token, tag)).to eq(JSON.parse(body))
       end
     end
   end

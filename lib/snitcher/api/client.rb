@@ -30,11 +30,11 @@ class Snitcher::API::Client
     @password     = options[:password]
 
     ## Use in production
-    # @api_endpoint = URI.parse("https://api.deadmanssnitch.com/v1/")
+    @api_endpoint = URI.parse("https://api.deadmanssnitch.com/v1/")
     ## Use in development for testing
     # @api_endpoint = URI.parse("http://api.dms.dev:3000/v1/")
 
-    @api_endpoint = URI.parse("http://staging-api.deadmanssnitch.com/v1/")
+    # @api_endpoint = URI.parse("http://staging-api.deadmanssnitch.com/v1/")
   end
 
   # Public: Retrieve API key based on username and password
@@ -281,10 +281,10 @@ class Snitcher::API::Client
   end
 
   # Public: Remove a tag from an existing snitch, identified by token.
-  #         Returns a hash with the message: "Response complete".
+  #         Returns an array of the snitch's tags.
   #
   # token - The unique token of the snitch to edit. Should be a string.
-  # tag -   Tag to be removed from a snitch's tags. Should be a string
+  # tag -   Tag to be removed from a snitch's tags. Should be a string.
   #
   # Examples
   #
@@ -292,22 +292,8 @@ class Snitcher::API::Client
   #     token = "c2354d53d2"
   #     tag =   "production"
   #     @client.remove_tag(token, tag)
-  #     => { :message => "Response complete" }
-  #     @client.snitch(token)
   #     => [
-  #          {
-  #            "token": "c2354d53d2",
-  #            "href": "/v1/snitches/c2354d53d2",
-  #            "name": "Daily Backups",
-  #            "tags": [
-  #              "critical"
-  #            ],
-  #            "status": "pending",
-  #            "checked_in_at": "",
-  #            "type": {
-  #              "interval": "daily"
-  #            }
-  #          }
+  #           "critical"
   #        ]
   def remove_tag(token, tag)
     delete("/snitches/#{token}/tags/#{tag}")
