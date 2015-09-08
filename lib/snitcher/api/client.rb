@@ -335,6 +335,37 @@ class Snitcher::API::Client
     edit_snitch(token, attributes)
   end
 
+  # Public: Remove all of a snitch's tags.
+  #         Returns the updated snitch.
+  #
+  # token - The unique token of the snitch to edit. Should be a string.
+  #
+  # Examples
+  #
+  #   Remove all tags.
+  #     token = "c2354d53d3"
+  #     @client.clear_tags(token)
+  #     => [
+  #          {
+  #            "token": "c2354d53d3",
+  #            "href": "/v1/snitches/c2354d53d3",
+  #            "name": "Daily Backups",
+  #            "tags": [
+  #            ],
+  #            "status": "pending",
+  #            "checked_in_at": "",
+  #            "type": {
+  #              "interval": "daily"
+  #            },
+  #            "notes": "Customer and supplier tables"
+  #          }
+  #        ]
+  def clear_tags(token)
+    attributes = {"tags": []}
+
+    edit_snitch(token, attributes)
+  end
+
   # Public: Pauses a snitch. The return is a hash with the message "Response
   #         complete".
   #

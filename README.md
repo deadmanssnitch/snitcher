@@ -150,7 +150,7 @@ tag = "support"
 Snitcher.remove_tag(token, tag)
 ```
 
-Returns a hash with a message key, whose value is "Response complete".
+Returns an array of all of the snitch's remaining tags.
 
 ### Replace Tags on a Snitch
 
@@ -160,6 +160,17 @@ Replaces all of a snitch's tags with an array of new tags.
 token = c2354d53d2
 tags = ["csv", "server_a"]
 Snitcher.replace_tags(token, tags)
+```
+
+Returns a hash representing the updated snitch.
+
+### Remove Tags From a Snitch
+
+Removes all of a snitch's tags.
+
+```ruby
+token = c2354d53d2
+Snitcher.clear_tags(token)
 ```
 
 Returns a hash representing the updated snitch.
