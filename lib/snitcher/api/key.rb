@@ -18,7 +18,7 @@ class Snitcher::API::Key < Snitcher::API::Base
   #
   # Example
   #
-  #     @client = Snitcher::API::Key.new({username: "alice@example.com",
+  #     @agent = Snitcher::API::Key.new({username: "alice@example.com",
   #       password: "password"})
   #     => #<Snitcher::API::Key:0x007fa3750af418 @username=nil,
   #          @password=nil, @api_endpoint=#<URI::HTTPS
