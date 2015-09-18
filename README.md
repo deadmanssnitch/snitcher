@@ -107,10 +107,10 @@ Required attributes are name and interval. Optional attributes are notes and tag
 
 ```ruby
 attributes = { "name": "Nightly User Data Backups",
-               "interval": "daily",
-               "notes": "User login and usage data",
-               "tags": ["users", "critical"]
-             }
+  "interval": "daily",
+  "notes": "User login and usage data",
+  "tags": ["users", "critical"]
+}
 Snitcher.create_snitch(attributes)
 ```
 
