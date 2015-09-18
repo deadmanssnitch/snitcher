@@ -9,45 +9,18 @@ describe Snitcher::API::Client do
   let(:client)    { Snitcher::API::Client.new(options) }
 
   ## Use these in development for testing
-  # let(:api_url)   { "api.dms.dev:3000/v1" }
-  # let(:stub_url)  { /api\.dms\.dev/ }
-  # let(:scheme)    { "http://" }
+  let(:api_url)   { "api.dms.dev:3000/v1" }
+  let(:stub_url)  { /api\.dms\.dev/ }
+  let(:scheme)    { "http://" }
 
   ## Use these in production
-  let(:api_url) { "api.deadmanssnitch.com/v1" }
-  let(:stub_url)  { /deadmanssnitch\.com/ }
-  let(:scheme)    { "https://" }
+  # let(:api_url) { "api.deadmanssnitch.com/v1" }
+  # let(:stub_url)  { /deadmanssnitch\.com/ }
+  # let(:scheme)    { "https://" }
 
   let(:snitch_url)        { "#{scheme}#{api_key}:@#{api_url}/snitches" }
   let(:unauthorized_hash) { { message: "Unauthorized access" } }
   let(:timeout_hash)      { { message: "Request timed out" } }
-
-  describe "#api_key" do
-    let(:username)  { "alice@example.com" }
-    let(:password)  { "password" }
-    let(:options)   { { username: username, password: password } }
-    let(:url)       { "#{scheme}#{username}:#{password}@#{api_url}/api_key" }
-
-    before do
-      stub_request(:get, stub_url).
-        to_return(:body => "{\n  \"api_key\": \"_caeEiZXnEyEzXXYVh2NhQ\"\n}\n",
-                  :status => 200)
-    end
-
-    it "pings API with the username and password" do
-      client.api_key
-
-      expect(a_request(:get, url)).to have_been_made.once
-    end
-
-    context "when successful" do
-      it "returns the api_key hash" do
-        api_hash = { "api_key" => "_caeEiZXnEyEzXXYVh2NhQ" }
-
-        expect(client.api_key).to eq(api_hash)
-      end
-    end
-  end
 
   describe "#snitches" do
     let(:url)   { snitch_url }

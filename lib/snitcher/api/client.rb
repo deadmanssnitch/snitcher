@@ -6,56 +6,31 @@ require "base64"
 require "json"
 
 require "snitcher/api"
+require "snitcher/api/base"
 require "snitcher/version"
 
-class Snitcher::API::Client
+class Snitcher::API::Client < Snitcher::API::Base
   # Public: Create a new Client
   #
   # options:
   #   api_key: access key available at https://deadmanssnitch.com/users/edit
-  #   username: the username associated with a Snitcher account
-  #   password: the password associated with a Snitcher account
   #
   # Example
   #
-  #   Get the api_key for user alice@example.com
+  #   Get the api_key for user with api_key "abc123"
   #     @client = Snitcher::API::Client.new({api_key: "abc123"})
-  #     => #<Snitcher::API::Client:0x007fa3750af418 @api_key=abc123
-  #          @username=nil, @password=nil, @api_endpoint=#<URI::HTTPS
-  #          https://api.deadmanssnitch.com/v1/>>
+  #     => #<Snitcher::API::Client:0x007fa3750af418 @api_key=abc123,
+  #          @api_endpoint=#<URI::HTTPS https://api.deadmanssnitch.com/v1/>>
   #
   def initialize(options = {})
     @api_key      = options[:api_key]
-    @username     = options[:username]
-    @password     = options[:password]
 
     ## Use in production
-    @api_endpoint = URI.parse("https://api.deadmanssnitch.com/v1/")
+    # @api_endpoint = URI.parse("https://api.deadmanssnitch.com/v1/")
     ## Use in development for testing
-    # @api_endpoint = URI.parse("http://api.dms.dev:3000/v1/")
+    @api_endpoint = URI.parse("http://api.dms.dev:3000/v1/")
 
     # @api_endpoint = URI.parse("http://staging-api.deadmanssnitch.com/v1/")
-  end
-
-  # Public: Retrieve API key based on username and password
-  #
-  # username - The username associated with a Deadman's Snitch account
-  # password - The password associated with a Deadman's Snitch account
-  #
-  # Examples
-  #
-  #   Get the api_key for user alice@example.com
-  #     @client = Snitcher::API::Client.new({username: "alice@example.com",
-  #                 password: "password"})
-  #     @client.api_key
-  #     => {
-  #          "api_key" => "_caeEiZXnEyEzXXYVh2NhQ"
-  #        }
-  #
-  # When the request is unsuccessful, the endpoint returns a hash
-  # with a message indicating the nature of the failure.
-  def api_key
-    get "/api_key"
   end
 
   # Public: List snitches on the account
@@ -186,11 +161,11 @@ class Snitcher::API::Client
   #
   #   Create a new snitch
   #     attributes = {
-  #                     "name":     "Daily Backups",
-  #                     "interval":  "daily",
-  #                     "notes":    "Customer and supplier tables",
-  #                     "tags":     ["backups", "maintenance"]
-  #                  }
+  #       "name": "Daily Backups",
+  #       "interval": "daily",
+  #       "notes": "Customer and supplier tables",
+  #       "tags": ["backups", "maintenance"]
+  #     }
   #     @client.create_snitch(attributes)
   #     => [
   #          {
@@ -235,9 +210,9 @@ class Snitcher::API::Client
   #   Edit an existing snitch using values passed in a hash.
   #     token      = "c2354d53d2"
   #     attributes = {
-  #                     "name":     "Monthly Backups",
-  #                     "interval": "monthly"
-  #                  }
+  #       "name":     "Monthly Backups",
+  #       "interval": "monthly"
+  #     }
   #     @client.edit_snitch(token, attributes)
   #     => [
   #          {
@@ -394,146 +369,5 @@ class Snitcher::API::Client
   #     => { :message => "Response complete" }
   def delete_snitch(token)
     delete("/snitches/#{token}")
-  end
-
-  private
-
-  def data_json(attributes={})
-    JSON.generate(data_hash(attributes))
-  end
-
-  def data_hash(attributes={})
-    attr_hash = Hash.new
-    attr_hash["name"] = attributes[:name] if attributes.has_key?(:name)
-    attr_hash["notes"] = attributes[:notes] if attributes.has_key?(:notes)
-    attr_hash["tags"] = attributes[:tags] if attributes.has_key?(:tags)
-    if attributes.has_key?(:interval)
-      attr_hash["type"] = {"interval": attributes[:interval]}
-    end
-    attr_hash
-  end
-
-  def set_uri_and_path(path)
-    uri     = @api_endpoint.dup
-    # Given path will be relative to the api endpoint.
-    path    = "/#{uri.path}/#{path}".gsub(/\/+/, "/")
-    return uri, path
-  end
-
-  def strip_and_join_params(params)
-    good_params = params.map { |p| p.strip }
-    good_params.compact.uniq.join(",")
-  end
-
-  def initialize_opts(options, uri)
-    timeout = options.fetch(:timeout, 5)
-
-    {
-      open_timeout: timeout,
-      read_timeout: timeout,
-      ssl_timeout:  timeout,
-      use_ssl:      use_ssl?(uri)
-    }
-  end
-
-  def use_ssl?(uri)
-    uri.scheme == "https"
-  end
-
-  def user_agent
-    # RUBY_ENGINE was not added until 1.9.3
-    engine = defined?(::RUBY_ENGINE) ? ::RUBY_ENGINE : "Ruby"
-
-    "Snitcher; #{engine}/#{RUBY_VERSION}; #{RUBY_PLATFORM}; v#{::Snitcher::VERSION}"
-  end
-
-  def set_up_authorization(request)
-    unless @api_key.nil?
-      request["Authorization"] = authorization
-    else
-      request.basic_auth @username, @password
-    end
-  end
-
-  def authorization
-    "Basic #{Base64.strict_encode64("#{@api_key}:")}"
-  end
-
-  def execute_request(http, request)
-    set_up_authorization(request)
-    response = http.request(request)
-    evaluate_response(response)
-  end
-
-  def evaluate_response(response)
-    case response
-    when Net::HTTPNoContent
-      { message: "Response complete" }
-    when Net::HTTPSuccess
-      JSON.parse(response.body)
-    when Net::HTTPForbidden
-      { message: "Unauthorized access" }
-    when Net::HTTPUnprocessableEntity
-      { message: "Unprocessable - #{response.body}"}
-    else
-      { message: "Response unsuccessful", response: response }
-    end
-  end
-
-  def get(path, options={})
-    uri, path = set_uri_and_path(path)
-    http_options = initialize_opts(options, uri)
-
-    Net::HTTP.start(uri.host, uri.port, http_options) do |http|
-      request = Net::HTTP::Get.new(path)
-      request["User-Agent"] = user_agent
-      execute_request(http, request)
-    end
-  rescue Timeout::Error
-    { message: "Request timed out" }
-  end
-
-  def post(path, data={}, options={})
-    uri, path = set_uri_and_path(path)
-    http_options = initialize_opts(options, uri)
-
-    Net::HTTP.start(uri.host, uri.port, http_options) do |http|
-      request = Net::HTTP::Post.new(path)
-      request.body = "#{data}"
-      request["User-Agent"] = user_agent
-      request["Content-Type"] = "application/json"
-      execute_request(http, request)
-    end
-  rescue Timeout::Error
-    { message: "Request timed out" }
-  end
-
-  def patch(path, data, options={})
-    uri, path = set_uri_and_path(path)
-    http_options = initialize_opts(options, uri)
-
-    Net::HTTP.start(uri.host, uri.port, http_options) do |http|
-      request = Net::HTTP::Patch.new(path)
-      request.body = data
-      request["User-Agent"] = user_agent
-      request["Content-Type"] = "application/json"
-      execute_request(http, request)
-    end
-  rescue Timeout::Error
-    { message: "Request timed out" }
-  end
-
-  def delete(path, options={})
-    uri, path = set_uri_and_path(path)
-    http_options = initialize_opts(options, uri)
-
-    Net::HTTP.start(uri.host, uri.port, http_options) do |http|
-      request = Net::HTTP::Delete.new(path)
-      request["User-Agent"] = user_agent
-      request["Content-Type"] = "application/json"
-      execute_request(http, request)
-    end
-  rescue Timeout::Error
-    { message: "Request timed out" }
   end
 end
