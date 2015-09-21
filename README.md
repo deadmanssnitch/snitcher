@@ -86,7 +86,7 @@ Returns an array of hashes. Each hash represents a snitch.
 ### Retrieve a Single Snitch
 
 ```ruby
-token = c2354d53d2
+token = "c2354d53d2"
 Snitcher.snitch(token)
 ```
 
@@ -121,7 +121,7 @@ Returns a hash representing the newly-created snitch.
 You only need to pass the edit_snitch function the attributes you want to change. The rest of a snitch's attributes will remain the same.
 
 ```ruby
-token = c2354d53d2
+token = "c2354d53d2"
 new_attributes = { "name": "Important Nightly User Data Backups" }
 Snitcher.edit_snitch(token, new_attributes)
 ```
@@ -133,7 +133,7 @@ Returns a hash representing the edited snitch.
 This function adds tags to a snitch, retaining whatever tags it already has.
 
 ```ruby
-token = c2354d53d2
+token = "c2354d53d2"
 tags = ["spring_campaign", "support"]
 Snitcher.add_tags(c2354d53d2, tags)
 ```
@@ -145,7 +145,7 @@ Returns an array of all of the snitch's tags.
 This function is for deleting a single tag from a snitch.
 
 ```ruby
-token = c2354d53d2
+token = "c2354d53d2"
 tag = "support"
 Snitcher.remove_tag(token, tag)
 ```
@@ -157,7 +157,7 @@ Returns an array of all of the snitch's remaining tags.
 Replaces all of a snitch's tags with an array of new tags.
 
 ```ruby
-token = c2354d53d2
+token = "c2354d53d2"
 tags = ["csv", "server_a"]
 Snitcher.replace_tags(token, tags)
 ```
@@ -169,7 +169,7 @@ Returns a hash representing the updated snitch.
 Removes all of a snitch's tags.
 
 ```ruby
-token = c2354d53d2
+token = "c2354d53d2"
 Snitcher.clear_tags(token)
 ```
 
@@ -178,7 +178,7 @@ Returns a hash representing the updated snitch.
 ### Pause a Snitch
 
 ```ruby
-token = c2354d53d2
+token = "c2354d53d2"
 Snitcher.pause_snitch(token)
 ```
 
@@ -187,7 +187,7 @@ Returns a hash with a message key, whose value is "Response complete".
 ### Delete a Snitch
 
 ```ruby
-token = c2354d53d2
+token = "c2354d53d2"
 Snitcher.delete_snitch(token)
 ```
 
