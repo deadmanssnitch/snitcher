@@ -24,13 +24,8 @@ class Snitcher::API::Client < Snitcher::API::Base
   #
   def initialize(options = {})
     @api_key      = options[:api_key]
-
-    ## Use in production
-    # @api_endpoint = URI.parse("https://api.deadmanssnitch.com/v1/")
-    ## Use in development for testing
-    @api_endpoint = URI.parse("http://api.dms.dev:3000/v1/")
-
-    # @api_endpoint = URI.parse("http://staging-api.deadmanssnitch.com/v1/")
+    @api_endpoint = options[:api_endpoint] ||
+      URI.parse("https://api.deadmanssnitch.com/v1/")
   end
 
   # Public: List snitches on the account

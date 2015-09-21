@@ -4,19 +4,14 @@ require "base64"
 require "securerandom"
 
 describe Snitcher::API::Client do
-  let(:api_key)   { "_caeEiZXnEyEzXXYVh2NhQ" }
-  let(:options)   { { api_key: api_key } }
-  let(:client)    { Snitcher::API::Client.new(options) }
+  let(:api_key)       { "_caeEiZXnEyEzXXYVh2NhQ" }
+  let(:api_endpoint)  { URI.parse("#{scheme}#{api_url}/") }
+  let(:options)       { { api_key: api_key, api_endpoint: api_endpoint } }
+  let(:client)        { Snitcher::API::Client.new(options) }
 
-  ## Use these in development for testing
   let(:api_url)   { "api.dms.dev:3000/v1" }
   let(:stub_url)  { /api\.dms\.dev/ }
   let(:scheme)    { "http://" }
-
-  ## Use these in production
-  # let(:api_url) { "api.deadmanssnitch.com/v1" }
-  # let(:stub_url)  { /deadmanssnitch\.com/ }
-  # let(:scheme)    { "https://" }
 
   let(:snitch_url)        { "#{scheme}#{api_key}:@#{api_url}/snitches" }
   let(:unauthorized_hash) { { message: "Unauthorized access" } }

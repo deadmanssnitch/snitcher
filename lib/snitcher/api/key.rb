@@ -27,13 +27,8 @@ class Snitcher::API::Key < Snitcher::API::Base
   def initialize(options = {})
     @username     = options[:username]
     @password     = options[:password]
-
-    ## Use in production
-    # @api_endpoint = URI.parse("https://api.deadmanssnitch.com/v1/")
-    ## Use in development for testing
-    @api_endpoint = URI.parse("http://api.dms.dev:3000/v1/")
-
-    # @api_endpoint = URI.parse("http://staging-api.deadmanssnitch.com/v1/")
+    @api_endpoint = options[:api_endpoint] ||
+      URI.parse("https://api.deadmanssnitch.com/v1/")
   end
 
   # Public: Retrieve API key based on username and password

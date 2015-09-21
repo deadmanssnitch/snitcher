@@ -6,19 +6,16 @@ require "securerandom"
 describe Snitcher::API::Key do
   let(:username)  { "alice@example.com" }
   let(:password)  { "password" }
-  let(:options)   { { username: username, password: password } }
+  let(:api_endpoint)  { URI.parse("#{scheme}#{api_url}/") }
+  let(:options)   { { username: username, password: password,
+    api_endpoint: api_endpoint } }
   let(:agent)     { Snitcher::API::Key.new(options) }
+
   let(:url)       { "#{scheme}#{username}:#{password}@#{api_url}/api_key" }
 
-  ## Use these in development for testing
   let(:api_url)   { "api.dms.dev:3000/v1" }
   let(:stub_url)  { /api\.dms\.dev/ }
   let(:scheme)    { "http://" }
-
-  ## Use these in production
-  # let(:api_url) { "api.deadmanssnitch.com/v1" }
-  # let(:stub_url)  { /deadmanssnitch\.com/ }
-  # let(:scheme)    { "https://" }
 
   describe "#api_key" do
     before do
