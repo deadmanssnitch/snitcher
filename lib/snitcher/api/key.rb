@@ -13,8 +13,9 @@ class Snitcher::API::Key < Snitcher::API::Base
   # Public: Create a new Key Access Agent
   #
   # options:
-  #   username: the username associated with a Snitcher account
-  #   password: the password associated with a Snitcher account
+  #   username:     the username associated with a Snitcher account
+  #   password:     the password associated with a Snitcher account
+  #   api_endpoint: optional - string URL of the DMS API connecting to.
   #
   # Example
   #
@@ -27,7 +28,7 @@ class Snitcher::API::Key < Snitcher::API::Base
   def initialize(options = {})
     @username     = options[:username]
     @password     = options[:password]
-    @api_endpoint = options[:api_endpoint] ||
+    @api_endpoint = URI.parse(options[:api_endpoint]) ||
       URI.parse("https://api.deadmanssnitch.com/v1/")
   end
 

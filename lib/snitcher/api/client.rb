@@ -13,18 +13,19 @@ class Snitcher::API::Client < Snitcher::API::Base
   # Public: Create a new Client
   #
   # options:
-  #   api_key: access key available at https://deadmanssnitch.com/users/edit
+  #   api_key: access key available at https://deadmanssnitch.com/account/keys
+  #   api_endpoint: optional - string URL of the DMS API connecting to.
   #
   # Example
   #
-  #   Get the api_key for user with api_key "abc123"
+  #   Initialize API client for user with api_key "abc123"
   #     @client = Snitcher::API::Client.new({api_key: "abc123"})
   #     => #<Snitcher::API::Client:0x007fa3750af418 @api_key=abc123,
   #          @api_endpoint=#<URI::HTTPS https://api.deadmanssnitch.com/v1/>>
   #
   def initialize(options = {})
     @api_key      = options[:api_key]
-    @api_endpoint = options[:api_endpoint] ||
+    @api_endpoint = URI.parse(options[:api_endpoint]) ||
       URI.parse("https://api.deadmanssnitch.com/v1/")
   end
 
