@@ -1,6 +1,7 @@
 require "uri"
 require "timeout"
 require "net/http"
+require "snitcher/version"
 
 module Snitcher
   extend self
@@ -11,6 +12,7 @@ module Snitcher
   # opts  - The hash of optional parameters that can be given during check-in:
   #         :message - Text message limited to ~250 characters.
   #         :timeout - Number of seconds to set as connect and read timeout.
+  #         :uri - URL to use for snitch checkins.
   #
   # Examples
   #
@@ -19,9 +21,10 @@ module Snitcher
   #
   # Returns true if the check-in succeeded or false if it failed
   def snitch(token, opts = {})
-    uri       = URI.parse("https://nosnch.in/#{token}")
+    checkin_url = "#{opts[:uri]}/#{token}" || "https://nosnch.in/#{token}"
+    uri       = URI.parse(checkin_url)
     uri.query = URI.encode_www_form(m: opts[:message]) if opts[:message]
-    timeout   = opts.fetch(:timeout, 2)
+    timeout   = opts.fetch(:timeout, 5)
 
     opts = {
       open_timeout: timeout,
@@ -36,6 +39,19 @@ module Snitcher
 
       response = http.request(request)
       response.is_a?(Net::HTTPSuccess)
+
+      # case response
+      # when Net::HTTPNoContent
+      #   { message: "Response complete" }
+      # when Net::HTTPSuccess
+      #   JSON.parse(response.body)
+      # when Net::HTTPForbidden
+      #   { message: "Unauthorized access" }
+      # when Net::HTTPUnprocessableEntity
+      #   { message: "Unprocessable - #{response.body}"}
+      # else
+      #   { message: "Response unsuccessful", response: response }
+      # end
     end
   rescue ::Timeout::Error
     false
@@ -51,7 +67,7 @@ module Snitcher
     # RUBY_ENGINE was not added until 1.9.3
     engine = defined?(::RUBY_ENGINE) ? ::RUBY_ENGINE : "Ruby"
 
-    "Snitcher; #{engine}/#{RUBY_VERSION}; #{RUBY_PLATFORM}; v#{VERSION}"
+    "Snitcher; #{engine}/#{RUBY_VERSION}; #{RUBY_PLATFORM}; v#{::Snitcher::VERSION}"
   end
 end
 

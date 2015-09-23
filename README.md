@@ -23,25 +23,10 @@ You also may provide a message with the check in:
 Snitcher.snitch("c2354d53d2", message: "Finished in 23.8 seconds.")
 ```
 
-The default timeout of 2 seconds can be overridden:
+The default timeout of 5 seconds can be overridden:
 
 ```ruby
 Snitcher.snitch("c2354d53d2", timeout: 10)
-```
-
-## Command Line Tool
-
-You can also check in from the command line:
-
-```bash
-$ snitch c2354d53d2
-```
-
-If you want to include a message, use the `-m` or `--message` flag.
-
-```bash
-$ snitch c2354d53d2 -m "Finished in 23.8 seconds."
-$ snitch c2354d53d2 --message "Finished in 23.8 seconds."
 ```
 
 ## API Access
