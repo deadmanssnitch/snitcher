@@ -5,7 +5,7 @@ require "securerandom"
 
 describe Snitcher::API::Client do
   let(:api_key)       { "_caeEiZXnEyEzXXYVh2NhQ" }
-  let(:api_endpoint)  { URI.parse("#{scheme}#{api_url}/") }
+  let(:api_endpoint)  { "#{scheme}#{api_url}/" }
   let(:options)       { { api_key: api_key, api_endpoint: api_endpoint } }
   let(:client)        { Snitcher::API::Client.new(options) }
 

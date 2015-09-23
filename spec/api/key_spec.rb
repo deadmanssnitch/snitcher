@@ -6,7 +6,7 @@ require "securerandom"
 describe Snitcher::API::Key do
   let(:username)  { "alice@example.com" }
   let(:password)  { "password" }
-  let(:api_endpoint)  { URI.parse("#{scheme}#{api_url}/") }
+  let(:api_endpoint)  { "#{scheme}#{api_url}/" }
   let(:options)   { { username: username, password: password,
     api_endpoint: api_endpoint } }
   let(:agent)     { Snitcher::API::Key.new(options) }

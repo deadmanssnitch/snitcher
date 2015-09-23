@@ -21,8 +21,7 @@ module Snitcher
   #
   # Returns true if the check-in succeeded or false if it failed
   def snitch(token, opts = {})
-    checkin_url = "#{opts[:uri]}/#{token}" || "https://nosnch.in/#{token}"
-    uri       = URI.parse(checkin_url)
+    uri       = URI.parse(checkin_url(opts, token))
     uri.query = URI.encode_www_form(m: opts[:message]) if opts[:message]
     timeout   = opts.fetch(:timeout, 5)
 
@@ -39,25 +38,20 @@ module Snitcher
 
       response = http.request(request)
       response.is_a?(Net::HTTPSuccess)
-
-      # case response
-      # when Net::HTTPNoContent
-      #   { message: "Response complete" }
-      # when Net::HTTPSuccess
-      #   JSON.parse(response.body)
-      # when Net::HTTPForbidden
-      #   { message: "Unauthorized access" }
-      # when Net::HTTPUnprocessableEntity
-      #   { message: "Unprocessable - #{response.body}"}
-      # else
-      #   { message: "Response unsuccessful", response: response }
-      # end
     end
   rescue ::Timeout::Error
     false
   end
 
   private
+
+  def checkin_url(opts, token)
+    if opts[:uri].nil?
+      "https://nosnch.in/#{token}"
+    else
+      "#{opts[:uri]}/#{token}"
+    end
+  end
 
   def use_ssl?(uri)
     uri.scheme == "https"
