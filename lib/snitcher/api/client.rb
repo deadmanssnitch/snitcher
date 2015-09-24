@@ -13,8 +13,8 @@ class Snitcher::API::Client < Snitcher::API::Base
   # Public: Create a new Client
   #
   # options:
-  #   api_key: access key available at https://deadmanssnitch.com/account/keys
-  #   api_endpoint: optional - string URL of the DMS API connecting to.
+  #   api_key:      access key available at https://deadmanssnitch.com/account/keys
+  #   api_endpoint: string URL of the DMS API connecting to
   #
   # Example
   #
@@ -68,7 +68,7 @@ class Snitcher::API::Client < Snitcher::API::Base
 
   # Public: Get a single snitch by unique token
   #
-  # token - The unique token of the snitch to get. Should be a string.
+  # token: The unique token of the snitch to get. Should be a string.
   #
   # Examples
   #
@@ -99,7 +99,7 @@ class Snitcher::API::Client < Snitcher::API::Base
 
   # Public: Retrieve snitches that match all of the tags in a list
   #
-  # tags - An array of strings. Each string is a tag.
+  # tags: An array of strings. Each string is a tag.
   #
   # Examples
   #
@@ -143,14 +143,14 @@ class Snitcher::API::Client < Snitcher::API::Base
 
   # Public: Create a snitch using passed-in values. Returns the new snitch.
   #
-  # attributes - A hash of the snitch properties. It should include these keys:
-  #              "name"     - String value is the name of the snitch.
-  #              "interval" - String value representing how often the snitch
-  #                           is expected to fire. Options are "hourly",
-  #                           "daily", "weekly", and "monthly".
-  #              "notes"    - Optional string value for recording additional
+  # attributes: A hash of the snitch properties. It should include these keys:
+  #               "name":     String value is the name of the snitch
+  #               "interval": String value representing how often the snitch is
+  #                           expected to fire. Options are "hourly", "daily",
+  #                           "weekly", "monthly"
+  #               "notes":    Optional string value for recording additional
   #                           information about the snitch
-  #              "tags"     - Optional array of string tags.
+  #               "tags":     Optional array of string tags
   #
   # Examples
   #
@@ -189,16 +189,16 @@ class Snitcher::API::Client < Snitcher::API::Base
   #         values. Only changes those values included in the attributes
   #         hash; other attributes are not changed. Returns the updated snitch.
   #
-  # token -       The unique token of the snitch to get. Should be a string.
-  # attributes -  A hash of the snitch properties. It should only include those
-  #               values you want to change. Options include these keys:
-  #               "name"     - String value is the name of the snitch.
-  #               "interval" - String value representing how often the snitch
-  #                            is expected to fire. Options are "hourly",
-  #                            "daily", "weekly", and "monthly".
-  #               "notes"    - Optional string value for recording additional
-  #                            information about the snitch
-  #               "tags"     - Optional array of string tags.
+  # token:      The unique token of the snitch to get. Should be a string.
+  # attributes: A hash of the snitch properties. It should only include those
+  #             values you want to change. Options include these keys:
+  #               "name":     String value is the name of the snitch
+  #               "interval": String value representing how often the snitch
+  #                           is expected to fire. Options are "hourly",
+  #                           "daily", "weekly", and "monthly".
+  #               "notes":    Optional string value for recording additional
+  #                           information about the snitch
+  #               "tags":     Optional array of string tags
   #
   # Examples
   #
@@ -233,8 +233,8 @@ class Snitcher::API::Client < Snitcher::API::Base
   # Public: Add one or more tags to an existing snitch, identified by token.
   #         Returns an array of the snitch's tags.
   #
-  # token - The unique token of the snitch to edit. Should be a string.
-  # tags -  Array of string tags. Will append these tags to any existing tags.
+  # token:  The unique token of the snitch to edit. Should be a string.
+  # tags:   Array of string tags. Will append these tags to any existing tags.
   #
   # Examples
   #
@@ -253,8 +253,8 @@ class Snitcher::API::Client < Snitcher::API::Base
   # Public: Remove a tag from an existing snitch, identified by token.
   #         Returns an array of the snitch's tags.
   #
-  # token - The unique token of the snitch to edit. Should be a string.
-  # tag -   Tag to be removed from a snitch's tags. Should be a string.
+  # token:  The unique token of the snitch to edit. Should be a string.
+  # tag:    Tag to be removed from a snitch's tags. Should be a string.
   #
   # Examples
   #
@@ -272,8 +272,8 @@ class Snitcher::API::Client < Snitcher::API::Base
   # Public: Replace all of a snitch's tags with those supplied.
   #         Returns the updated snitch.
   #
-  # token - The unique token of the snitch to edit. Should be a string.
-  # tags -  Array of string tags. Will replace the snitch's current tags with
+  # token:  The unique token of the snitch to edit. Should be a string.
+  # tags:   Array of string tags. Will replace the snitch's current tags with
   #         these.
   #
   # Examples
@@ -308,7 +308,7 @@ class Snitcher::API::Client < Snitcher::API::Base
   # Public: Remove all of a snitch's tags.
   #         Returns the updated snitch.
   #
-  # token - The unique token of the snitch to edit. Should be a string.
+  # token: The unique token of the snitch to edit. Should be a string.
   #
   # Examples
   #
@@ -339,7 +339,7 @@ class Snitcher::API::Client < Snitcher::API::Base
   # Public: Pauses a snitch. The return is a hash with the message "Response
   #         complete".
   #
-  # token - The unique token of the snitch to pause. Should be a string.
+  # token: The unique token of the snitch to pause. Should be a string.
   #
   # Examples
   #
@@ -354,7 +354,7 @@ class Snitcher::API::Client < Snitcher::API::Base
   # Public: Deletes a snitch. The return is a hash with the message "Response
   #         complete".
   #
-  # token - The unique token of the snitch to delete. Should be a string.
+  # token: The unique token of the snitch to delete. Should be a string.
   #
   # Examples
   #

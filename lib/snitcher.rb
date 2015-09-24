@@ -8,11 +8,11 @@ module Snitcher
 
   # Public: Check-in to Deadman's Snitch
   #
-  # token - The Snitch token given by Deadman's Snitch (see the install page).
-  # opts  - The hash of optional parameters that can be given during check-in:
-  #         :message - Text message limited to ~250 characters.
-  #         :timeout - Number of seconds to set as connect and read timeout.
-  #         :uri - URL to use for snitch checkins.
+  # token:  The Snitch token given by Deadman's Snitch (see the install page).
+  # opts:   The hash of optional parameters that can be given during check-in:
+  #           :message - Text message limited to ~250 characters.
+  #           :timeout - Number of seconds to set as connect and read timeout.
+  #           :uri - URL to use for snitch checkins.
   #
   # Examples
   #
