@@ -34,14 +34,12 @@ Snitcher.snitch("c2354d53d2", timeout: 10)
 ### Retrieving Your API Key At Command Line
 
 ```ruby
-require "snitcher/api/key"
+require "snitcher/api"
 
-agent = Snitcher::API::Key.new(username: "jane@example.com",
-  password: "password")
-agent.api_key
+agent = Snitcher::API.get_key("jane@example.com", "password")
 ```
 
-Returns a hash with an `api_key` key, whose value is your api_key.
+Returns a the `api_key` key string.
 
 ### Setup
 
