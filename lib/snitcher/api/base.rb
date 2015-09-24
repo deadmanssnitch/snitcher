@@ -38,15 +38,7 @@ class Snitcher::API::Base
   end
 
   def set_up_authorization(request)
-    unless @api_key.nil?
-      request["Authorization"] = authorization
-    else
-      request.basic_auth @username, @password
-    end
-  end
-
-  def authorization
-    "Basic #{Base64.strict_encode64("#{@api_key}:")}"
+    request["Authorization"] = "Basic #{Base64.strict_encode64("#{@api_key}:")}"
   end
 
   def execute_request(http, request)

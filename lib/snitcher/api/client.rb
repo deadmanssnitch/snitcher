@@ -25,8 +25,7 @@ class Snitcher::API::Client < Snitcher::API::Base
   #
   def initialize(options = {})
     @api_key      = options[:api_key]
-    @api_endpoint = URI.parse(options[:api_endpoint]) ||
-      URI.parse("https://api.deadmanssnitch.com/v1/")
+    @api_endpoint = URI.parse(api_url(options))
   end
 
   # Public: List snitches on the account
@@ -365,5 +364,15 @@ class Snitcher::API::Client < Snitcher::API::Base
   #     => { :message => "Response complete" }
   def delete_snitch(token)
     delete("/snitches/#{token}")
+  end
+
+  private
+
+  def api_url(opts)
+    if opts[:api_endpoint].nil?
+      "https://api.deadmanssnitch.com/v1/"
+    else
+      opts[:api_endpoint]
+    end
   end
 end

@@ -23,14 +23,8 @@ module Snitcher
   def snitch(token, opts = {})
     uri       = URI.parse(checkin_url(opts, token))
     uri.query = URI.encode_www_form(m: opts[:message]) if opts[:message]
-    timeout   = opts.fetch(:timeout, 5)
 
-    opts = {
-      open_timeout: timeout,
-      read_timeout: timeout,
-      ssl_timeout:  timeout,
-      use_ssl:      use_ssl?(uri)
-    }
+    opts = initialize_opts(opts, uri)
 
     Net::HTTP.start(uri.host, uri.port, opts) do |http|
       request = Net::HTTP::Get.new(uri.request_uri)
@@ -44,6 +38,17 @@ module Snitcher
   end
 
   private
+
+  def initialize_opts(options, uri)
+    timeout = options.fetch(:timeout, 5)
+
+    {
+      open_timeout: timeout,
+      read_timeout: timeout,
+      ssl_timeout:  timeout,
+      use_ssl:      use_ssl?(uri)
+    }
+  end
 
   def checkin_url(opts, token)
     if opts[:uri].nil?
