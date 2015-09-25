@@ -84,7 +84,7 @@ describe Snitcher::API::Client do
                        "type": {
                          "interval": "hourly"
                        },
-                       "check_in_url": "https://s.nosnch.in/c2354d53d2",
+                       "check_in_url": "https://nosnch.in/c2354d53d2",
                        "created_at": "2015-08-15T12:15:00.234Z",
                        "notes": "Save everything that is cool."
                      }
@@ -186,7 +186,7 @@ describe Snitcher::API::Client do
                        "type": {
                          "interval": "daily"
                        },
-                       "check_in_url": "https://s.nosnch.in/c2354d53d2",
+                       "check_in_url": "https://nosnch.in/c2354d53d2",
                        "created_at": "2015-08-27T18:30:23.737Z",
                        "notes": "Customer and supplier tables"
                      }

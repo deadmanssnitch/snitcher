@@ -30,7 +30,7 @@ class Snitcher::API::Client < Snitcher::API::Base
 
   # Public: List snitches on the account
   #
-  # Examples
+  # Example
   #
   #   Get a list of all snitches
   #     @client.snitches
@@ -70,7 +70,7 @@ class Snitcher::API::Client < Snitcher::API::Base
   #
   # token: The unique token of the snitch to get. Should be a string.
   #
-  # Examples
+  # Example
   #
   #   Get the snitch with token "c2354d53d2"
   #     @client.snitch("c2354d53d2")
@@ -88,7 +88,7 @@ class Snitcher::API::Client < Snitcher::API::Base
   #            "type": {
   #              "interval": "daily"
   #            },
-  #            "check_in_url" => "https://s.nosnch.in/c2354d53d3",
+  #            "check_in_url" => "https://nosnch.in/c2354d53d3",
   #            "created_at" => "2015-08-15T12:15:00.234Z",
   #            "notes" => "Important user data."
   #          }
@@ -101,7 +101,7 @@ class Snitcher::API::Client < Snitcher::API::Base
   #
   # tags: An array of strings. Each string is a tag.
   #
-  # Examples
+  # Example
   #
   #   Get the snitches that match a list of tags
   #     @client.tagged_snitches(["production","critical"])
@@ -152,7 +152,7 @@ class Snitcher::API::Client < Snitcher::API::Base
   #                           information about the snitch
   #               "tags":     Optional array of string tags
   #
-  # Examples
+  # Example
   #
   #   Create a new snitch
   #     attributes = {
@@ -176,7 +176,7 @@ class Snitcher::API::Client < Snitcher::API::Base
   #            "type": {
   #              "interval": "daily"
   #            },
-  #            "check_in_url": "https://s.nosnch.in/c2354d53d3",
+  #            "check_in_url": "https://nosnch.in/c2354d53d3",
   #            "created_at"=>"2015-08-27T18:30:23.737Z",
   #            "notes": "Customer and supplier tables"
   #          }
@@ -200,7 +200,7 @@ class Snitcher::API::Client < Snitcher::API::Base
   #                           information about the snitch
   #               "tags":     Optional array of string tags
   #
-  # Examples
+  # Example
   #
   #   Edit an existing snitch using values passed in a hash.
   #     token      = "c2354d53d2"
@@ -236,7 +236,7 @@ class Snitcher::API::Client < Snitcher::API::Base
   # token:  The unique token of the snitch to edit. Should be a string.
   # tags:   Array of string tags. Will append these tags to any existing tags.
   #
-  # Examples
+  # Example
   #
   #   Add tags to an existing snitch.
   #     token = "c2354d53d2"
@@ -256,7 +256,7 @@ class Snitcher::API::Client < Snitcher::API::Base
   # token:  The unique token of the snitch to edit. Should be a string.
   # tag:    Tag to be removed from a snitch's tags. Should be a string.
   #
-  # Examples
+  # Example
   #
   #   Assume a snitch that already has the tags "critical" and "production"
   #     token = "c2354d53d2"
@@ -276,7 +276,7 @@ class Snitcher::API::Client < Snitcher::API::Base
   # tags:   Array of string tags. Will replace the snitch's current tags with
   #         these.
   #
-  # Examples
+  # Example
   #
   #   Assume a snitch with the tag "critical". Replace with tags provided.
   #     token = "c2354d53d3"
@@ -310,7 +310,7 @@ class Snitcher::API::Client < Snitcher::API::Base
   #
   # token: The unique token of the snitch to edit. Should be a string.
   #
-  # Examples
+  # Example
   #
   #   Remove all tags.
   #     token = "c2354d53d3"
@@ -341,7 +341,7 @@ class Snitcher::API::Client < Snitcher::API::Base
   #
   # token: The unique token of the snitch to pause. Should be a string.
   #
-  # Examples
+  # Example
   #
   #   Pause a snitch.
   #     token = "c2354d53d3"
@@ -356,7 +356,7 @@ class Snitcher::API::Client < Snitcher::API::Base
   #
   # token: The unique token of the snitch to delete. Should be a string.
   #
-  # Examples
+  # Example
   #
   #   Delete a snitch.
   #     token = "c2354d53d3"
