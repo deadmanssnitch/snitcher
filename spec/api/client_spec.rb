@@ -60,35 +60,32 @@ describe Snitcher::API::Client do
       expect(a_request(:get, url)).to have_been_made.once
     end
 
-    context "when successful" do
-      it "returns the hash of snitches" do
-        expect(client.snitches).to eq(JSON.parse(body))
-      end
+    it "returns the array of snitches" do
+      expect(client.snitches).to be_a(Array)
+      expect(client.snitches.first).to be_a(Snitcher::API::Snitch)
     end
   end
 
   describe "#snitch" do
     let(:token) { "c2354d53d2" }
     let(:url)   { "#{snitch_url}/#{token}" }
-    let(:body)  { '[
-                     {
-                       "token": "c2354d53d2",
-                       "href": "/v1/snitches/c2354d53d2",
-                       "name": "Cool Test Snitch",
-                       "tags": [
-                         "testing",
-                         "api"
-                       ],
-                       "status": "pending",
-                       "checked_in_at": "",
-                       "type": {
-                         "interval": "hourly"
-                       },
-                       "check_in_url": "https://nosnch.in/c2354d53d2",
-                       "created_at": "2015-08-15T12:15:00.234Z",
-                       "notes": "Save everything that is cool."
-                     }
-                   ]'
+    let(:body)  { '{
+                     "token": "c2354d53d2",
+                     "href": "/v1/snitches/c2354d53d2",
+                     "name": "Cool Test Snitch",
+                     "tags": [
+                       "testing",
+                       "api"
+                     ],
+                     "status": "pending",
+                     "checked_in_at": "",
+                     "type": {
+                       "interval": "hourly"
+                     },
+                     "check_in_url": "https://nosnch.in/c2354d53d2",
+                     "created_at": "2015-08-15T12:15:00.234Z",
+                     "notes": "Save everything that is cool."
+                   }'
                 }
 
     before do
@@ -101,10 +98,8 @@ describe Snitcher::API::Client do
       expect(a_request(:get, url)).to have_been_made.once
     end
 
-    context "when successful" do
-      it "returns the snitch" do
-        expect(client.snitch(token)).to eq(JSON.parse(body))
-      end
+    it "returns the snitch" do
+      expect(client.snitch(token)).to be_a(Snitcher::API::Snitch)
     end
   end
 
@@ -155,10 +150,9 @@ describe Snitcher::API::Client do
       expect(a_request(:get, url)).to have_been_made.once
     end
 
-    context "when successful" do
-      it "returns the snitches" do
-        expect(client.tagged_snitches(tags)).to eq(JSON.parse(body))
-      end
+    it "returns the snitches" do
+      expect(client.tagged_snitches(tags)).to be_a(Array)
+      expect(client.tagged_snitches(tags).first).to be_a(Snitcher::API::Snitch)
     end
   end
 
@@ -172,25 +166,23 @@ describe Snitcher::API::Client do
                    }
                 }
     let(:url)   { snitch_url }
-    let(:body)  { '[
-                     {
-                       "token": "c2354d53d2",
-                       "href": "/v1/snitches/c2354d53d2",
-                       "name": "Daily Backups",
-                       "tags": [
-                         "backups",
-                         "maintenance"
-                       ],
-                       "status": "pending",
-                       "checked_in_at": "",
-                       "type": {
-                         "interval": "daily"
-                       },
-                       "check_in_url": "https://nosnch.in/c2354d53d2",
-                       "created_at": "2015-08-27T18:30:23.737Z",
-                       "notes": "Customer and supplier tables"
-                     }
-                   ]'
+    let(:body)  { '{
+                     "token": "c2354d53d2",
+                     "href": "/v1/snitches/c2354d53d2",
+                     "name": "Daily Backups",
+                     "tags": [
+                       "backups",
+                       "maintenance"
+                     ],
+                     "status": "pending",
+                     "checked_in_at": "",
+                     "type": {
+                       "interval": "daily"
+                     },
+                     "check_in_url": "https://nosnch.in/c2354d53d2",
+                     "created_at": "2015-08-27T18:30:23.737Z",
+                     "notes": "Customer and supplier tables"
+                   }'
                 }
 
     before do
@@ -203,10 +195,8 @@ describe Snitcher::API::Client do
       expect(a_request(:post, url)).to have_been_made.once
     end
 
-    context "when successful" do
-      it "returns the new snitch" do
-        expect(client.create_snitch(data)).to eq(JSON.parse(body))
-      end
+    it "returns the new snitch" do
+      expect(client.create_snitch(data)).to be_a(Snitcher::API::Snitch)
     end
   end
 
@@ -219,23 +209,21 @@ describe Snitcher::API::Client do
                    }
                 }
     let(:url)   { "#{snitch_url}/#{token}" }
-    let(:body)  { '[
-                     {
-                       "token": "c2354d53d2",
-                       "href": "/v1/snitches/c2354d53d2",
-                       "name": "The Backups",
-                       "tags": [
-                         "backups",
-                         "maintenance"
-                       ],
-                       "status": "pending",
-                       "checked_in_at": "",
-                       "type": {
-                         "interval": "hourly"
-                       },
-                       "notes": "We need this more often"
-                     }
-                   ]'
+    let(:body)  { '{
+                     "token": "c2354d53d2",
+                     "href": "/v1/snitches/c2354d53d2",
+                     "name": "The Backups",
+                     "tags": [
+                       "backups",
+                       "maintenance"
+                     ],
+                     "status": "pending",
+                     "checked_in_at": "",
+                     "type": {
+                       "interval": "hourly"
+                     },
+                     "notes": "We need this more often"
+                   }'
                 }
 
     before do
@@ -248,10 +236,8 @@ describe Snitcher::API::Client do
       expect(a_request(:patch, url)).to have_been_made.once
     end
 
-    context "when successful" do
-      it "returns the modified snitch" do
-        expect(client.edit_snitch(token, data)).to eq(JSON.parse(body))
-      end
+    it "returns the modified snitch" do
+      expect(client.edit_snitch(token, data)).to be_a(Snitcher::API::Snitch)
     end
   end
 
@@ -312,23 +298,21 @@ describe Snitcher::API::Client do
     let(:token) { "c2354d53d2" }
     let(:tags)  { ["red", "green"] }
     let(:url)   { "#{snitch_url}/#{token}" }
-    let(:body)  { '[
-                     {
-                       "token": "c2354d53d2",
-                       "href": "/v1/snitches/c2354d53d2",
-                       "name": "Daily Backups",
-                       "tags": [
-                         "red",
-                         "green"
-                       ],
-                       "status": "pending",
-                       "checked_in_at": "",
-                       "type": {
-                         "interval": "daily"
-                       },
-                       "notes": "Sales data."
-                     }
-                   ]'
+    let(:body)  { '{
+                     "token": "c2354d53d2",
+                     "href": "/v1/snitches/c2354d53d2",
+                     "name": "Daily Backups",
+                     "tags": [
+                       "red",
+                       "green"
+                     ],
+                     "status": "pending",
+                     "checked_in_at": "",
+                     "type": {
+                       "interval": "daily"
+                     },
+                     "notes": "Sales data."
+                   }'
                 }
 
     before do
@@ -341,31 +325,27 @@ describe Snitcher::API::Client do
       expect(a_request(:patch, url)).to have_been_made.once
     end
 
-    context "when successful" do
-      it "returns the updated snitch" do
-        expect(client.replace_tags(token, tags)).to eq(JSON.parse(body))
-      end
+    it "returns the updated snitch" do
+      expect(client.replace_tags(token, tags)).to be_a(Snitcher::API::Snitch)
     end
   end
 
   describe "#clear_tags" do
     let(:token) { "c2354d53d2" }
     let(:url)   { "#{snitch_url}/#{token}" }
-    let(:body)  { '[
-                     {
-                       "token": "c2354d53d2",
-                       "href": "/v1/snitches/c2354d53d2",
-                       "name": "Daily Backups",
-                       "tags": [
-                       ],
-                       "status": "pending",
-                       "checked_in_at": "",
-                       "type": {
-                         "interval": "daily"
-                       },
-                       "notes": "Sales data."
-                     }
-                   ]'
+    let(:body)  { '{
+                     "token": "c2354d53d2",
+                     "href": "/v1/snitches/c2354d53d2",
+                     "name": "Daily Backups",
+                     "tags": [
+                     ],
+                     "status": "pending",
+                     "checked_in_at": "",
+                     "type": {
+                       "interval": "daily"
+                     },
+                     "notes": "Sales data."
+                   }'
                 }
 
     before do
@@ -378,10 +358,8 @@ describe Snitcher::API::Client do
       expect(a_request(:patch, url)).to have_been_made.once
     end
 
-    context "when successful" do
-      it "returns the updated snitch" do
-        expect(client.clear_tags(token)).to eq(JSON.parse(body))
-      end
+    it "returns the updated snitch" do
+      expect(client.clear_tags(token)).to be_a(Snitcher::API::Snitch)
     end
   end
 

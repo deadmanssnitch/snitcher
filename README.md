@@ -57,7 +57,7 @@ client = Snitcher::API::Client.new(api_key: "FOO")
 client.snitches
 ```
 
-Returns an array of hashes. Each hash represents a snitch.
+Returns an array of snitches.
 
 ### Retrieve a Single Snitch
 
@@ -66,7 +66,7 @@ token = "c2354d53d2"
 client.snitch(token)
 ```
 
-Returns a hash that represents a snitch.
+Returns a snitch.
 
 ### Retrieve Snitches That Match a Set of Tags
 
@@ -75,7 +75,7 @@ tags = ["critical", "sales"]
 client.tagged_snitches(tags)
 ```
 
-Returns an array of hashes. Each hash represents a snitch.
+Returns an array of snitches.
 
 ### Create a Snitch
 
@@ -90,7 +90,7 @@ attributes = { "name": "Nightly User Data Backups",
 client.create_snitch(attributes)
 ```
 
-Returns a hash representing the newly-created snitch.
+Returns the newly-created snitch.
 
 ### Edit a Snitch
 
@@ -102,7 +102,7 @@ new_attributes = { "name": "Important Nightly User Data Backups" }
 client.edit_snitch(token, new_attributes)
 ```
 
-Returns a hash representing the edited snitch.
+Returns the edited snitch.
 
 ### Adding Tags to a Snitch
 
@@ -138,7 +138,7 @@ tags = ["csv", "server_a"]
 client.replace_tags(token, tags)
 ```
 
-Returns a hash representing the updated snitch.
+Returns the updated snitch.
 
 ### Remove Tags From a Snitch
 
@@ -149,7 +149,7 @@ token = "c2354d53d2"
 client.clear_tags(token)
 ```
 
-Returns a hash representing the updated snitch.
+Returns the updated snitch.
 
 ### Pause a Snitch
 

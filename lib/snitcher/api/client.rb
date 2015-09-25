@@ -8,6 +8,7 @@ require "json"
 require "snitcher/api"
 require "snitcher/api/base"
 require "snitcher/version"
+require "snitcher/api/snitch"
 
 class Snitcher::API::Client < Snitcher::API::Base
   # Public: Create a new Client
@@ -34,36 +35,18 @@ class Snitcher::API::Client < Snitcher::API::Base
   #
   #   Get a list of all snitches
   #     @client.snitches
-  #     => [
-  #          {
-  #            "token": "c2354d53d3",
-  #            "href": "/v1/snitches/c2354d53d3",
-  #            "name": "Daily Backups",
-  #            "tags": [
-  #              "production",
-  #              "critical"
-  #            ],
-  #            "status": "healthy",
-  #            "checked_in_at": "2014-01-01T12:00:00.000Z",
-  #            "type": {
-  #              "interval": "daily"
-  #            }
-  #          },
-  #          {
-  #            "token": "c2354d53d4",
-  #            "href": "/v1/snitches/c2354d53d4",
-  #            "name": "Hourly Emails",
-  #            "tags": [
-  #            ],
-  #            "status": "healthy",
-  #            "checked_in_at": "2014-01-01T12:00:00.000Z",
-  #            "type": {
-  #              "interval": "hourly"
-  #            }
-  #          }
-  #        ]
+  #     => [#<Snitcher::API::Snitch:0x007fdcf51ec380 @token="c2354d53d3",
+  #          @name="Daily Backups", @tags=["production", "critical"],
+  #          @status="healthy", @checked_in_at="2014-01-01T12:00:00.000Z",
+  #          @interval="daily", @check_in_url="https://nosnch.in/c2354d53d3",
+  #          @created_at="2014-01-01T08:00:00.000Z", @notes=nil>,
+  #         #<Snitcher::API::Snitch:0x007fdcf51ec358 @token="c2354d53d4",
+  #          @name="Hourly Emails", @tags=[], @status="healthy",
+  #          @checked_in_at="2014-01-01T12:00:00.000Z", @interval="hourly",
+  #          @check_in_url="https://nosnch.in/c2354d53d4",
+  #          @created_at="2014-01-01T07:50:00.000Z", @notes=nil>]
   def snitches
-    get "/snitches"
+    snitch_array(get "/snitches")
   end
 
   # Public: Get a single snitch by unique token
@@ -73,28 +56,17 @@ class Snitcher::API::Client < Snitcher::API::Base
   # Example
   #
   #   Get the snitch with token "c2354d53d2"
+  #
   #     @client.snitch("c2354d53d2")
-  #     => [
-  #          {
-  #            "token": "c2354d53d3",
-  #            "href": "/v1/snitches/c2354d53d3",
-  #            "name": "Daily Backups",
-  #            "tags": [
-  #              "production",
-  #              "critical"
-  #            ],
-  #            "status": "pending",
-  #            "checked_in_at": "",
-  #            "type": {
-  #              "interval": "daily"
-  #            },
-  #            "check_in_url" => "https://nosnch.in/c2354d53d3",
-  #            "created_at" => "2015-08-15T12:15:00.234Z",
-  #            "notes" => "Important user data."
-  #          }
-  #        ]
+  #     => #<Snitcher::API::Snitch:0x007fdcf50ad2d0 @token="c2354d53d3",
+  #         @name="Daily Backups", @tags=["production", "critical"],
+  #         @status="pending", @checked_in_at=nil, @interval="daily",
+  #         @check_in_url="https://nosnch.in/c2354d53d3",
+  #         @created_at="2015-08-15T12:15:00.234Z",
+  #         @notes="Important user data.">
   def snitch(token)
-    get "/snitches/#{token}"
+    payload = get "/snitches/#{token}"
+    Snitcher::API::Snitch.new(payload)
   end
 
   # Public: Retrieve snitches that match all of the tags in a list
@@ -105,40 +77,21 @@ class Snitcher::API::Client < Snitcher::API::Base
   #
   #   Get the snitches that match a list of tags
   #     @client.tagged_snitches(["production","critical"])
-  #     => [
-  #          {
-  #            "token": "c2354d53d3",
-  #            "href": "/v1/snitches/c2354d53d3",
-  #            "name": "Daily Backups",
-  #            "tags": [
-  #              "production",
-  #              "critical"
-  #            ],
-  #            "status": "pending",
-  #            "checked_in_at": "",
-  #            "type": {
-  #              "interval": "daily"
-  #            }
-  #          },
-  #          {
-  #            "token": "c2354d53d4",
-  #            "href": "/v1/snitches/c2354d53d4",
-  #            "name": "Hourly Emails",
-  #            "tags": [
-  #              "production",
-  #              "critical"
-  #            ],
-  #            "status": "healthy",
-  #            "checked_in_at": "2014-01-01T12:00:00.000Z",
-  #            "type": {
-  #              "interval": "hourly"
-  #            }
-  #          }
-  #        ]
+  #     => [#<Snitcher::API::Snitch:0x007fdcf51ec380 @token="c2354d53d3",
+  #          @name="Daily Backups", @tags=["production", "critical"],
+  #          @status="pending", @checked_in_at=nil, @interval="daily",
+  #          @check_in_url="https://nosnch.in/c2354d53d3",
+  #          @created_at="2014-01-01T08:00:00.000Z", @notes=nil>,
+  #         #<Snitcher::API::Snitch:0x007fdcf51ec358 @token="c2354d53d4",
+  #          @name="Hourly Emails", @tags=["production", "critical"],
+  #          @status="healthy", @checked_in_at="2014-01-01T12:00:00.000Z",
+  #          @interval="hourly", @check_in_url="https://nosnch.in/c2354d53d4",
+  #          @created_at="2014-01-01T07:50:00.000Z", @notes=nil>]
   def tagged_snitches(tags=[])
     tag_params = strip_and_join_params(tags)
 
-    get "/snitches?tags=#{tag_params}"
+    # get "/snitches?tags=#{tag_params}"
+    snitch_array(get "/snitches?tags=#{tag_params}")
   end
 
   # Public: Create a snitch using passed-in values. Returns the new snitch.
@@ -162,27 +115,15 @@ class Snitcher::API::Client < Snitcher::API::Base
   #       "tags": ["backups", "maintenance"]
   #     }
   #     @client.create_snitch(attributes)
-  #     => [
-  #          {
-  #            "token": "c2354d53d3",
-  #            "href": "/v1/snitches/c2354d53d3",
-  #            "name": "Daily Backups",
-  #            "tags": [
-  #              "backups",
-  #              "maintenance"
-  #            ],
-  #            "status": "pending",
-  #            "checked_in_at": "",
-  #            "type": {
-  #              "interval": "daily"
-  #            },
-  #            "check_in_url": "https://nosnch.in/c2354d53d3",
-  #            "created_at"=>"2015-08-27T18:30:23.737Z",
-  #            "notes": "Customer and supplier tables"
-  #          }
-  #        ]
+  #     => #<Snitcher::API::Snitch:0x007fdcf50ad2d0 @token="c2354d53d3",
+  #         @name="Daily Backups", @tags=["backups", "maintenance"],
+  #         @status="pending", @checked_in_at=nil, @interval="daily",
+  #         @check_in_url="https://nosnch.in/c2354d53d3",
+  #         @created_at="2015-08-15T12:15:00.234Z",
+  #         @notes="Customer and supplier tables">
   def create_snitch(attributes={})
-    post("/snitches", data_json(attributes))
+    payload = post("/snitches", data_json(attributes))
+    Snitcher::API::Snitch.new(payload)
   end
 
   # Public: Edit an existing snitch, identified by token, using passed-in
@@ -209,25 +150,15 @@ class Snitcher::API::Client < Snitcher::API::Base
   #       "interval": "monthly"
   #     }
   #     @client.edit_snitch(token, attributes)
-  #     => [
-  #          {
-  #            "token": "c2354d53d2",
-  #            "href": "/v1/snitches/c2354d53d2",
-  #            "name": "Monthly Backups",
-  #            "tags": [
-  #              "backups",
-  #              "maintenance"
-  #            ],
-  #            "status": "pending",
-  #            "checked_in_at": "",
-  #            "type": {
-  #              "interval": "monthly"
-  #            },
-  #            "notes": "Customer and supplier tables"
-  #          }
-  #        ]
+  #     => #<Snitcher::API::Snitch:0x007fdcf50ad2d0 @token="c2354d53d3",
+  #         @name="Monthly Backups", @tags=["backups", "maintenance"],
+  #         @status="pending", @checked_in_at=nil, @interval="monthly",
+  #         @check_in_url="https://nosnch.in/c2354d53d3",
+  #         @created_at="2015-08-15T12:15:00.234Z",
+  #         @notes="Customer and supplier tables">
   def edit_snitch(token, attributes={})
-    patch("/snitches/#{token}", data_json(attributes))
+    payload = patch("/snitches/#{token}", data_json(attributes))
+    Snitcher::API::Snitch.new(payload)
   end
 
   # Public: Add one or more tags to an existing snitch, identified by token.
@@ -282,23 +213,12 @@ class Snitcher::API::Client < Snitcher::API::Base
   #     token = "c2354d53d3"
   #     tags =  ["production", "urgent"]
   #     @client.replace_tags(token, tags)
-  #     => [
-  #          {
-  #            "token": "c2354d53d3",
-  #            "href": "/v1/snitches/c2354d53d3",
-  #            "name": "Daily Backups",
-  #            "tags": [
-  #              "production",
-  #              "urgent"
-  #            ],
-  #            "status": "pending",
-  #            "checked_in_at": "",
-  #            "type": {
-  #              "interval": "daily"
-  #            },
-  #            "notes": "Customer and supplier tables"
-  #          }
-  #        ]
+  #     => #<Snitcher::API::Snitch:0x007fdcf50ad2d0 @token="c2354d53d3",
+  #         @name="Daily Backups", @tags=["production", "urgent"],
+  #         @status="pending", @checked_in_at=nil, @interval="daily",
+  #         @check_in_url="https://nosnch.in/c2354d53d3",
+  #         @created_at="2015-08-15T12:15:00.234Z",
+  #         @notes="Customer and supplier tables">
   def replace_tags(token, tags=[])
     attributes = {"tags": tags}
 
@@ -315,21 +235,12 @@ class Snitcher::API::Client < Snitcher::API::Base
   #   Remove all tags.
   #     token = "c2354d53d3"
   #     @client.clear_tags(token)
-  #     => [
-  #          {
-  #            "token": "c2354d53d3",
-  #            "href": "/v1/snitches/c2354d53d3",
-  #            "name": "Daily Backups",
-  #            "tags": [
-  #            ],
-  #            "status": "pending",
-  #            "checked_in_at": "",
-  #            "type": {
-  #              "interval": "daily"
-  #            },
-  #            "notes": "Customer and supplier tables"
-  #          }
-  #        ]
+  #     => #<Snitcher::API::Snitch:0x007fdcf50ad2d0 @token="c2354d53d3",
+  #         @name="Daily Backups", @tags=[], @status="pending",
+  #         @checked_in_at=nil, @interval="daily",
+  #         @check_in_url="https://nosnch.in/c2354d53d3",
+  #         @created_at="2015-08-15T12:15:00.234Z",
+  #         @notes="Customer and supplier tables">
   def clear_tags(token)
     attributes = {"tags": []}
 
@@ -374,5 +285,13 @@ class Snitcher::API::Client < Snitcher::API::Base
     else
       opts[:api_endpoint]
     end
+  end
+
+  def snitch_array(json_payload)
+    arr = []
+    json_payload.each do |payload|
+      arr << Snitcher::API::Snitch.new(payload)
+    end
+    arr
   end
 end
