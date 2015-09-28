@@ -111,7 +111,7 @@ This function adds tags to a snitch, retaining whatever tags it already has.
 ```ruby
 token = "c2354d53d2"
 tags = ["spring_campaign", "support"]
-client.add_tags(c2354d53d2, tags)
+client.add_tags(token, tags)
 ```
 
 Returns an array of all of the snitch's tags.
