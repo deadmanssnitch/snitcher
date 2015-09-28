@@ -48,7 +48,7 @@ describe Snitcher do
 
     describe "with message" do
       it "includes the message as a query param" do
-        Snitcher.snitch(token, :message => "A thing just happened")
+        Snitcher.snitch(token, message: "A thing just happened")
 
         expect(a_request(:get, "https://nosnch.in/#{token}?m=A%20thing%20just%20happened")).to have_been_made
       end

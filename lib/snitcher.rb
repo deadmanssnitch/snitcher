@@ -1,16 +1,18 @@
 require "uri"
 require "timeout"
 require "net/http"
+require "snitcher/version"
 
 module Snitcher
   extend self
 
   # Public: Check-in to Deadman's Snitch
   #
-  # token - The Snitch token given by Deadman's Snitch (see the install page).
-  # opts  - The hash of optional parameters that can be given during check-in:
-  #         :message - Text message limited to ~250 characters.
-  #         :timeout - Number of seconds to set as connect and read timeout.
+  # token:  The Snitch token given by Deadman's Snitch (see the install page).
+  # opts:   The hash of optional parameters that can be given during check-in:
+  #           :message - Text message limited to ~250 characters.
+  #           :timeout - Number of seconds to set as connect and read timeout.
+  #           :uri - URL to use for snitch checkins.
   #
   # Examples
   #
@@ -19,16 +21,10 @@ module Snitcher
   #
   # Returns true if the check-in succeeded or false if it failed
   def snitch(token, opts = {})
-    uri       = URI.parse("https://nosnch.in/#{token}")
-    uri.query = URI.encode_www_form(:m => opts[:message]) if opts[:message]
-    timeout   = opts.fetch(:timeout, 2)
+    uri       = URI.parse(checkin_url(opts, token))
+    uri.query = URI.encode_www_form(m: opts[:message]) if opts[:message]
 
-    opts = {
-      :open_timeout => timeout,
-      :read_timeout => timeout,
-      :ssl_timeout  => timeout,
-      :use_ssl      => uri.port == 443
-    }
+    opts = initialize_opts(opts, uri)
 
     Net::HTTP.start(uri.host, uri.port, opts) do |http|
       request = Net::HTTP::Get.new(uri.request_uri)
@@ -43,11 +39,34 @@ module Snitcher
 
   private
 
+  def initialize_opts(options, uri)
+    timeout = options.fetch(:timeout, 5)
+
+    {
+      open_timeout: timeout,
+      read_timeout: timeout,
+      ssl_timeout:  timeout,
+      use_ssl:      use_ssl?(uri)
+    }
+  end
+
+  def checkin_url(opts, token)
+    if opts[:uri].nil?
+      "https://nosnch.in/#{token}"
+    else
+      "#{opts[:uri]}/#{token}"
+    end
+  end
+
+  def use_ssl?(uri)
+    uri.scheme == "https"
+  end
+
   def user_agent
     # RUBY_ENGINE was not added until 1.9.3
     engine = defined?(::RUBY_ENGINE) ? ::RUBY_ENGINE : "Ruby"
 
-    "Snitcher; #{engine}/#{RUBY_VERSION}; #{RUBY_PLATFORM}; v#{VERSION}"
+    "Snitcher; #{engine}/#{RUBY_VERSION}; #{RUBY_PLATFORM}; v#{::Snitcher::VERSION}"
   end
 end
 
