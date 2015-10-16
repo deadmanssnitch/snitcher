@@ -2,20 +2,21 @@ require "pp"
 
 require "net/https"
 require "timeout"
-require "base64"
 require "json"
 
 require "snitcher/api"
-require "snitcher/api/base"
 require "snitcher/version"
 require "snitcher/api/snitch"
 
-class Snitcher::API::Client < Snitcher::API::Base
+class Snitcher::API::Client
+  DEFAULT_ENDPOINT = "https://api.deadmanssnitch.com"
+
   # Public: Create a new Client
   #
   # options:
-  #   api_key:      access key available at https://deadmanssnitch.com/account/keys
-  #   api_endpoint: string URL of the DMS API connecting to
+  #   api_key:      Access key available at https://deadmanssnitch.com/account/keys
+  #   api_endpoint: String URL of the DMS API connecting to
+  #   timeout:      Number of seconds to wait at most while making a request.
   #
   # Example
   #
@@ -25,8 +26,11 @@ class Snitcher::API::Client < Snitcher::API::Base
   #          @api_endpoint=#<URI::HTTPS https://api.deadmanssnitch.com/v1/>>
   #
   def initialize(options = {})
+    api_endpoint = options[:api_endpoint] || DEFAULT_ENDPOINT
+
     @api_key      = options[:api_key]
-    @api_endpoint = URI.parse(api_url(options))
+    @api_endpoint = URI.parse(api_endpoint).freeze
+    @timeout      = options.fetch(:timeout, 5.0)
   end
 
   # Public: List snitches on the account
@@ -45,8 +49,10 @@ class Snitcher::API::Client < Snitcher::API::Base
   #          @checked_in_at="2014-01-01T12:00:00.000Z", @interval="hourly",
   #          @check_in_url="https://nosnch.in/c2354d53d4",
   #          @created_at="2014-01-01T07:50:00.000Z", @notes=nil>]
+  #
+  # Raise Timeout::Error if the API request times out
   def snitches
-    snitch_array(get "/snitches")
+    snitch_array(get("/v1/snitches"))
   end
 
   # Public: Get a single snitch by unique token
@@ -64,8 +70,10 @@ class Snitcher::API::Client < Snitcher::API::Base
   #         @check_in_url="https://nosnch.in/c2354d53d3",
   #         @created_at="2015-08-15T12:15:00.234Z",
   #         @notes="Important user data.">
+  #
+  # Raise Timeout::Error if the API request times out
   def snitch(token)
-    payload = get "/snitches/#{token}"
+    payload = get("/v1/snitches/#{token}")
     Snitcher::API::Snitch.new(payload)
   end
 
@@ -87,11 +95,13 @@ class Snitcher::API::Client < Snitcher::API::Base
   #          @status="healthy", @checked_in_at="2014-01-01T12:00:00.000Z",
   #          @interval="hourly", @check_in_url="https://nosnch.in/c2354d53d4",
   #          @created_at="2014-01-01T07:50:00.000Z", @notes=nil>]
+  #
+  # Raise Timeout::Error if the API request times out
   def tagged_snitches(tags=[])
     tag_params = strip_and_join_params(tags)
 
     # get "/snitches?tags=#{tag_params}"
-    snitch_array(get "/snitches?tags=#{tag_params}")
+    snitch_array(get "/v1/snitches?tags=#{tag_params}")
   end
 
   # Public: Create a snitch using passed-in values. Returns the new snitch.
@@ -121,8 +131,10 @@ class Snitcher::API::Client < Snitcher::API::Base
   #         @check_in_url="https://nosnch.in/c2354d53d3",
   #         @created_at="2015-08-15T12:15:00.234Z",
   #         @notes="Customer and supplier tables">
+  #
+  # Raise Timeout::Error if the API request times out
   def create_snitch(attributes={})
-    payload = post("/snitches", data_json(attributes))
+    payload = post("/v1/snitches", attributes)
     Snitcher::API::Snitch.new(payload)
   end
 
@@ -156,8 +168,10 @@ class Snitcher::API::Client < Snitcher::API::Base
   #         @check_in_url="https://nosnch.in/c2354d53d3",
   #         @created_at="2015-08-15T12:15:00.234Z",
   #         @notes="Customer and supplier tables">
+  #
+  # Raise Timeout::Error if the API request times out
   def edit_snitch(token, attributes={})
-    payload = patch("/snitches/#{token}", data_json(attributes))
+    payload = patch("/v1/snitches/#{token}", attributes)
     Snitcher::API::Snitch.new(payload)
   end
 
@@ -177,8 +191,10 @@ class Snitcher::API::Client < Snitcher::API::Base
   #           "red",
   #           "green"
   #        ]
+  #
+  # Raise Timeout::Error if the API request times out
   def add_tags(token, tags=[])
-    post("/snitches/#{token}/tags", tags)
+    post("/v1/snitches/#{token}/tags", tags)
   end
 
   # Public: Remove a tag from an existing snitch, identified by token.
@@ -196,8 +212,10 @@ class Snitcher::API::Client < Snitcher::API::Base
   #     => [
   #           "critical"
   #        ]
+  #
+  # Raise Timeout::Error if the API request times out
   def remove_tag(token, tag)
-    delete("/snitches/#{token}/tags/#{tag}")
+    delete("/v1/snitches/#{token}/tags/#{tag}")
   end
 
   # Public: Replace all of a snitch's tags with those supplied.
@@ -219,6 +237,8 @@ class Snitcher::API::Client < Snitcher::API::Base
   #         @check_in_url="https://nosnch.in/c2354d53d3",
   #         @created_at="2015-08-15T12:15:00.234Z",
   #         @notes="Customer and supplier tables">
+  #
+  # Raise Timeout::Error if the API request times out
   def replace_tags(token, tags=[])
     attributes = {"tags" => tags}
 
@@ -241,10 +261,10 @@ class Snitcher::API::Client < Snitcher::API::Base
   #         @check_in_url="https://nosnch.in/c2354d53d3",
   #         @created_at="2015-08-15T12:15:00.234Z",
   #         @notes="Customer and supplier tables">
+  #
+  # Raise Timeout::Error if the API request times out
   def clear_tags(token)
-    attributes = {"tags" => []}
-
-    edit_snitch(token, attributes)
+    edit_snitch(token, :tags => [])
   end
 
   # Public: Pauses a snitch. The return is a hash with the message "Response
@@ -258,8 +278,10 @@ class Snitcher::API::Client < Snitcher::API::Base
   #     token = "c2354d53d3"
   #     @client.pause_snitch(token)
   #     => { :message => "Response complete" }
+  #
+  # Raise Timeout::Error if the API request times out
   def pause_snitch(token)
-    post("/snitches/#{token}/pause")
+    post("/v1/snitches/#{token}/pause")
   end
 
   # Public: Deletes a snitch. The return is a hash with the message "Response
@@ -273,19 +295,97 @@ class Snitcher::API::Client < Snitcher::API::Base
   #     token = "c2354d53d3"
   #     @client.delete_snitch(token)
   #     => { :message => "Response complete" }
+  #
+  # Raise Timeout::Error if the API request times out
   def delete_snitch(token)
-    delete("/snitches/#{token}")
+    delete("/v1/snitches/#{token}")
+  end
+
+  protected
+
+  def user_agent
+    # RUBY_ENGINE was not added until 1.9.3
+    engine = defined?(::RUBY_ENGINE) ? ::RUBY_ENGINE : "Ruby"
+
+    "Snitcher; #{engine}/#{RUBY_VERSION}; #{RUBY_PLATFORM}; v#{::Snitcher::VERSION}"
+  end
+
+  def execute_request(request, options={})
+    http_options = {
+      open_timeout: @timeout,
+      read_timeout: @timeout,
+      ssl_timeout:  @timeout,
+      use_ssl:      @api_endpoint.scheme == "https",
+    }
+
+    host = @api_endpoint.host
+    port = @api_endpoint.port
+
+    Net::HTTP.start(host, port, http_options) do |http|
+      request.basic_auth(@api_key, "")
+      request["User-Agent"] = user_agent
+
+      # All requests (with bodies) are made using JSON.
+      if request.body
+        request["Content-Type"] = "application/json"
+
+        # Some trickiery to allow pushing the JSON rendering down as far as
+        # possible.
+        if !request.body.is_a?(String)
+          request.body = JSON.generate(request.body)
+        end
+      end
+
+      response = http.request(request)
+      evaluate_response(response)
+    end
+  end
+
+  def evaluate_response(response)
+    case response
+    when Net::HTTPNoContent
+      { message: "Response complete" }
+    when Net::HTTPSuccess
+      JSON.parse(response.body)
+    when Net::HTTPForbidden
+      { message: "Unauthorized access" }
+    when Net::HTTPUnprocessableEntity
+      { message: "Unprocessable - #{response.body}"}
+    else
+      { message: "Response unsuccessful", response: response }
+    end
+  end
+
+  def strip_and_join_params(params)
+    good_params = params.map { |p| p.strip }
+    good_params.compact.uniq.join(",")
+  end
+
+  def get(path, options={})
+    request = Net::HTTP::Get.new(path)
+    execute_request(request, options)
+  end
+
+  def post(path, data=nil, options={})
+    request = Net::HTTP::Post.new(path)
+    request.body = data
+
+    execute_request(request, options)
+  end
+
+  def patch(path, data, options={})
+    request = Net::HTTP::Patch.new(path)
+    request.body = data
+
+    execute_request(request, options)
+  end
+
+  def delete(path, options={})
+    request = Net::HTTP::Delete.new(path)
+    execute_request(request, options)
   end
 
   private
-
-  def api_url(opts)
-    if opts[:api_endpoint].nil?
-      "https://api.deadmanssnitch.com/v1/"
-    else
-      opts[:api_endpoint]
-    end
-  end
 
   def snitch_array(json_payload)
     arr = []
