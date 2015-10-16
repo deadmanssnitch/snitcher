@@ -24,57 +24,39 @@ module Snitcher
     #
     # Returns the string api_key
     def get_key(username, password, options={})
-      uri = URI.parse(api_url(options))
-      http_options = initialize_opts(options, uri)
+      api = options.fetch(:uri, "https://deadmanssnitch.com")
+      uri = URI.parse("#{api}/v1/api_key")
+
+      timeout = options.fetch(:timeout, 5)
+      http_options = {
+        open_timeout: timeout,
+        read_timeout: timeout,
+        ssl_timeout:  timeout,
+        use_ssl:      uri.scheme == "https",
+      }
 
       Net::HTTP.start(uri.host, uri.port, http_options) do |http|
-        request = Net::HTTP::Get.new(uri)
+        request = Net::HTTP::Get.new(uri.path)
         request["User-Agent"] = user_agent
-        request.basic_auth username, password
+        request.basic_auth(username, password)
 
         response = http.request(request)
+
         if response.is_a?(Net::HTTPSuccess)
           JSON.parse(response.body)["api_key"]
         end
       end
     rescue Timeout::Error
-      timeout_message
+      { message: "Request timed out" }
     end
 
     private
-
-    def api_url(opts)
-      if opts[:uri].nil?
-        "https://api.deadmanssnitch.com/v1/api_key"
-      else
-        opts[:uri]
-      end
-    end
-
-    def initialize_opts(options, uri)
-      timeout = options.fetch(:timeout, 5)
-
-      {
-        open_timeout: timeout,
-        read_timeout: timeout,
-        ssl_timeout:  timeout,
-        use_ssl:      use_ssl?(uri)
-      }
-    end
-
-    def use_ssl?(uri)
-      uri.scheme == "https"
-    end
 
     def user_agent
       # RUBY_ENGINE was not added until 1.9.3
       engine = defined?(::RUBY_ENGINE) ? ::RUBY_ENGINE : "Ruby"
 
       "Snitcher; #{engine}/#{RUBY_VERSION}; #{RUBY_PLATFORM}; v#{::Snitcher::VERSION}"
-    end
-
-    def timeout_message
-      { message: "Request timed out" }
     end
   end
 end
