@@ -39,16 +39,16 @@ require "snitcher/api"
 agent = Snitcher::API.get_key("jane@example.com", "password")
 ```
 
-Returns a the `api_key` key string.
+Returns an authentication key to access the api.
 
 ### Setup
 
-Initialize the API client directly with your api_key:
+Initialize the API client directly with your api key:
 
 ```ruby
 require "snitcher/api"
 
-client = Snitcher::API::Client.new(api_key: "FOO")
+client = Snitcher::API::Client.new("my_awesome_key")
 ```
 
 ### Listing Snitches

@@ -6,8 +6,8 @@ require "securerandom"
 describe Snitcher::API::Client do
   let(:api_key)       { "_caeEiZXnEyEzXXYVh2NhQ" }
   let(:api_endpoint)  { "#{scheme}#{api_url}/" }
-  let(:options)       { { api_key: api_key, api_endpoint: api_endpoint } }
-  let(:client)        { Snitcher::API::Client.new(options) }
+  let(:options)       { { endpoint: api_endpoint } }
+  let(:client)        { Snitcher::API::Client.new(api_key, options) }
 
   let(:api_url)   { "api.dms.dev:3000/v1" }
   let(:stub_url)  { /api\.dms\.dev/ }

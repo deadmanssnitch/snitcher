@@ -13,24 +13,23 @@ class Snitcher::API::Client
 
   # Public: Create a new Client
   #
-  # options:
-  #   api_key:      Access key available at https://deadmanssnitch.com/account/keys
-  #   api_endpoint: String URL of the DMS API connecting to
-  #   timeout:      Number of seconds to wait at most while making a request.
+  # key - Access key available at https://deadmanssnitch.com/account/keys.
+  #
+  # options
+  #   endpoint - String URL of the DMS API connecting to.
+  #   timeout  - Number of seconds to wait at most when making a request.
   #
   # Example
   #
-  #   Initialize API client for user with api_key "abc123"
-  #     @client = Snitcher::API::Client.new({api_key: "abc123"})
-  #     => #<Snitcher::API::Client:0x007fa3750af418 @api_key=abc123,
-  #          @api_endpoint=#<URI::HTTPS https://api.deadmanssnitch.com/v1/>>
+  #   Initialize API client for user with api key "abc123"
+  #     @client = Snitcher::API::Client.new("abc123")
   #
-  def initialize(options = {})
-    api_endpoint = options[:api_endpoint] || DEFAULT_ENDPOINT
+  def initialize(key, options = {})
+    endpoint = options[:endpoint] || DEFAULT_ENDPOINT
 
-    @api_key      = options[:api_key]
-    @api_endpoint = URI.parse(api_endpoint).freeze
-    @timeout      = options.fetch(:timeout, 5.0)
+    @key      = key
+    @endpoint = URI.parse(endpoint).freeze
+    @timeout  = options.fetch(:timeout, 5.0)
   end
 
   # Public: List snitches on the account
@@ -315,14 +314,11 @@ class Snitcher::API::Client
       open_timeout: @timeout,
       read_timeout: @timeout,
       ssl_timeout:  @timeout,
-      use_ssl:      @api_endpoint.scheme == "https",
+      use_ssl:      @endpoint.scheme == "https",
     }
 
-    host = @api_endpoint.host
-    port = @api_endpoint.port
-
-    Net::HTTP.start(host, port, http_options) do |http|
-      request.basic_auth(@api_key, "")
+    Net::HTTP.start(@endpoint.host, @endpoint.port, http_options) do |http|
+      request.basic_auth(@key, "")
       request["User-Agent"] = user_agent
 
       # All requests (with bodies) are made using JSON.
