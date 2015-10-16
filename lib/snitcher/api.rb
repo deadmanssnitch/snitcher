@@ -9,20 +9,26 @@ module Snitcher
   module API
     extend self
 
+    # Snitcher::API::Error and subclasses
+    require "snitcher/api/error"
+
     # Public: Retrieve API Key
     #
     # username: The username associated with a Deadman's Snitch account
     # password: The password associated with a Deadman's Snitch account
     #
     # options:
-    #   uri: String URL of the DMS API to connect to.
+    #   uri     - String URL of the DMS API to connect to.
+    #   timeout - Number of seconds to wait for open, read, and ssl handshake.
     #
     # Example
     #
-    #   Snitch::API.get_key("alice@example.com", "password")
+    #   Snitcher::API.get_key("alice@example.com", "password")
     #   # => "_caeEiZXnEyEzXXYVh2NhQ"
     #
     # Returns the string api_key
+    # Raises Snitcher::API::Error based on the type from the server.
+    # Raises Timeout::Error if the request timed out.
     def get_key(username, password, options={})
       api = options.fetch(:uri, "https://deadmanssnitch.com")
       uri = URI.parse("#{api}/v1/api_key")
@@ -44,10 +50,14 @@ module Snitcher
 
         if response.is_a?(Net::HTTPSuccess)
           JSON.parse(response.body)["api_key"]
+        else
+          error   = JSON.parse(response.body)
+          type    = error["type"]
+          message = error["error"]
+
+          raise Error.new(type, message)
         end
       end
-    rescue Timeout::Error
-      { message: "Request timed out" }
     end
 
     private
