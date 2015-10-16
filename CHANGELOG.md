@@ -1,4 +1,10 @@
-## 0.3.1 / TBD
+## 0.4.0 / TBD
+* [FEATURE] Add Snitcher::API for integrating with the DMS API ([[@danabrit](https://github.com/danabrit))
+
+## 0.3.2 / 2015-08-13
+* [BUG] Fixed passing messaging during a check-in ([@ryoung](https://github.com/ryoung))
+
+## 0.3.1 / 2015-06-23
 * [ENHANCEMENT] Add a custom User-Agent
 
 ## 0.3.0 / 2014-10-14
