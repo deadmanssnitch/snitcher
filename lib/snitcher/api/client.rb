@@ -220,7 +220,7 @@ class Snitcher::API::Client < Snitcher::API::Base
   #         @created_at="2015-08-15T12:15:00.234Z",
   #         @notes="Customer and supplier tables">
   def replace_tags(token, tags=[])
-    attributes = {"tags": tags}
+    attributes = {"tags" => tags}
 
     edit_snitch(token, attributes)
   end
@@ -242,7 +242,7 @@ class Snitcher::API::Client < Snitcher::API::Base
   #         @created_at="2015-08-15T12:15:00.234Z",
   #         @notes="Customer and supplier tables">
   def clear_tags(token)
-    attributes = {"tags": []}
+    attributes = {"tags" => []}
 
     edit_snitch(token, attributes)
   end

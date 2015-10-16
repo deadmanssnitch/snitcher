@@ -72,7 +72,9 @@ class Snitcher::API::Base
     attr_hash["notes"] = attributes[:notes] if attributes.has_key?(:notes)
     attr_hash["tags"] = attributes[:tags] if attributes.has_key?(:tags)
     if attributes.has_key?(:interval)
-      attr_hash["type"] = {"interval": attributes[:interval]}
+      attr_hash["type"] = {
+        "interval" => attributes[:interval],
+      }
     end
     attr_hash
   end

@@ -159,10 +159,10 @@ describe Snitcher::API::Client do
   describe "#create_snitch" do
     let(:data)  {
                   {
-                    "name":     "Daily Backups",
-                    "interval": "daily",
-                    "notes":    "Customer and supplier tables",
-                    "tags":     ["backups", "maintenance"]
+                    "name"     => "Daily Backups",
+                    "interval" => "daily",
+                    "notes"    => "Customer and supplier tables",
+                    "tags"     => ["backups", "maintenance"]
                    }
                 }
     let(:url)   { snitch_url }
@@ -204,8 +204,8 @@ describe Snitcher::API::Client do
     let(:token) { "c2354d53d2" }
     let(:data)  {
                   {
-                    "interval": "hourly",
-                    "notes":    "We need this more often",
+                    "interval" => "hourly",
+                    "notes"    => "We need this more often",
                    }
                 }
     let(:url)   { "#{snitch_url}/#{token}" }
