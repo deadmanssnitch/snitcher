@@ -154,6 +154,24 @@ describe Snitcher::API::Client do
       expect(client.tagged_snitches(tags)).to be_a(Array)
       expect(client.tagged_snitches(tags).first).to be_a(Snitcher::API::Snitch)
     end
+
+    it "supports spaces in tags" do
+      request = stub_request(:get, "#{snitch_url}?tags=phoenix%20foundary,murggle").
+        to_return(body: body, status: 200)
+
+      client.tagged_snitches("phoenix foundary", "murggle")
+
+      expect(request).to have_been_made.once
+    end
+
+    it "allows an array to be passed for tags" do
+      request = stub_request(:get, "#{snitch_url}?tags=murggle,gurgggle").
+        to_return(body: body, status: 200)
+
+      client.tagged_snitches(["murggle", "gurgggle"])
+
+      expect(request).to have_been_made.once
+    end
   end
 
   describe "#create_snitch" do

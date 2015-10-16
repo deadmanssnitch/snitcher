@@ -96,11 +96,16 @@ class Snitcher::API::Client
   #          @created_at="2014-01-01T07:50:00.000Z", @notes=nil>]
   #
   # Raise Timeout::Error if the API request times out
-  def tagged_snitches(tags=[])
-    tag_params = strip_and_join_params(tags)
+  def tagged_snitches(*tags)
+    (tags ||= []).flatten!
 
-    # get "/snitches?tags=#{tag_params}"
-    snitch_array(get "/v1/snitches?tags=#{tag_params}")
+    query = URI.encode_www_form({
+      # Strip extra spaces, dedupe, and clean up the list of tags to be filtered
+      # by.
+      tags: tags.map(&:strip).compact.uniq.join(","),
+    })
+
+    snitch_array(get("/v1/snitches?#{query}"))
   end
 
   # Public: Create a snitch using passed-in values. Returns the new snitch.
@@ -350,11 +355,6 @@ class Snitcher::API::Client
     else
       { message: "Response unsuccessful", response: response }
     end
-  end
-
-  def strip_and_join_params(params)
-    good_params = params.map { |p| p.strip }
-    good_params.compact.uniq.join(",")
   end
 
   def get(path, options={})
