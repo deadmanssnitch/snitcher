@@ -9,6 +9,9 @@ matrix:
 install:
   - gem install bundler
 
+# Disable support for sudo to get faster builds with Docker
+sudo: false
+
 rvm:
   - 1.9.3
   - 2.0.0
