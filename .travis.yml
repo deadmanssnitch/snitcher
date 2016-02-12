@@ -5,6 +5,10 @@ language: ruby
 matrix:
   allow_failures:
     - rvm: ruby-head
+
+install:
+  - gem install bundler
+
 rvm:
   - 1.9.3
   - 2.0.0
