@@ -1,5 +1,3 @@
-require "pp"
-
 require "net/https"
 require "timeout"
 require "json"
