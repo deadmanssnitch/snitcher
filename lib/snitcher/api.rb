@@ -51,11 +51,9 @@ module Snitcher
         if response.is_a?(Net::HTTPSuccess)
           JSON.parse(response.body)["api_key"]
         else
-          error   = JSON.parse(response.body)
-          type    = error["type"]
-          message = error["error"]
+          error = JSON.parse(response.body)
 
-          raise Error.new(type, message)
+          raise ::Snitcher::API::Error.new(error)
         end
       end
     end
