@@ -6,7 +6,7 @@ matrix:
   allow_failures:
     - rvm: ruby-head
 
-install:
+before_install:
   - gem install bundler
 
 # Disable support for sudo to get faster builds with Docker
