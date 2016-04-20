@@ -7,24 +7,24 @@ class Snitcher::API::Snitch
   # Example
   #
   #   payload = {
-  #               "token" => "c2354d53d3",
-  #               "href" => "/v1/snitches/c2354d53d3",
-  #               "name" => "Daily Backups",
-  #               "tags" => [
-  #                 "production",
-  #                 "critical"
-  #               ],
-  #               "status" => "pending",
-  #               "checked_in_at" => "",
-  #               "type": {
-  #                 "interval" => "daily"
-  #               },
-  #               "check_in_url" => "https://nosnch.in/c2354d53d3",
-  #               "created_at" => "2015-08-15T12:15:00.234Z",
-  #               "notes" => "Important user data."
-  #             }
+  #     "token" => "c2354d53d3",
+  #     "href" => "/v1/snitches/c2354d53d3",
+  #     "name" => "Daily Backups",
+  #     "tags" => [
+  #       "production",
+  #       "critical"
+  #     ],
+  #     "status" => "pending",
+  #     "checked_in_at" => "",
+  #     "type": {
+  #       "interval" => "daily"
+  #     },
+  #     "check_in_url" => "https://nosnch.in/c2354d53d3",
+  #     "created_at" => "2015-08-15T12:15:00.234Z",
+  #     "notes" => "Important user data.",
+  #   }
   #
-  #   Snitcher::API::Snitch(payload)
+  #   Snitcher::API::Snitch.new(payload)
   #   => #<Snitcher::API::Snitch:0x007fdcf50ad2d0 @token="c2354d53d3",
   #       @name="Daily Backups", @tags=["production", "critical"],
   #       @status="pending", @checked_in_at=nil, @interval="daily",

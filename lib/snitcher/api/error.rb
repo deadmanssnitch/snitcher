@@ -7,8 +7,8 @@ module Snitcher::API
     attr_reader :type
 
     def self.new(api_error)
-      type    = api_error["type"]
-      message = api_error["error"]
+      type    = api_error.delete("type")
+      message = api_error.delete("error")
 
       klass =
         case type.to_s
@@ -24,14 +24,15 @@ module Snitcher::API
         end
 
       error = klass.allocate
-      error.send(:initialize, type, message)
+      error.send(:initialize, type, message, api_error)
       error
     end
 
-    def initialize(type, message = nil)
+    def initialize(type, message = nil, metadata = nil)
       super(message)
 
-      @type = type
+      @type     = type
+      @metadata = metadata || {}
     end
   end
 
@@ -56,7 +57,13 @@ module Snitcher::API
 
   # ResourceInvalidError is raised when updating a resource and there are errors
   # with the update.
-  class ResourceInvalidError < Error; end
+  class ResourceInvalidError < Error
+    def errors
+      @metadata.fetch("validations", []).each_with_object({}) do |tuple, memo|
+        memo[tuple["attribute"]] = tuple["message"]
+      end
+    end
+  end
 
   # InternalServerError is raised when something bad has happened on our end.
   # Hopefully it's nothing you did and we're already on the case getting it

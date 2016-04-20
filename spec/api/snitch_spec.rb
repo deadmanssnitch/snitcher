@@ -6,13 +6,14 @@ describe Snitcher::API::Snitch do
   describe "#new" do
     before do
       payload = {
-                  "token" => "c2354d53d3",
-                  "name" => "Daily Backups",
-                  "type" => {
-                    "interval" => "daily"
-                  },
-                  "notes" => "Important user data."
-                }
+        "token" => "c2354d53d3",
+        "name" => "Daily Backups",
+        "type" => {
+          "interval" => "daily"
+        },
+        "notes" => "Important user data."
+      }
+
       @snitch = Snitcher::API::Snitch.new(payload)
     end
 

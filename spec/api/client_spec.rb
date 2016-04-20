@@ -210,6 +210,39 @@ describe Snitcher::API::Client do
     it "returns the new snitch" do
       expect(client.create_snitch(data)).to be_a(Snitcher::API::Snitch)
     end
+
+    describe "validation errors" do
+      let(:data) do
+        {
+          "name"     => "",
+          "interval" => "",
+        }
+      end
+
+      let(:body) do
+        '{
+           "type": "resource_invalid",
+           "error": "resource invalid",
+           "validations": [
+             { "attribute": "name", "message": "Can\'t be blank."},
+             { "attribute": "type.interval", "message": "Can\'t be blank."}
+           ]
+         }'
+      end
+
+      it "raises ResourceInvalidError if invalid" do
+        stub_request(:post, stub_url).to_return(:body => body, :status => 422)
+
+        expect {
+          client.create_snitch(data)
+        }.to raise_error(Snitcher::API::ResourceInvalidError) { |error|
+          expect(error.errors).to eq({
+            "name"          => "Can't be blank.",
+            "type.interval" => "Can't be blank.",
+          })
+        }
+      end
+    end
   end
 
   describe "#edit_snitch" do
