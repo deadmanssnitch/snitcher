@@ -36,7 +36,7 @@ Snitcher.snitch("c2354d53d2", timeout: 10)
 ```ruby
 require "snitcher/api"
 
-agent = Snitcher::API.get_key("jane@example.com", "password")
+key = Snitcher::API.get_key("jane@example.com", "password")
 ```
 
 Returns an authentication key to access the api.
@@ -49,6 +49,17 @@ Initialize the API client directly with your api key:
 require "snitcher/api"
 
 client = Snitcher::API::Client.new("my_awesome_key")
+```
+
+#### Heroku
+
+Dead Man's Snitch exposes the `DEADMANSSNITCH_API_KEY` environment variable for
+accessing the API.
+
+```ruby
+require "snitcher/api"
+
+client = Snitcher::API::Client.new(ENV["DEADMANSSNITCH_API_KEY"])
 ```
 
 ### Listing Snitches
