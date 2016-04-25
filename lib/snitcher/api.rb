@@ -30,7 +30,7 @@ module Snitcher
     # Raises Snitcher::API::Error based on the type from the server.
     # Raises Timeout::Error if the request timed out.
     def get_key(username, password, options={})
-      api = options.fetch(:uri, "https://deadmanssnitch.com")
+      api = options.fetch(:uri, "https://api.deadmanssnitch.com")
       uri = URI.parse("#{api}/v1/api_key")
 
       timeout = options.fetch(:timeout, 5)
