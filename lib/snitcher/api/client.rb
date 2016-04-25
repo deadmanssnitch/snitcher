@@ -187,16 +187,16 @@ class Snitcher::API::Client
   # Example
   #
   #   Add tags to an existing snitch.
-  #     token = "c2354d53d2"
-  #     tags =  [ "red", "green" ]
-  #     @client.add_tags(token, tags)
-  #     => [
-  #           "red",
-  #           "green"
-  #        ]
+  #     @client.add_tags("c2354d53d2", %w("red", "green")
+  #     => [ "yellow", "red", "green" ]
+  #
+  #   Adding a single tag
+  #     @client.add_tags("c2354d53d2", "orange")
+  #     => [ "yellow", "orange" ]
   #
   # Raise Timeout::Error if the API request times out
   def add_tags(token, tags=[])
+    tags = [tags].flatten
     post("/v1/snitches/#{token}/tags", tags)
   end
 

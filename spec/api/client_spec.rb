@@ -287,29 +287,26 @@ describe Snitcher::API::Client do
   end
 
   describe "#add_tags" do
-    let(:token) { "c2354d53d2" }
-    let(:tags)  { ["red", "green"] }
-    let(:url)   { "#{snitch_url}/#{token}/tags" }
-    let(:body)  { '[
-                     "red",
-                     "green"
-                   ]'
-                }
+    it "adds the tags to the Snitch via the API" do
+      request = stub_request(:post, "#{snitch_url}/c2354d53d2/tags").
+        with(:body => %|["red","green"]|).
+        to_return(:body => %|["red", "green"]|, :status => 200)
 
-    before do
-      stub_request(:post, stub_url).to_return(:body => body, :status => 200)
+      result = client.add_tags("c2354d53d2", ["red", "green"])
+
+      expect(request).to have_been_made.once
+      expect(result).to eq(["red", "green"])
     end
 
-    it "pings API with the api_key" do
-      client.add_tags(token, tags)
+    it "allows passing a single tag to add" do
+      request = stub_request(:post, "#{snitch_url}/TOKEN/tags").
+        with(:body => %|["extremely important"]|).
+        to_return(:body => %|["extremely important"]|, :status => 200)
 
-      expect(a_request(:post, url)).to have_been_made.once
-    end
+      result = client.add_tags("TOKEN", "extremely important")
 
-    context "when successful" do
-      it "returns an array of the snitch's tags" do
-        expect(client.add_tags(token, tags)).to eq(JSON.parse(body))
-      end
+      expect(request).to have_been_made.once
+      expect(result).to eq(["extremely important"])
     end
   end
 
