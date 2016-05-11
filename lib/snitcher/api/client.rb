@@ -123,17 +123,13 @@ class Snitcher::API::Client
   #   Create a new snitch
   #     attributes = {
   #       "name": "Daily Backups",
-  #       "interval": "daily",
+  #       "type": { "interval": "hourly" },
   #       "notes": "Customer and supplier tables",
   #       "tags": ["backups", "maintenance"]
   #     }
   #     @client.create_snitch(attributes)
-  #     => #<Snitcher::API::Snitch:0x007fdcf50ad2d0 @token="c2354d53d3",
-  #         @name="Daily Backups", @tags=["backups", "maintenance"],
-  #         @status="pending", @checked_in_at=nil, @interval="daily",
-  #         @check_in_url="https://nosnch.in/c2354d53d3",
-  #         @created_at="2015-08-15T12:15:00.234Z",
-  #         @notes="Customer and supplier tables">
+  #
+  #     => #<Snitcher::API::Snitch:...>
   #
   # Raise Timeout::Error if the API request times out
   def create_snitch(attributes={})
@@ -161,16 +157,11 @@ class Snitcher::API::Client
   #   Edit an existing snitch using values passed in a hash.
   #     token      = "c2354d53d2"
   #     attributes = {
-  #       "name":     "Monthly Backups",
-  #       "interval": "monthly"
+  #       "name": "Monthly Backups",
+  #       "type": { "interval": "monthly" },
   #     }
   #     @client.edit_snitch(token, attributes)
-  #     => #<Snitcher::API::Snitch:0x007fdcf50ad2d0 @token="c2354d53d3",
-  #         @name="Monthly Backups", @tags=["backups", "maintenance"],
-  #         @status="pending", @checked_in_at=nil, @interval="monthly",
-  #         @check_in_url="https://nosnch.in/c2354d53d3",
-  #         @created_at="2015-08-15T12:15:00.234Z",
-  #         @notes="Customer and supplier tables">
+  #     => #<Snitcher::API::Snitch:...>
   #
   # Raise Timeout::Error if the API request times out
   def edit_snitch(token, attributes={})
