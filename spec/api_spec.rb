@@ -11,7 +11,8 @@ describe Snitcher::API do
       user = "alice@example.com"
       pass = "password"
 
-      request = stub_request(:get, "https://#{user}:#{pass}@api.deadmanssnitch.com/v1/api_key").
+      request = stub_request(:get, "https://api.deadmanssnitch.com/v1/api_key").
+        with(basic_auth: [user, pass]).
         to_return({
           :body   => '{"api_key": "_caeEiZXnEyEzXXYVh2NhQ"}',
           :status => 200
@@ -27,7 +28,8 @@ describe Snitcher::API do
       user = "lol@notreally.horse"
       pass = "nope"
 
-      request = stub_request(:get, "https://#{user}:#{pass}@api.deadmanssnitch.com/v1/api_key").
+      request = stub_request(:get, "https://api.deadmanssnitch.com/v1/api_key").
+        with(basic_auth: [user, pass]).
         to_return({
           :body => JSON.generate({
             :type  => "sign_in_incorrect",
@@ -60,7 +62,8 @@ describe Snitcher::API do
     end
 
     it "allows the API URI to be provided" do
-      request = stub_request(:any, "user:pass@dms.dev:4000/v1/api_key").
+      request = stub_request(:any, "dms.dev:4000/v1/api_key").
+        with(basic_auth: ["user", "pass"]).
         to_return({
           :body   => '{"api_key": "this_is_an_api_key"}',
           :status => 200

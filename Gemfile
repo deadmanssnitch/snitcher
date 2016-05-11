@@ -9,5 +9,5 @@ end
 group :test do
   gem "coveralls", require: false
   gem "rspec"
-  gem "webmock"
+  gem "webmock", ">= 2.0"
 end

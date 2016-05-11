@@ -9,7 +9,7 @@ describe Snitcher::API::Client do
   end
 
   let(:stub_url)   { /api\.dms\.dev/ }
-  let(:snitch_url) { "http://key:@api.dms.dev/v1/snitches" }
+  let(:snitch_url) { "http://api.dms.dev/v1/snitches" }
 
   describe "#snitches" do
     let(:url)   { snitch_url }
@@ -45,7 +45,9 @@ describe Snitcher::API::Client do
                 }
 
     before do
-      stub_request(:get, stub_url).to_return(:body => body, :status => 200)
+      stub_request(:get, stub_url).
+        with(basic_auth: ["key", ""]).
+        to_return(:body => body, :status => 200)
     end
 
     it "pings API with the api_key" do
