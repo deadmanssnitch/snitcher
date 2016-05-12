@@ -10,19 +10,21 @@ require "snitcher/api/error"
 class Snitcher::API::Client
   DEFAULT_ENDPOINT = "https://api.deadmanssnitch.com"
 
-  # Public: Create a new Client
+  # Create a new API Client for taling to Dead Man's Snitch's API.
   #
-  # key - Access key available at https://deadmanssnitch.com/account/keys.
+  # @param key [String] API access key (available at
+  #   https://deadmanssnitch.com/account/keys).
   #
-  # options
-  #   endpoint - String URL of the DMS API connecting to.
-  #   timeout  - Number of seconds to wait at most when making a request.
+  # @param [Hash] options advanced options for customizing the client
+  # @option options [String] :endpoint URL of the DMS API to connect to
+  # @option options [Float, Fixnum] :timeout number of seconds to wait at most
+  #   for a response from the API.
   #
-  # Example
+  # @example Creating a new Client with an API key
+  #   client = Snitcher::API::Client.new("abc123")
+  #   # => #<Snitcher::API::Client...>
   #
-  #   Initialize API client for user with api key "abc123"
-  #     @client = Snitcher::API::Client.new("abc123")
-  #
+  # @return [Snitcher::API::Client] New API Client.
   def initialize(key, options = {})
     endpoint = options[:endpoint] || DEFAULT_ENDPOINT
 
@@ -31,70 +33,58 @@ class Snitcher::API::Client
     @timeout  = options.fetch(:timeout, 5.0)
   end
 
-  # Public: List snitches on the account
+  # Get the list snitches on the account
   #
-  # Example
+  # @example List the Snitches on an account
+  #     client.snitches
+  #     # => [ #<Snitcher::API::Snitch:...>, #<Snitcher::API::Snitch:...> ]
   #
-  #   Get a list of all snitches
-  #     @client.snitches
-  #     => [#<Snitcher::API::Snitch:0x007fdcf51ec380 @token="c2354d53d3",
-  #          @name="Daily Backups", @tags=["production", "critical"],
-  #          @status="healthy", @checked_in_at="2014-01-01T12:00:00.000Z",
-  #          @interval="daily", @check_in_url="https://nosnch.in/c2354d53d3",
-  #          @created_at="2014-01-01T08:00:00.000Z", @notes=nil>,
-  #         #<Snitcher::API::Snitch:0x007fdcf51ec358 @token="c2354d53d4",
-  #          @name="Hourly Emails", @tags=[], @status="healthy",
-  #          @checked_in_at="2014-01-01T12:00:00.000Z", @interval="hourly",
-  #          @check_in_url="https://nosnch.in/c2354d53d4",
-  #          @created_at="2014-01-01T07:50:00.000Z", @notes=nil>]
+  # @raise [Timeout::Error] if the API request took too long to execute.
+  # @raise [Snitcher::API::Error] if any API errors occur.
   #
-  # Raise Timeout::Error if the API request times out
+  # @return [Array<Snitcher::API::Snitch>] the snitches on the account.
   def snitches
     snitch_array(get("/v1/snitches"))
   end
 
-  # Public: Get a single snitch by unique token
+  # Get a single Snitch by it's unique token.
   #
-  # token: The unique token of the snitch to get. Should be a string.
+  # @param token [String] The unique token of the Snitch to get
   #
-  # Example
+  # @example Get the Snitch with token "c2354d53d2"
+  #   client.snitch("c2354d53d2")
   #
-  #   Get the snitch with token "c2354d53d2"
+  #   # => #<Snitcher::API:: @token="c2354d53d2" ...>
   #
-  #     @client.snitch("c2354d53d2")
-  #     => #<Snitcher::API::Snitch:0x007fdcf50ad2d0 @token="c2354d53d3",
-  #         @name="Daily Backups", @tags=["production", "critical"],
-  #         @status="pending", @checked_in_at=nil, @interval="daily",
-  #         @check_in_url="https://nosnch.in/c2354d53d3",
-  #         @created_at="2015-08-15T12:15:00.234Z",
-  #         @notes="Important user data.">
+  # @raise [Timeout::Error] if the API request took too long to execute.
+  # @raise [Snitcher::API::ResourceNotFoundError] if a Snitch does not exist
+  #   with that token
+  # @raise [Snitcher::API::Error] if any other API errors occur.
   #
-  # Raise Timeout::Error if the API request times out
+  # @return [Snitcher::API::Snitch] the Snitch
   def snitch(token)
     payload = get("/v1/snitches/#{token}")
     Snitcher::API::Snitch.new(payload)
   end
 
-  # Public: Retrieve snitches that match all of the tags in a list
+  # Retrieve Snitches filtered by a list of tags. Only Snitches that are tagged
+  # with all of the given tags will be returned.
   #
-  # tags: An array of strings. Each string is a tag.
+  # @param tags [String, Array<String>] the tag(s) to filter by.
   #
-  # Example
+  # @example Get the snitches that match a list of tags
+  #   client.tagged_snitches(["production","critical"])
   #
-  #   Get the snitches that match a list of tags
-  #     @client.tagged_snitches(["production","critical"])
-  #     => [#<Snitcher::API::Snitch:0x007fdcf51ec380 @token="c2354d53d3",
-  #          @name="Daily Backups", @tags=["production", "critical"],
-  #          @status="pending", @checked_in_at=nil, @interval="daily",
-  #          @check_in_url="https://nosnch.in/c2354d53d3",
-  #          @created_at="2014-01-01T08:00:00.000Z", @notes=nil>,
-  #         #<Snitcher::API::Snitch:0x007fdcf51ec358 @token="c2354d53d4",
-  #          @name="Hourly Emails", @tags=["production", "critical"],
-  #          @status="healthy", @checked_in_at="2014-01-01T12:00:00.000Z",
-  #          @interval="hourly", @check_in_url="https://nosnch.in/c2354d53d4",
-  #          @created_at="2014-01-01T07:50:00.000Z", @notes=nil>]
+  #   # => [
+  #     #<Snitcher::API::Snitch tags=["production", "critical"]>,
+  #     #<Snitcher::API::Snitch tags=["production", "critical"]>,
+  #   ]
   #
-  # Raise Timeout::Error if the API request times out
+  # @raise [Timeout::Error] if the API request took too long to execute.
+  #   with that token
+  # @raise [Snitcher::API::Error] if any API errors occur.
+  #
+  # @return [Array<Snitcher::API::Snitch>] list of Snitches matching all tags.
   def tagged_snitches(*tags)
     (tags ||= []).flatten!
 
@@ -107,61 +97,63 @@ class Snitcher::API::Client
     snitch_array(get("/v1/snitches?#{query}"))
   end
 
-  # Public: Create a snitch using passed-in values. Returns the new snitch.
+  # Create a new Snitch.
   #
-  # attributes: A hash of the snitch properties. It should include these keys:
-  #               "name":     String value is the name of the snitch
-  #               "interval": String value representing how often the snitch is
-  #                           expected to fire. Options are "hourly", "daily",
-  #                           "weekly", "monthly"
-  #               "notes":    Optional string value for recording additional
-  #                           information about the snitch
-  #               "tags":     Optional array of string tags
+  # @param [Hash] attributes The properties for the new Snitch
+  # @option attributes [String] :name The label used for the Snitch
+  # @option attributes [Hash]   :type Hash containing the interval of the Snitch.
+  # @option attributes [optional, String] :notes Additional information about
+  #   the Snitch. Useful to put instructions of investigating or fixing any
+  #   errors.
+  # @option attributes [optional, Array<String>] :tags List of labels to tag the
+  #   Snitch with.
   #
-  # Example
+  # @example Create a new Snitch
+  #   client.create_snitch({
+  #     name:  "Daily Backups",
+  #     type:  { interval: "hourly" },
+  #     notes: "On error check the print tray for paper jams",
+  #     tags:  [ "backups", "maintenance" ],
+  #   })
   #
-  #   Create a new snitch
-  #     attributes = {
-  #       "name": "Daily Backups",
-  #       "type": { "interval": "hourly" },
-  #       "notes": "Customer and supplier tables",
-  #       "tags": ["backups", "maintenance"]
-  #     }
-  #     @client.create_snitch(attributes)
+  #   # => #<Snitcher::API::Snitch:...>
   #
-  #     => #<Snitcher::API::Snitch:...>
+  # @raise [Timeout::Error] if the API request took too long to execute.
+  # @raise [Snitcher::API::ResourceInvalidError] if the attributes are not valid
+  #   for a Snitch.
+  # @raise [Snitcher::API::Error] if any other API errors occur.
   #
-  # Raise Timeout::Error if the API request times out
+  # @return [Snitcher::API::Snitch] the new Snitch.
   def create_snitch(attributes={})
     payload = post("/v1/snitches", attributes)
     Snitcher::API::Snitch.new(payload)
   end
 
-  # Public: Edit an existing snitch, identified by token, using passed-in
-  #         values. Only changes those values included in the attributes
-  #         hash; other attributes are not changed. Returns the updated snitch.
+  # Update a snitch, identified by token, using passed-in values. Only changes
+  # those values included in the attributes hash; other attributes are not
+  # changed.
   #
-  # token:      The unique token of the snitch to get. Should be a string.
-  # attributes: A hash of the snitch properties. It should only include those
-  #             values you want to change. Options include these keys:
-  #               "name":     String value is the name of the snitch
-  #               "interval": String value representing how often the snitch
-  #                           is expected to fire. Options are "hourly",
-  #                           "daily", "weekly", and "monthly".
-  #               "notes":    Optional string value for recording additional
-  #                           information about the snitch
-  #               "tags":     Optional array of string tags
+  # @param token [String] The unique token of the Snitch.
+  # @param [Hash] attributes the set of Snitch attributes to change.
   #
-  # Example
+  # @option attributes [String] :name The label used for the Snitch
+  # @option attributes [Hash]   :type Hash containing the interval of the Snitch.
+  # @option attributes [optional, String] :notes Additional information about
+  #   the Snitch. Useful to put instructions of investigating or fixing any
+  #   errors.
+  # @option attributes [optional, Array<String>] :tags List of labels to tag the
+  #   Snitch with.
   #
-  #   Edit an existing snitch using values passed in a hash.
-  #     token      = "c2354d53d2"
-  #     attributes = {
-  #       "name": "Monthly Backups",
-  #       "type": { "interval": "monthly" },
-  #     }
-  #     @client.edit_snitch(token, attributes)
-  #     => #<Snitcher::API::Snitch:...>
+  # @example Update an existing Snitch
+  #     client.edit_snitch("c2354d53d2", {
+  #       name: "Monthyl Backups",
+  #     })
+  #     # => #<Snitcher::API::Snitch:...>
+  #
+  # @raise [Timeout::Error] if the API request took too long to execute.
+  # @raise [Snitcher::API::ResourceInvalidError] if the changes are not valid.
+  # @raise [Snitcher::API::ResourceNotFoundError] if the Snitch does not exist.
+  # @raise [Snitcher::API::Error] if any other API errors occur.
   #
   # Raise Timeout::Error if the API request times out
   def edit_snitch(token, attributes={})
@@ -169,133 +161,125 @@ class Snitcher::API::Client
     Snitcher::API::Snitch.new(payload)
   end
 
-  # Public: Add one or more tags to an existing snitch, identified by token.
-  #         Returns an array of the snitch's tags.
+  # Add one or more tags to an existing snitch, identified by token.
   #
-  # token:  The unique token of the snitch to edit. Should be a string.
-  # tags:   Array of string tags. Will append these tags to any existing tags.
+  # @param token [String] The unique token of the Snitch.
+  # @param tags  [Array<String>] Tag or tags to add to the list of tags already
+  #   on the Snitch.
   #
-  # Example
+  # @example Add tags to an existing snitch.
+  #   client.add_tags("c2354d53d2", ["red", "green"])
+  #   # => [ "yellow", "red", "green" ]
   #
-  #   Add tags to an existing snitch.
-  #     @client.add_tags("c2354d53d2", %w("red", "green")
-  #     => [ "yellow", "red", "green" ]
+  # @example Adding a single tag
+  #   client.add_tags("c2354d53d2", "orange")
+  #   # => [ "yellow", "orange" ]
   #
-  #   Adding a single tag
-  #     @client.add_tags("c2354d53d2", "orange")
-  #     => [ "yellow", "orange" ]
+  # @raise [Timeout::Error] if the API request took too long to execute.
+  # @raise [Snitcher::API::ResourceNotFoundError] if the Snitch does not exist.
+  # @raise [Snitcher::API::Error] if an API errors occur.
   #
-  # Raise Timeout::Error if the API request times out
+  # @return [Array<String>] full list of tags on the Snitch.
   def add_tags(token, tags=[])
     tags = [tags].flatten
     post("/v1/snitches/#{token}/tags", tags)
   end
 
-  # Public: Remove a tag from an existing snitch, identified by token.
-  #         Returns an array of the snitch's tags.
+  # Remove a tag from a Snitch.
   #
-  # token:  The unique token of the snitch to edit. Should be a string.
-  # tag:    Tag to be removed from a snitch's tags. Should be a string.
+  # @param token [String] The unique token of the Snitch.
+  # @param tag   [String] The tag to remove from the Snitch.
   #
-  # Example
+  # @example Removing the "production" tag from a Snitch
+  #   client.remove_tag("c2354d53d2", "production")
+  #   # => [ "critical" ]
   #
-  #   Assume a snitch that already has the tags "critical" and "production"
-  #     token = "c2354d53d2"
-  #     tag =   "production"
-  #     @client.remove_tag(token, tag)
-  #     => [
-  #           "critical"
-  #        ]
+  # @raise [Timeout::Error] if the API request took too long to execute.
+  # @raise [Snitcher::API::ResourceNotFoundError] if the Snitch does not exist.
+  # @raise [Snitcher::API::Error] if any other API errors occur.
   #
-  # Raise Timeout::Error if the API request times out
+  # @return [Array<String>] list of the remaining tags on the Snitch.
   def remove_tag(token, tag)
     delete("/v1/snitches/#{token}/tags/#{tag}")
   end
 
-  # Public: Replace all of a snitch's tags with those supplied.
-  #         Returns the updated snitch.
+  # Replace the tags on a Snitch.
   #
-  # token:  The unique token of the snitch to edit. Should be a string.
-  # tags:   Array of string tags. Will replace the snitch's current tags with
-  #         these.
+  # @param token [String] The unique token of the Snitch.
+  # @param tags  [Array<String>] List of tags to set onto the Snitch.
   #
-  # Example
+  # @example 
+  #   client.replace_tags("c2354d53d2", ["production", "urgent"])
+  #   # => #<Snitcher::API::Snitch @tags=["production", "urgent"]>
   #
-  #   Assume a snitch with the tag "critical". Replace with tags provided.
-  #     token = "c2354d53d3"
-  #     tags =  ["production", "urgent"]
-  #     @client.replace_tags(token, tags)
-  #     => #<Snitcher::API::Snitch:0x007fdcf50ad2d0 @token="c2354d53d3",
-  #         @name="Daily Backups", @tags=["production", "urgent"],
-  #         @status="pending", @checked_in_at=nil, @interval="daily",
-  #         @check_in_url="https://nosnch.in/c2354d53d3",
-  #         @created_at="2015-08-15T12:15:00.234Z",
-  #         @notes="Customer and supplier tables">
+  # @raise [Timeout::Error] if the API request took too long to execute.
+  # @raise [Snitcher::API::ResourceNotFoundError] if the Snitch does not exist.
+  # @raise [Snitcher::API::Error] if any other API errors occur.
   #
-  # Raise Timeout::Error if the API request times out
+  # @return [Snitcher::API::Snitch] The updated Snitch.
   def replace_tags(token, tags=[])
     attributes = {"tags" => tags}
 
     edit_snitch(token, attributes)
   end
 
-  # Public: Remove all of a snitch's tags.
-  #         Returns the updated snitch.
+  # Remove all of a Snitch's tags.
   #
-  # token: The unique token of the snitch to edit. Should be a string.
+  # @param token [String] The unique token of the Snitch.
   #
-  # Example
+  # @example Remove all tags
+  #   client.clear_tags("c2354d53d2")
+  #   # => #<Snitcher::API::Snitch tags=[]>
   #
-  #   Remove all tags.
-  #     token = "c2354d53d3"
-  #     @client.clear_tags(token)
-  #     => #<Snitcher::API::Snitch:0x007fdcf50ad2d0 @token="c2354d53d3",
-  #         @name="Daily Backups", @tags=[], @status="pending",
-  #         @checked_in_at=nil, @interval="daily",
-  #         @check_in_url="https://nosnch.in/c2354d53d3",
-  #         @created_at="2015-08-15T12:15:00.234Z",
-  #         @notes="Customer and supplier tables">
+  # @raise [Timeout::Error] if the API request took too long to execute.
+  # @raise [Snitcher::API::ResourceNotFoundError] if the Snitch does not exist.
+  # @raise [Snitcher::API::Error] if any other API errors occur.
   #
-  # Raise Timeout::Error if the API request times out
+  # @return [Snitcher::API::Snitch] The updated Snitch.
   def clear_tags(token)
     edit_snitch(token, :tags => [])
   end
 
-  # Public: Pauses a snitch. The return is a hash with the message "Response
-  #         complete".
+  # Pauses a Snitch if it can be paused. Snitches can only be paused if their
+  # status is currently "failing" or "errored".
   #
-  # token: The unique token of the snitch to pause. Should be a string.
+  # @param token [String] The unique token of the Snitch.
   #
-  # Example
+  # @example Pause a Snitch
+  #   client.pause_snitch("c2354d53d2")
+  #   # => true
   #
-  #   Pause a snitch.
-  #     token = "c2354d53d3"
-  #     @client.pause_snitch(token)
-  #     => { :message => "Response complete" }
+  # @raise [Timeout::Error] if the API request took too long to execute.
+  # @raise [Snitcher::API::ResourceNotFoundError] if the Snitch does not exist.
+  # @raise [Snitcher::API::Error] if any other API errors occur.
   #
-  # Raise Timeout::Error if the API request times out
+  # @return [nil]
   def pause_snitch(token)
     post("/v1/snitches/#{token}/pause")
+
+    nil
   end
 
-  # Public: Deletes a snitch. The return is a hash with the message "Response
-  #         complete".
+  # Deletes a Snitch.
   #
-  # token: The unique token of the snitch to delete. Should be a string.
+  # @param token [String] The unique token of the Snitch to delete.
   #
-  # Example
+  # @example Delete a Snitch.
+  #   client.delete_snitch("c2354d53d2")
+  #   # => { :message => "Response complete" }
   #
-  #   Delete a snitch.
-  #     token = "c2354d53d3"
-  #     @client.delete_snitch(token)
-  #     => { :message => "Response complete" }
+  # @raise [Timeout::Error] if the API request took too long to execute.
+  # @raise [Snitcher::API::ResourceNotFoundError] if the Snitch does not exist.
+  # @raise [Snitcher::API::Error] if any other API errors occur.
   #
-  # Raise Timeout::Error if the API request times out
+  # @return [nil]
   def delete_snitch(token)
     delete("/v1/snitches/#{token}")
+
+    nil
   end
 
-  protected
+  private
 
   def user_agent
     # RUBY_ENGINE was not added until 1.9.3

@@ -68,7 +68,7 @@ client = Snitcher::API::Client.new(ENV["DEADMANSSNITCH_API_KEY"])
 client.snitches
 ```
 
-Returns an array of snitches.
+Returns an array of Snitches.
 
 ### Retrieve a Single Snitch
 
@@ -77,7 +77,7 @@ token = "c2354d53d2"
 client.snitch(token)
 ```
 
-Returns a snitch.
+Returns a Snitch.
 
 ### Retrieve Snitches That Match a Set of Tags
 
@@ -86,11 +86,12 @@ tags = ["critical", "sales"]
 client.tagged_snitches(tags)
 ```
 
-Returns an array of snitches.
+Returns an array of Snitches.
 
 ### Create a Snitch
 
-Required attributes are name and interval. Optional attributes are notes and tags.
+Required attributes are name and interval. Optional attributes are notes and
+tags.
 
 ```ruby
 attributes = { "name": "Nightly User Data Backups",
@@ -101,11 +102,12 @@ attributes = { "name": "Nightly User Data Backups",
 client.create_snitch(attributes)
 ```
 
-Returns the newly-created snitch.
+Returns the newly-created Snitch.
 
 ### Edit a Snitch
 
-You only need to pass the edit_snitch function the attributes you want to change. The rest of a snitch's attributes will remain the same.
+You only need to pass the edit_snitch function the attributes you want to
+change. The rest of a Snitch's attributes will remain the same.
 
 ```ruby
 token = "c2354d53d2"
@@ -113,11 +115,11 @@ new_attributes = { "name": "Important Nightly User Data Backups" }
 client.edit_snitch(token, new_attributes)
 ```
 
-Returns the edited snitch.
+Returns the edited Snitch.
 
 ### Adding Tags to a Snitch
 
-This function adds tags to a snitch, retaining whatever tags it already has.
+This function adds tags to a Snitch, retaining whatever tags it already has.
 
 ```ruby
 token = "c2354d53d2"
@@ -125,11 +127,11 @@ tags = ["spring_campaign", "support"]
 client.add_tags(token, tags)
 ```
 
-Returns an array of all of the snitch's tags.
+Returns an array of all of the Snitch's tags.
 
 ### Deleting a Tag From a Snitch
 
-This function is for deleting a single tag from a snitch.
+This function is for deleting a single tag from a Snitch.
 
 ```ruby
 token = "c2354d53d2"
@@ -137,11 +139,11 @@ tag = "support"
 client.remove_tag(token, tag)
 ```
 
-Returns an array of all of the snitch's remaining tags.
+Returns an array of all of the Snitch's remaining tags.
 
 ### Replace Tags on a Snitch
 
-Replaces all of a snitch's tags with an array of new tags.
+Replaces all of a Snitch's tags with an array of new tags.
 
 ```ruby
 token = "c2354d53d2"
@@ -149,18 +151,18 @@ tags = ["csv", "server_a"]
 client.replace_tags(token, tags)
 ```
 
-Returns the updated snitch.
+Returns the updated Snitch.
 
 ### Remove Tags From a Snitch
 
-Removes all of a snitch's tags.
+Removes all of a Snitch's tags.
 
 ```ruby
 token = "c2354d53d2"
 client.clear_tags(token)
 ```
 
-Returns the updated snitch.
+Returns the updated Snitch.
 
 ### Pause a Snitch
 

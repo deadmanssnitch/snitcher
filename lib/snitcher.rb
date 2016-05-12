@@ -6,20 +6,28 @@ require "snitcher/version"
 module Snitcher
   extend self
 
-  # Public: Check-in to Deadman's Snitch
+  # Check-in to Dead Man's Snitch.
   #
-  # token:  The Snitch token given by Deadman's Snitch (see the install page).
-  # opts:   The hash of optional parameters that can be given during check-in:
-  #           :message - Text message limited to ~250 characters.
-  #           :timeout - Number of seconds to set as connect and read timeout.
-  #           :uri - URL to use for snitch checkins.
+  # @param token [String] The unique Snitch token to check-in with. This can be
+  #   found on the Setup page as the last part of the HTTP check-in url. For
+  #   example, c2354d53d2 is the token in http://nosnch.in/c2354d53d2.
   #
-  # Examples
+  # @param [Hash] opts
   #
+  # @option opts [String] :message Text message to include with the check-in.
+  #   The message is limited to 256 characters.
+  #
+  # @option opts [Float, Fixnum] :timeout Number of seconds to wait for a
+  #   response from the server. Default is 5 seconds.
+  #   no
+  #
+  # @example
   #   Snitch.snitch("c2354d53d2")
   #   # => true
   #
-  # Returns true if the check-in succeeded or false if it failed
+  # @raise [Timeout::Error] if the request took too long and timed out.
+  #
+  # @return [Boolean] if the check-in succeeded.
   def snitch(token, opts = {})
     uri       = URI.parse(checkin_url(opts, token))
     uri.query = URI.encode_www_form(m: opts[:message]) if opts[:message]

@@ -12,23 +12,25 @@ module Snitcher
     # Snitcher::API::Error and subclasses
     require "snitcher/api/error"
 
-    # Public: Retrieve API Key
+    # Retrieve an API Key for your account.
     #
-    # username: The username associated with a Deadman's Snitch account
-    # password: The password associated with a Deadman's Snitch account
+    # @param username [String] username for your Dead Man's Snitch account.
+    # @param password [String] password for your Dead Man's Snitch account.
     #
-    # options:
-    #   uri     - String URL of the DMS API to connect to.
-    #   timeout - Number of seconds to wait for open, read, and ssl handshake.
+    # @param [Hash] options
+    # @option options [String] uri location of alternative Dead Man's Snitch API
+    # @option timeout [Float, Fixnum] timeout number of seconds to wait for
+    #   server response before timing out.
     #
-    # Example
-    #
+    # @example
     #   Snitcher::API.get_key("alice@example.com", "password")
     #   # => "_caeEiZXnEyEzXXYVh2NhQ"
     #
-    # Returns the string api_key
-    # Raises Snitcher::API::Error based on the type from the server.
-    # Raises Timeout::Error if the request timed out.
+    # @raise [Timeout::Error] if the API request took too long to execute.
+    # @raise [Snitcher::API::AuthenticationError] credentials are invalid.
+    # @raise [Snitcher::API::Error] if any other API errors occur.
+    #
+    # @return [String] the API key to use for further API requests.
     def get_key(username, password, options={})
       api = options.fetch(:uri, "https://api.deadmanssnitch.com")
       uri = URI.parse("#{api}/v1/api_key")
