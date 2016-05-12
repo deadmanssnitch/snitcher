@@ -141,14 +141,23 @@ class Snitcher::API::Client
   # @option attributes [optional, String] :notes Additional information about
   #   the Snitch. Useful to put instructions of investigating or fixing any
   #   errors.
-  # @option attributes [optional, Array<String>] :tags List of labels to tag the
-  #   Snitch with.
+  # @option attributes [optional, Array<String>, nil] :tags List of labels to
+  #   tag the Snitch with.
   #
   # @example Update an existing Snitch
-  #     client.edit_snitch("c2354d53d2", {
-  #       name: "Monthyl Backups",
-  #     })
-  #     # => #<Snitcher::API::Snitch:...>
+  #   client.edit_snitch("c2354d53d2", {
+  #     name: "Monthly Backups",
+  #   })
+  #   # => #<Snitcher::API::Snitch:...>
+  #
+  # @example Setting Tags for a Snitch
+  #   client.edit_snitch("c2354d53d2", tags: ["production", "backup"])
+  #   # => #<Snitcher::API::Snitch: @tags=["production", "backup"])
+  #
+  # @example Removing Tags from a Snitch
+  #   client.edit_snitch("c2354d53d2", tags: [])
+  #   or
+  #   client.edit_snitch("c2354d53d2", tags: nil)
   #
   # @raise [Timeout::Error] if the API request took too long to execute.
   # @raise [Snitcher::API::ResourceInvalidError] if the changes are not valid.
@@ -157,6 +166,10 @@ class Snitcher::API::Client
   #
   # Raise Timeout::Error if the API request times out
   def edit_snitch(token, attributes={})
+    if attributes.has_key?(:tags)
+      attributes[:tags] = [attributes[:tags]].flatten.compact
+    end
+
     payload = patch("/v1/snitches/#{token}", attributes)
     Snitcher::API::Snitch.new(payload)
   end
@@ -201,43 +214,6 @@ class Snitcher::API::Client
   # @return [Array<String>] list of the remaining tags on the Snitch.
   def remove_tag(token, tag)
     delete("/v1/snitches/#{token}/tags/#{tag}")
-  end
-
-  # Replace the tags on a Snitch.
-  #
-  # @param token [String] The unique token of the Snitch.
-  # @param tags  [Array<String>] List of tags to set onto the Snitch.
-  #
-  # @example 
-  #   client.replace_tags("c2354d53d2", ["production", "urgent"])
-  #   # => #<Snitcher::API::Snitch @tags=["production", "urgent"]>
-  #
-  # @raise [Timeout::Error] if the API request took too long to execute.
-  # @raise [Snitcher::API::ResourceNotFoundError] if the Snitch does not exist.
-  # @raise [Snitcher::API::Error] if any other API errors occur.
-  #
-  # @return [Snitcher::API::Snitch] The updated Snitch.
-  def replace_tags(token, tags=[])
-    attributes = {"tags" => tags}
-
-    edit_snitch(token, attributes)
-  end
-
-  # Remove all of a Snitch's tags.
-  #
-  # @param token [String] The unique token of the Snitch.
-  #
-  # @example Remove all tags
-  #   client.clear_tags("c2354d53d2")
-  #   # => #<Snitcher::API::Snitch tags=[]>
-  #
-  # @raise [Timeout::Error] if the API request took too long to execute.
-  # @raise [Snitcher::API::ResourceNotFoundError] if the Snitch does not exist.
-  # @raise [Snitcher::API::Error] if any other API errors occur.
-  #
-  # @return [Snitcher::API::Snitch] The updated Snitch.
-  def clear_tags(token)
-    edit_snitch(token, :tags => [])
   end
 
   # Pauses a Snitch if it can be paused. Snitches can only be paused if their

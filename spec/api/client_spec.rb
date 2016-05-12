@@ -286,6 +286,42 @@ describe Snitcher::API::Client do
     it "returns the modified snitch" do
       expect(client.edit_snitch(token, data)).to be_a(Snitcher::API::Snitch)
     end
+
+    it "can tag using a single string" do
+      req =
+        stub_request(:patch, stub_url).with do |request|
+          payload = JSON.parse(request.body)
+          expect(payload["tags"]).to eq(["production"])
+        end.
+        and_return(body: body)
+
+      client.edit_snitch("c2354d53d2", tags: "production")
+      expect(req).to have_been_made
+    end
+
+    it "can remove all tags using `nil`" do
+      req =
+        stub_request(:patch, stub_url).with do |request|
+          payload = JSON.parse(request.body)
+          expect(payload["tags"]).to eq([])
+        end.
+        and_return(body: body)
+
+      client.edit_snitch("c2354d53d2", tags: nil)
+      expect(req).to have_been_made
+    end
+
+    it "can remove all tags using an empty hash" do
+      req =
+        stub_request(:patch, stub_url).with do |request|
+          payload = JSON.parse(request.body)
+          expect(payload["tags"]).to eq([])
+        end.
+        and_return(body: body)
+
+      client.edit_snitch("c2354d53d2", tags: [])
+      expect(req).to have_been_made
+    end
   end
 
   describe "#add_tags" do
@@ -335,75 +371,6 @@ describe Snitcher::API::Client do
       it "returns an array of the snitch's remaining tags" do
         expect(client.remove_tag(token, tag)).to eq(JSON.parse(body))
       end
-    end
-  end
-
-  describe "#replace_tags" do
-    let(:token) { "c2354d53d2" }
-    let(:tags)  { ["red", "green"] }
-    let(:url)   { "#{snitch_url}/#{token}" }
-    let(:body)  { '{
-                     "token": "c2354d53d2",
-                     "href": "/v1/snitches/c2354d53d2",
-                     "name": "Daily Backups",
-                     "tags": [
-                       "red",
-                       "green"
-                     ],
-                     "status": "pending",
-                     "checked_in_at": "",
-                     "type": {
-                       "interval": "daily"
-                     },
-                     "notes": "Sales data."
-                   }'
-                }
-
-    before do
-      stub_request(:patch, stub_url).to_return(:body => body, :status => 200)
-    end
-
-    it "pings API with the api_key" do
-      client.replace_tags(token, tags)
-
-      expect(a_request(:patch, url)).to have_been_made.once
-    end
-
-    it "returns the updated snitch" do
-      expect(client.replace_tags(token, tags)).to be_a(Snitcher::API::Snitch)
-    end
-  end
-
-  describe "#clear_tags" do
-    let(:token) { "c2354d53d2" }
-    let(:url)   { "#{snitch_url}/#{token}" }
-    let(:body)  { '{
-                     "token": "c2354d53d2",
-                     "href": "/v1/snitches/c2354d53d2",
-                     "name": "Daily Backups",
-                     "tags": [
-                     ],
-                     "status": "pending",
-                     "checked_in_at": "",
-                     "type": {
-                       "interval": "daily"
-                     },
-                     "notes": "Sales data."
-                   }'
-                }
-
-    before do
-      stub_request(:patch, stub_url).to_return(:body => body, :status => 200)
-    end
-
-    it "pings API with the api_key" do
-      client.clear_tags(token)
-
-      expect(a_request(:patch, url)).to have_been_made.once
-    end
-
-    it "returns the updated snitch" do
-      expect(client.clear_tags(token)).to be_a(Snitcher::API::Snitch)
     end
   end
 
