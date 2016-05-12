@@ -410,10 +410,9 @@ describe Snitcher::API::Client do
   describe "#pause_snitch" do
     let(:token) { "c2354d53d2" }
     let(:url)   { "#{snitch_url}/#{token}/pause" }
-    let(:body)  { '{}' }
 
     before do
-      stub_request(:post, stub_url).to_return(:body => body, :status => 200)
+      stub_request(:post, stub_url).to_return(:status => 204)
     end
 
     it "pings API with the api_key" do
@@ -424,7 +423,7 @@ describe Snitcher::API::Client do
 
     context "when successful" do
       it "returns an empty response" do
-        expect(client.pause_snitch(token)).to eq(JSON.parse(body))
+        expect(client.pause_snitch(token)).to eq(nil)
       end
     end
   end
@@ -432,10 +431,9 @@ describe Snitcher::API::Client do
   describe "#delete_snitch" do
     let(:token) { "c2354d53d2" }
     let(:url)   { "#{snitch_url}/#{token}" }
-    let(:body)  { '{}' }
 
     before do
-      stub_request(:delete, stub_url).to_return(:body => body, :status => 200)
+      stub_request(:delete, stub_url).to_return(:status => 204)
     end
 
     it "pings API with the api_key" do
@@ -446,7 +444,7 @@ describe Snitcher::API::Client do
 
     context "when successful" do
       it "returns an empty response" do
-        expect(client.delete_snitch(token)).to eq(JSON.parse(body))
+        expect(client.delete_snitch(token)).to eq(nil)
       end
     end
   end
