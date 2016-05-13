@@ -4,7 +4,6 @@ gemspec
 
 group :development do
   gem "pry"
-  gem "yard-ghpages"
 end
 
 group :test do
