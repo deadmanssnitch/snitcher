@@ -154,19 +154,19 @@ class Snitcher::API::Client
   #   tag the Snitch with.
   #
   # @example Update an existing Snitch
-  #   client.edit_snitch("c2354d53d2", {
+  #   client.update_snitch("c2354d53d2", {
   #     name: "Monthly Backups",
   #   })
   #   # => #<Snitcher::API::Snitch:...>
   #
   # @example Setting Tags for a Snitch
-  #   client.edit_snitch("c2354d53d2", tags: ["production", "backup"])
+  #   client.update_snitch("c2354d53d2", tags: ["production", "backup"])
   #   # => #<Snitcher::API::Snitch: @tags=["production", "backup"])
   #
   # @example Removing Tags from a Snitch
-  #   client.edit_snitch("c2354d53d2", tags: [])
+  #   client.update_snitch("c2354d53d2", tags: [])
   #   or
-  #   client.edit_snitch("c2354d53d2", tags: nil)
+  #   client.update_snitch("c2354d53d2", tags: nil)
   #
   # @raise [Timeout::Error] if the API request took too long to execute.
   # @raise [Snitcher::API::ResourceInvalidError] if the changes are not valid.
@@ -174,7 +174,7 @@ class Snitcher::API::Client
   # @raise [Snitcher::API::Error] if any other API errors occur.
   #
   # Raise Timeout::Error if the API request times out
-  def edit_snitch(token, attributes={})
+  def update_snitch(token, attributes={})
     if attributes.has_key?(:tags)
       attributes[:tags] = [attributes[:tags]].flatten.compact
     end

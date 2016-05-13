@@ -104,15 +104,15 @@ client.create_snitch(attributes)
 
 Returns the newly-created Snitch.
 
-### Edit a Snitch
+### Updating a Snitch
 
-You only need to pass the edit_snitch function the attributes you want to
+You only need to pass the update_snitch function the attributes you want to
 change. The rest of a Snitch's attributes will remain the same.
 
 ```ruby
 token = "c2354d53d2"
 new_attributes = { "name": "Important Nightly User Data Backups" }
-client.edit_snitch(token, new_attributes)
+client.update_snitch(token, new_attributes)
 ```
 
 Returns the edited Snitch.

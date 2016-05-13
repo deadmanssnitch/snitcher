@@ -290,7 +290,7 @@ describe Snitcher::API::Client do
     end
   end
 
-  describe "#edit_snitch" do
+  describe "#update_snitch" do
     let(:token) { "c2354d53d2" }
     let(:data)  {
                   {
@@ -321,13 +321,13 @@ describe Snitcher::API::Client do
     end
 
     it "pings API with the api_key" do
-      client.edit_snitch(token, data)
+      client.update_snitch(token, data)
 
       expect(a_request(:patch, url)).to have_been_made.once
     end
 
     it "returns the modified snitch" do
-      expect(client.edit_snitch(token, data)).to be_a(Snitcher::API::Snitch)
+      expect(client.update_snitch(token, data)).to be_a(Snitcher::API::Snitch)
     end
 
     it "takes interval as a top level key" do
@@ -340,7 +340,7 @@ describe Snitcher::API::Client do
         end
         .to_return(:body => body, :status => 200)
 
-      client.edit_snitch("c2354d53d2", interval: "hourly")
+      client.update_snitch("c2354d53d2", interval: "hourly")
 
       expect(req).to have_been_made
     end
@@ -357,7 +357,7 @@ describe Snitcher::API::Client do
         end
         .to_return(:body => body, :status => 200)
 
-      client.edit_snitch("c2354d53d2", {
+      client.update_snitch("c2354d53d2", {
         interval: "daily",
         type: { interval: "weekly" },
       })
@@ -374,7 +374,7 @@ describe Snitcher::API::Client do
         end.
         and_return(body: body)
 
-      client.edit_snitch("c2354d53d2", tags: "production")
+      client.update_snitch("c2354d53d2", tags: "production")
       expect(req).to have_been_made
     end
 
@@ -386,7 +386,7 @@ describe Snitcher::API::Client do
         end.
         and_return(body: body)
 
-      client.edit_snitch("c2354d53d2", tags: nil)
+      client.update_snitch("c2354d53d2", tags: nil)
       expect(req).to have_been_made
     end
 
@@ -398,7 +398,7 @@ describe Snitcher::API::Client do
         end.
         and_return(body: body)
 
-      client.edit_snitch("c2354d53d2", tags: [])
+      client.update_snitch("c2354d53d2", tags: [])
       expect(req).to have_been_made
     end
   end
