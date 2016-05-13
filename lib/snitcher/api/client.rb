@@ -101,7 +101,9 @@ class Snitcher::API::Client
   #
   # @param [Hash] attributes The properties for the new Snitch
   # @option attributes [String] :name The label used for the Snitch
-  # @option attributes [Hash]   :type Hash containing the interval of the Snitch.
+  # @option attributes [String] :interval How often the snitch is expected to
+  #   check-in. One of: "15_minute", "30_minute", "hourly", "daily", "weekly",
+  #   or "monthly".
   # @option attributes [optional, String] :notes Additional information about
   #   the Snitch. Useful to put instructions of investigating or fixing any
   #   errors.
@@ -125,8 +127,13 @@ class Snitcher::API::Client
   #
   # @return [Snitcher::API::Snitch] the new Snitch.
   def create_snitch(attributes={})
-    payload = post("/v1/snitches", attributes)
-    Snitcher::API::Snitch.new(payload)
+    if attributes.has_key?(:interval)
+      type = attributes[:type] ||= {}
+      type[:interval] ||= attributes.delete(:interval)
+    end
+
+    response = post("/v1/snitches", attributes)
+    Snitcher::API::Snitch.new(response)
   end
 
   # Update a snitch, identified by token, using passed-in values. Only changes
@@ -137,7 +144,9 @@ class Snitcher::API::Client
   # @param [Hash] attributes the set of Snitch attributes to change.
   #
   # @option attributes [String] :name The label used for the Snitch
-  # @option attributes [Hash]   :type Hash containing the interval of the Snitch.
+  # @option attributes [String] :interval How often the snitch is expected to
+  #   check-in. One of: "15_minute", "30_minute", "hourly", "daily", "weekly",
+  #   or "monthly".
   # @option attributes [optional, String] :notes Additional information about
   #   the Snitch. Useful to put instructions of investigating or fixing any
   #   errors.
@@ -168,6 +177,11 @@ class Snitcher::API::Client
   def edit_snitch(token, attributes={})
     if attributes.has_key?(:tags)
       attributes[:tags] = [attributes[:tags]].flatten.compact
+    end
+
+    if attributes.has_key?(:interval)
+      type = attributes[:type] ||= {}
+      type[:interval] ||= attributes.delete(:interval)
     end
 
     payload = patch("/v1/snitches/#{token}", attributes)

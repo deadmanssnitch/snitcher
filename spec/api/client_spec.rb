@@ -174,7 +174,7 @@ describe Snitcher::API::Client do
     let(:data)  {
                   {
                     "name"  => "Daily Backups",
-                    "type"  => { "interval" => "daily" },
+                    "interval" => "daily",
                     "notes" => "Customer and supplier tables",
                     "tags"  => ["backups", "maintenance"]
                    }
@@ -211,6 +211,49 @@ describe Snitcher::API::Client do
 
     it "returns the new snitch" do
       expect(client.create_snitch(data)).to be_a(Snitcher::API::Snitch)
+    end
+
+    it "takes interval as a top level key" do
+      # The API as designed requires `type: { interval: "" }` with the
+      # expectation that there will be more types of Snitches. This hasn't
+      # happend as of 2016 and it's expected that interval will be required
+      # regardless of future changes.
+      #
+      # Allowing interval as a top level key makes using the API easier.
+
+      req =
+        stub_request(:post, stub_url).with do |request|
+          payload = JSON.parse(request.body)
+
+          expect(payload).to have_key("type")
+          expect(payload["type"]["interval"]).to eq("hourly")
+        end
+        .to_return(:body => body, :status => 201)
+
+      client.create_snitch(name: "Snitch", interval: "hourly")
+
+      expect(req).to have_been_made
+    end
+
+    it "puts precedences on type/interval over just interval" do
+      # :interval is a helper but the API documentation specifies type/interval.
+
+      req =
+        stub_request(:post, stub_url).with do |request|
+          payload = JSON.parse(request.body)
+
+          expect(payload).to have_key("type")
+          expect(payload["type"]["interval"]).to eq("weekly")
+        end
+        .to_return(:body => body, :status => 201)
+
+      client.create_snitch({
+        name: "Snitch",
+        interval: "daily",
+        type: { interval: "weekly" },
+      })
+
+      expect(req).to have_been_made
     end
 
     describe "validation errors" do
@@ -287,6 +330,42 @@ describe Snitcher::API::Client do
       expect(client.edit_snitch(token, data)).to be_a(Snitcher::API::Snitch)
     end
 
+    it "takes interval as a top level key" do
+      req =
+        stub_request(:patch, stub_url).with do |request|
+          payload = JSON.parse(request.body)
+
+          expect(payload).to have_key("type")
+          expect(payload["type"]["interval"]).to eq("hourly")
+        end
+        .to_return(:body => body, :status => 200)
+
+      client.edit_snitch("c2354d53d2", interval: "hourly")
+
+      expect(req).to have_been_made
+    end
+
+    it "puts precedences on type/interval over just interval" do
+      # :interval is a helper but the API documentation specifies type/interval.
+
+      req =
+        stub_request(:patch, stub_url).with do |request|
+          payload = JSON.parse(request.body)
+
+          expect(payload).to have_key("type")
+          expect(payload["type"]["interval"]).to eq("weekly")
+        end
+        .to_return(:body => body, :status => 200)
+
+      client.edit_snitch("c2354d53d2", {
+        interval: "daily",
+        type: { interval: "weekly" },
+      })
+
+      expect(req).to have_been_made
+    end
+
+
     it "can tag using a single string" do
       req =
         stub_request(:patch, stub_url).with do |request|
@@ -352,10 +431,7 @@ describe Snitcher::API::Client do
     let(:token) { "c2354d53d2" }
     let(:tag)   { "critical" }
     let(:url)   { "#{snitch_url}/#{token}/tags/#{tag}" }
-    let(:body)  { '[
-                     "critical"
-                   ]'
-                }
+    let(:body)  { '[ "critical" ]' }
 
     before do
       stub_request(:delete, stub_url).to_return(:body => body, :status => 200)
