@@ -1,0 +1,282 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>
+  File: README
+  
+    &mdash; Documentation by YARD 0.8.7.6
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '';
+  framesUrl = "frames.html#!file.README.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: README</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><div id='filecontents'>
+<h1 id="label-Snitcher">Snitcher</h1>
+
+<p>Simple API client for <a href="https://deadmanssnitch.com">Dead Man’s
+Snitch</a></p>
+
+<p><a href="http://badge.fury.io/rb/snitcher"><img
+src="https://badge.fury.io/rb/snitcher.png"></a> <a
+href="https://travis-ci.org/deadmanssnitch/snitcher"><img
+src="https://travis-ci.org/deadmanssnitch/snitcher.png?branch=master"></a>
+<a href="https://codeclimate.com/github/deadmanssnitch/snitcher"><img
+src="https://codeclimate.com/github/deadmanssnitch/snitcher.png"></a> <a
+href="https://coveralls.io/r/deadmanssnitch/snitcher"><img
+src="https://coveralls.io/repos/deadmanssnitch/snitcher/badge.png"></a></p>
+
+<p><img src="doc/get_them_stitches.jpg"></p>
+
+<h2 id="label-Usage">Usage</h2>
+
+<p>To check in for one of your snitches:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='const'>Snitcher</span><span class='period'>.</span><span class='id identifier rubyid_snitch'>snitch</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>c2354d53d2</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+</code></pre>
+
+<p>You also may provide a message with the check in:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='const'>Snitcher</span><span class='period'>.</span><span class='id identifier rubyid_snitch'>snitch</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>c2354d53d2</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>message:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Finished in 23.8 seconds.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+</code></pre>
+
+<p>The default timeout of 5 seconds can be overridden:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='const'>Snitcher</span><span class='period'>.</span><span class='id identifier rubyid_snitch'>snitch</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>c2354d53d2</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>timeout:</span> <span class='int'>10</span><span class='rparen'>)</span>
+</code></pre>
+
+<h2 id="label-API+Access">API Access</h2>
+
+<h3 id="label-Retrieving+Your+API+Key+At+Command+Line">Retrieving Your API Key At Command Line</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>snitcher/api</span><span class='tstring_end'>&quot;</span></span>
+
+<span class='id identifier rubyid_key'>key</span> <span class='op'>=</span> <span class='const'>Snitcher</span><span class='op'>::</span><span class='const'>API</span><span class='period'>.</span><span class='id identifier rubyid_get_key'>get_key</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>jane@example.com</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>password</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+</code></pre>
+
+<p>Returns an authentication key to access the api.</p>
+
+<h3 id="label-Setup">Setup</h3>
+
+<p>Initialize the API client directly with your api key:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>snitcher/api</span><span class='tstring_end'>&quot;</span></span>
+
+<span class='id identifier rubyid_client'>client</span> <span class='op'>=</span> <span class='const'>Snitcher</span><span class='op'>::</span><span class='const'>API</span><span class='op'>::</span><span class='const'>Client</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>my_awesome_key</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+</code></pre>
+
+<h4 id="label-Heroku">Heroku</h4>
+
+<p>Dead Man&#39;s Snitch exposes the <code>DEADMANSSNITCH_API_KEY</code>
+environment variable for accessing the API.</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>snitcher/api</span><span class='tstring_end'>&quot;</span></span>
+
+<span class='id identifier rubyid_client'>client</span> <span class='op'>=</span> <span class='const'>Snitcher</span><span class='op'>::</span><span class='const'>API</span><span class='op'>::</span><span class='const'>Client</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>DEADMANSSNITCH_API_KEY</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
+</code></pre>
+
+<h3 id="label-Listing+Snitches">Listing Snitches</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_client'>client</span><span class='period'>.</span><span class='id identifier rubyid_snitches'>snitches</span>
+</code></pre>
+
+<p>Returns an array of Snitches.</p>
+
+<h3 id="label-Retrieve+a+Single+Snitch">Retrieve a Single Snitch</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_token'>token</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>c2354d53d2</span><span class='tstring_end'>&quot;</span></span>
+<span class='id identifier rubyid_client'>client</span><span class='period'>.</span><span class='id identifier rubyid_snitch'>snitch</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+</code></pre>
+
+<p>Returns a Snitch.</p>
+
+<h3 id="label-Retrieve+Snitches+That+Match+a+Set+of+Tags">Retrieve Snitches That Match a Set of Tags</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_tags'>tags</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>critical</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>sales</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+<span class='id identifier rubyid_client'>client</span><span class='period'>.</span><span class='id identifier rubyid_tagged_snitches'>tagged_snitches</span><span class='lparen'>(</span><span class='id identifier rubyid_tags'>tags</span><span class='rparen'>)</span>
+</code></pre>
+
+<p>Returns an array of Snitches.</p>
+
+<h3 id="label-Create+a+Snitch">Create a Snitch</h3>
+
+<p>Required attributes are name and interval. Optional attributes are notes
+and tags.</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_attributes'>attributes</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>name</span><span class='label_end'>&quot;:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Nightly User Data Backups</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>interval</span><span class='label_end'>&quot;:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>daily</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>notes</span><span class='label_end'>&quot;:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>User login and usage data</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tags</span><span class='label_end'>&quot;:</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>users</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>critical</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+<span class='rbrace'>}</span>
+<span class='id identifier rubyid_client'>client</span><span class='period'>.</span><span class='id identifier rubyid_create_snitch'>create_snitch</span><span class='lparen'>(</span><span class='id identifier rubyid_attributes'>attributes</span><span class='rparen'>)</span>
+</code></pre>
+
+<p>Returns the newly-created Snitch.</p>
+
+<h3 id="label-Updating+a+Snitch">Updating a Snitch</h3>
+
+<p>You only need to pass the update_snitch function the attributes you want to
+change. The rest of a Snitch&#39;s attributes will remain the same.</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_token'>token</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>c2354d53d2</span><span class='tstring_end'>&quot;</span></span>
+<span class='id identifier rubyid_new_attributes'>new_attributes</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>name</span><span class='label_end'>&quot;:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Important Nightly User Data Backups</span><span class='tstring_end'>&quot;</span></span> <span class='rbrace'>}</span>
+<span class='id identifier rubyid_client'>client</span><span class='period'>.</span><span class='id identifier rubyid_update_snitch'>update_snitch</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='id identifier rubyid_new_attributes'>new_attributes</span><span class='rparen'>)</span>
+</code></pre>
+
+<p>Returns the edited Snitch.</p>
+
+<h3 id="label-Adding+Tags+to+a+Snitch">Adding Tags to a Snitch</h3>
+
+<p>This function adds tags to a Snitch, retaining whatever tags it already
+has.</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_token'>token</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>c2354d53d2</span><span class='tstring_end'>&quot;</span></span>
+<span class='id identifier rubyid_tags'>tags</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>spring_campaign</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>support</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+<span class='id identifier rubyid_client'>client</span><span class='period'>.</span><span class='id identifier rubyid_add_tags'>add_tags</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='id identifier rubyid_tags'>tags</span><span class='rparen'>)</span>
+</code></pre>
+
+<p>Returns an array of all of the Snitch&#39;s tags.</p>
+
+<h3 id="label-Deleting+a+Tag+From+a+Snitch">Deleting a Tag From a Snitch</h3>
+
+<p>This function is for deleting a single tag from a Snitch.</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_token'>token</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>c2354d53d2</span><span class='tstring_end'>&quot;</span></span>
+<span class='id identifier rubyid_tag'>tag</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>support</span><span class='tstring_end'>&quot;</span></span>
+<span class='id identifier rubyid_client'>client</span><span class='period'>.</span><span class='id identifier rubyid_remove_tag'>remove_tag</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='id identifier rubyid_tag'>tag</span><span class='rparen'>)</span>
+</code></pre>
+
+<p>Returns an array of all of the Snitch&#39;s remaining tags.</p>
+
+<h3 id="label-Replace+Tags+on+a+Snitch">Replace Tags on a Snitch</h3>
+
+<p>Replaces all of a Snitch&#39;s tags with an array of new tags.</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_token'>token</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>c2354d53d2</span><span class='tstring_end'>&quot;</span></span>
+<span class='id identifier rubyid_tags'>tags</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>csv</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>server_a</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+<span class='id identifier rubyid_client'>client</span><span class='period'>.</span><span class='id identifier rubyid_replace_tags'>replace_tags</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='id identifier rubyid_tags'>tags</span><span class='rparen'>)</span>
+</code></pre>
+
+<p>Returns the updated Snitch.</p>
+
+<h3 id="label-Remove+Tags+From+a+Snitch">Remove Tags From a Snitch</h3>
+
+<p>Removes all of a Snitch&#39;s tags.</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_token'>token</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>c2354d53d2</span><span class='tstring_end'>&quot;</span></span>
+<span class='id identifier rubyid_client'>client</span><span class='period'>.</span><span class='id identifier rubyid_clear_tags'>clear_tags</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+</code></pre>
+
+<p>Returns the updated Snitch.</p>
+
+<h3 id="label-Pause+a+Snitch">Pause a Snitch</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_token'>token</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>c2354d53d2</span><span class='tstring_end'>&quot;</span></span>
+<span class='id identifier rubyid_client'>client</span><span class='period'>.</span><span class='id identifier rubyid_pause_snitch'>pause_snitch</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+</code></pre>
+
+<p>Returns a hash with a <code>message</code> key, whose value is “Response
+complete”.</p>
+
+<h3 id="label-Delete+a+Snitch">Delete a Snitch</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_token'>token</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>c2354d53d2</span><span class='tstring_end'>&quot;</span></span>
+<span class='id identifier rubyid_client'>client</span><span class='period'>.</span><span class='id identifier rubyid_delete_snitch'>delete_snitch</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+</code></pre>
+
+<p>Returns a hash with a <code>message</code> key, whose value is “Response
+complete”.</p>
+
+<h2 id="label-Contributing">Contributing</h2>
+
+<p>Snitcher is open source and contributions from the community are
+encouraged! No contribution is too small. Please consider:</p>
+<ul><li>
+<p>adding features</p>
+</li><li>
+<p>squashing bugs</p>
+</li><li>
+<p>updating documentation</p>
+</li><li>
+<p>fixing typos</p>
+</li></ul>
+
+<p>For the best chance of having your changes merged, please:</p>
+<ol><li>
+<p>fork the project</p>
+</li><li>
+<p>push your changes, with tests</p>
+</li><li>
+<p>submit a pull request with at least one animated GIF</p>
+</li></ol>
+
+<h2 id="label-Thanks">Thanks</h2>
+
+<p>A big thank you to <a href="https://github.com/r38y">Randy Schmidt</a> for
+dreaming up Dead Man&#39;s Snitch in the first place and for <a
+href="http://r38y.com/dead-mans-snitch-sold">entrusting</a> its future to
+Collective Idea.</p>
+
+<h2 id="label-Copyright">Copyright</h2>
+
+<p>See <a href="LICENSE.txt">LICENSE.txt</a> for details.</p>
+</div></div>
+
+    <div id="footer">
+  Generated on Fri May 13 10:49:40 2016 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.6 (ruby-2.3.1).
+</div>
+
+  </body>
+</html>
