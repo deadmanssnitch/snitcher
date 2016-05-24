@@ -141,29 +141,6 @@ client.remove_tag(token, tag)
 
 Returns an array of all of the Snitch's remaining tags.
 
-### Replace Tags on a Snitch
-
-Replaces all of a Snitch's tags with an array of new tags.
-
-```ruby
-token = "c2354d53d2"
-tags = ["csv", "server_a"]
-client.replace_tags(token, tags)
-```
-
-Returns the updated Snitch.
-
-### Remove Tags From a Snitch
-
-Removes all of a Snitch's tags.
-
-```ruby
-token = "c2354d53d2"
-client.clear_tags(token)
-```
-
-Returns the updated Snitch.
-
 ### Pause a Snitch
 
 ```ruby
@@ -171,7 +148,7 @@ token = "c2354d53d2"
 client.pause_snitch(token)
 ```
 
-Returns a hash with a `message` key, whose value is "Response complete".
+Returns a nil object.
 
 ### Delete a Snitch
 
@@ -180,7 +157,7 @@ token = "c2354d53d2"
 client.delete_snitch(token)
 ```
 
-Returns a hash with a `message` key, whose value is "Response complete".
+Returns a nil object.
 
 ## Contributing
 
