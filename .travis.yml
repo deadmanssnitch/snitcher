@@ -1,6 +1,3 @@
-branches:
-  only:
-    - master
 language: ruby
 matrix:
   allow_failures:
