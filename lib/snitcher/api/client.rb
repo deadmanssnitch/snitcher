@@ -113,7 +113,7 @@ class Snitcher::API::Client
   # @example Create a new Snitch
   #   client.create_snitch({
   #     name:  "Daily Backups",
-  #     type:  { interval: "hourly" },
+  #     interval: "hourly",
   #     notes: "On error check the print tray for paper jams",
   #     tags:  [ "backups", "maintenance" ],
   #   })
