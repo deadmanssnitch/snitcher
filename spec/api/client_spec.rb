@@ -60,6 +60,22 @@ describe Snitcher::API::Client do
       expect(client.snitches).to be_a(Array)
       expect(client.snitches.first).to be_a(Snitcher::API::Snitch)
     end
+
+    it "allows filtering by a tag" do
+      request = stub_request(:get, "#{snitch_url}?tags=production")
+        .to_return(body: body, status: 200)
+
+      client.snitches(tags: "production")
+      expect(request).to have_been_made.once
+    end
+
+    it "allows filtering by multiple tags" do
+      request = stub_request(:get, "#{snitch_url}?tags=phoenix%20foundary,murggle")
+        .to_return(body: body, status: 200)
+
+      client.snitches(tags: ["phoenix foundary", "murggle"])
+      expect(request).to have_been_made.once
+    end
   end
 
   describe "#snitch" do
@@ -96,77 +112,6 @@ describe Snitcher::API::Client do
 
     it "returns the snitch" do
       expect(client.snitch(token)).to be_a(Snitcher::API::Snitch)
-    end
-  end
-
-  describe "#tagged_snitches" do
-    let(:tags)  { ["sneetch", "belly"] }
-    let(:url)   { "#{snitch_url}?tags=sneetch,belly" }
-    let(:body)  { '[
-                     {
-                       "token": "c2354d53d2",
-                       "href": "/v1/snitches/c2354d53d2",
-                       "name": "Best Kind of Sneetch on the Beach",
-                       "tags": [
-                         "sneetch",
-                         "belly",
-                         "star-belly"
-                       ],
-                       "status": "pending",
-                       "checked_in_at": "",
-                       "type": {
-                         "interval": "hourly"
-                       }
-                     },
-                     {
-                       "token": "c2354d53d3",
-                       "href": "/v1/snitches/c2354d53d3",
-                       "name": "Have None Upon Thars",
-                       "tags": [
-                         "sneetch",
-                         "belly",
-                         "plain-belly"
-                       ],
-                       "status": "pending",
-                       "checked_in_at": "",
-                       "type": {
-                         "interval": "hourly"
-                       }
-                     }
-                   ]'
-                }
-
-    before do
-      stub_request(:get, stub_url).to_return(:body => body, :status => 200)
-    end
-
-    it "pings API with the api_key" do
-      client.tagged_snitches(tags)
-
-      expect(a_request(:get, url)).to have_been_made.once
-    end
-
-    it "returns the snitches" do
-      expect(client.tagged_snitches(tags)).to be_a(Array)
-      expect(client.tagged_snitches(tags).first).to be_a(Snitcher::API::Snitch)
-    end
-
-    it "supports spaces in tags" do
-      request = stub_request(:get, "#{snitch_url}?tags=phoenix%20foundary,murggle").
-        to_return(body: body, status: 200)
-
-      client.tagged_snitches("phoenix foundary", "murggle")
-
-      expect(request).to have_been_made.once
-    end
-
-    it "allows an array to be passed for tags" do
-      request = stub_request(:get, "#{snitch_url}?tags=murggle,gurgggle").
-        to_return(body: body, status: 200)
-
-      client.tagged_snitches(["murggle", "gurgggle"])
-
-      expect(request).to have_been_made.once
     end
   end
 
