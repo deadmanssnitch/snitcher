@@ -1,44 +1,51 @@
 $:.unshift File.expand_path("../../lib", __FILE__)
 
-require "pry"
+# Need to require the API separately as it is not required by Snitcher itself.
 require "snitcher/api"
+
+if !(ENV["DMS_USER"] && ENV["DMS_PASS"])
+  puts "Set DMS_USER and DMS_PASS environment variables to your"
+  puts "deadmanssnitch.com credentials before running this example"
+  puts
+  puts "example: DMS_USER=email DMS_PASS=pass ruby examples/api.rb"
+
+  exit 1
+end
 
 # Get an API key for a given user with password
 key = Snitcher::API.get_key(ENV["DMS_USER"], ENV["DMS_PASS"])
+
 # Create a new API client
 client = Snitcher::API::Client.new(key)
 
-# Create an hourly Snitch called Test Snitch
+# Create an hourly Snitch called "Monitor All The Things"
+snitch = client.create_snitch({
+  name: "Monitor All The Things",
+  tags: ["things"],
+  interval: "hourly",
+})
+puts "Created: #{snitch.inspect}"
 
-attributes = { "name": "Test Snitch",
-               "interval": "hourly" }
-snitch = client.create_snitch(attributes)
+# Change the name and notes of an existing Snitch
+snitch = client.update_snitch(snitch.token, {
+  name: "Monitor Fewer Things",
+  notes: "Only monitoring a couple things",
+})
 
-# Update the attributes of a Snitch with a given token
+# Add new tags to a Snitch
+snitch.tags = client.add_tags(snitch.token, ["production", "critical issues"])
 
-new_attributes = { "name": "New Name",
-                   "interval": "daily" }
-snitch = client.update_snitch(snitch.token, new_attributes)
+# Remove the "critical issues" tag from the Snitch
+snitch.tags = client.remove_tag(snitch.token, "critical issues")
 
-# Add tags to a Snitch with a given token
+# Get a list of Snitches tagged with "production"
+production = client.tagged_snitches(["production"])
+puts "Production Snitches:"
+production.each { |s| puts "  - #{s.inspect}"}
 
-tags = [ "tag 1", "tag 2"]
-snitch.tags = client.add_tags(snitch.token, tags)
-
-# Deleting tags from a snitch with a given token
-
-tag = "tag 1"
-snitch.tags = client.remove_tag(snitch.token, tag)
-
-# Get a list of snitches that match tags 
-
-tags = [ "new tag 2" ]
-client.tagged_snitches(tags) # => snitch with tag "new tag 2"
-
-# Pause a snitch with a given token
-
+# Pause a Snitch if it's currently missing or errored
 client.pause_snitch(snitch.token)
 
-# Delete a snitch with a given token
-
+# Delete a Snitch
 client.delete_snitch(snitch.token)
+puts "Deleted: #{snitch.token}"
