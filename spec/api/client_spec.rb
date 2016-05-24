@@ -442,6 +442,14 @@ describe Snitcher::API::Client do
 
       expect(a_request(:delete, url)).to have_been_made.once
     end
+    
+    it "properly escapes tags with spaces" do
+      request = stub_request(:delete, "#{snitch_url}/c2354d53d2/tags/tag%20with%20spaces").
+        to_return(:body => body, :status => 200)
+
+      client.remove_tag(token, "tag with spaces")
+      expect(request).to have_been_made.once
+    end
 
     context "when successful" do
       it "returns an array of the snitch's remaining tags" do

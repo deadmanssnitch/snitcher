@@ -227,7 +227,8 @@ class Snitcher::API::Client
   #
   # @return [Array<String>] list of the remaining tags on the Snitch.
   def remove_tag(token, tag)
-    delete("/v1/snitches/#{token}/tags/#{tag}")
+    path = "/v1/snitches/#{token}/tags/#{tag}"
+    delete(URI.encode(path))
   end
 
   # Pauses a Snitch if it can be paused. Snitches can only be paused if their
