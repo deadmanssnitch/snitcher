@@ -82,8 +82,7 @@ Returns a Snitch.
 ### Retrieve Snitches That Match a Set of Tags
 
 ```ruby
-tags = ["critical", "sales"]
-client.tagged_snitches(tags)
+client.snitches(tags: ["critical", "sales"])
 ```
 
 Returns an array of Snitches.

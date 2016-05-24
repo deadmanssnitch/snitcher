@@ -35,16 +35,46 @@ class Snitcher::API::Client
 
   # Get the list snitches on the account
   #
+  # @param [Hash] filters
+  # @option filters [String, Array<String>] tags only return Snitches that are
+  #   tagged with _all_ of the given tags. For example, if a Snitch is tagged
+  #   with "production" and "critical" it will be returned when filtering by
+  #   "production", "critical", or ["production", "critical"] but not
+  #   ["production", "backups"].
+  #
   # @example List the Snitches on an account
-  #     client.snitches
-  #     # => [ #<Snitcher::API::Snitch:...>, #<Snitcher::API::Snitch:...> ]
+  #   client.snitches
+  #   # => [ #<Snitcher::API::Snitch:...>, #<Snitcher::API::Snitch:...> ]
+  #
+  # @example List Snitches with a specific tag
+  #   client.snitches(tags: "production")
+  #   # => [ #<Snitcher::API::Snitch:...>, #<Snitcher::API::Snitch:...> ]
+  #
+  # @example List Snitches with multiple tags
+  #   client.snitches(tags: ["production", "critical"])
+  #   # => [ #<Snitcher::API::Snitch:...>, #<Snitcher::API::Snitch:...> ]
   #
   # @raise [Timeout::Error] if the API request took too long to execute.
   # @raise [Snitcher::API::Error] if any API errors occur.
   #
   # @return [Array<Snitcher::API::Snitch>] the snitches on the account.
-  def snitches
-    snitch_array(get("/v1/snitches"))
+  def snitches(filters = {})
+    path  = "/v1/snitches"
+    query = {}
+
+    # Tags allow for labeling Snitches for better categorization. This allows
+    # filtering by a set of tags.
+    if filters[:tags]
+      tags = Array(filters[:tags]).flatten
+      query[:tags] = tags.map(&:strip).compact.uniq.join(",")
+    end
+
+    # Only add the query param if any valid filters were given.
+    if query.any?
+      path = "#{path}?#{URI.encode_www_form(query)}"
+    end
+
+    snitch_array(get(path))
   end
 
   # Get a single Snitch by it's unique token.
@@ -65,36 +95,6 @@ class Snitcher::API::Client
   def snitch(token)
     payload = get("/v1/snitches/#{token}")
     Snitcher::API::Snitch.new(payload)
-  end
-
-  # Retrieve Snitches filtered by a list of tags. Only Snitches that are tagged
-  # with all of the given tags will be returned.
-  #
-  # @param tags [String, Array<String>] the tag(s) to filter by.
-  #
-  # @example Get the snitches that match a list of tags
-  #   client.tagged_snitches(["production","critical"])
-  #
-  #   # => [
-  #     #<Snitcher::API::Snitch tags=["production", "critical"]>,
-  #     #<Snitcher::API::Snitch tags=["production", "critical"]>,
-  #   ]
-  #
-  # @raise [Timeout::Error] if the API request took too long to execute.
-  #   with that token
-  # @raise [Snitcher::API::Error] if any API errors occur.
-  #
-  # @return [Array<Snitcher::API::Snitch>] list of Snitches matching all tags.
-  def tagged_snitches(*tags)
-    (tags ||= []).flatten!
-
-    query = URI.encode_www_form({
-      # Strip extra spaces, dedupe, and clean up the list of tags to be filtered
-      # by.
-      tags: tags.map(&:strip).compact.uniq.join(","),
-    })
-
-    snitch_array(get("/v1/snitches?#{query}"))
   end
 
   # Create a new Snitch.

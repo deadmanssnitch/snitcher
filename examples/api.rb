@@ -39,7 +39,7 @@ snitch.tags = client.add_tags(snitch.token, ["production", "critical issues"])
 snitch.tags = client.remove_tag(snitch.token, "critical issues")
 
 # Get a list of Snitches tagged with "production"
-production = client.tagged_snitches(["production"])
+production = client.snitches(tags: ["production"])
 puts "Production Snitches:"
 production.each { |s| puts "  - #{s.inspect}"}
 
