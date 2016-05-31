@@ -26,24 +26,18 @@ describe Snitcher do
       ).to have_been_made
     end
 
-    context "when successful" do
-      before do
-        stub_request(:get, "https://nosnch.in/#{token}").to_return(status: 200)
-      end
+    it "returns true when successful" do
+      request = stub_request(:get, "https://nosnch.in/#{token}").to_return(status: 202)
 
-      it "returns true" do
-        expect(Snitcher.snitch!(token)).to eq(true)
-      end
+      expect(Snitcher.snitch!(token)).to eq(true)
+      expect(request).to have_been_made.once
     end
 
-    context "when unsuccessful" do
-      before do
-        stub_request(:get, "https://nosnch.in/#{token}").to_return(status: 404)
-      end
+    it "returns false when unsuccessful" do
+      request = stub_request(:get, "https://nosnch.in/#{token}").to_return(status: 404)
 
-      it "returns false" do
-        expect(Snitcher.snitch!(token)).to eq(false)
-      end
+      expect(Snitcher.snitch!(token)).to eq(false)
+      expect(request).to have_been_made.once
     end
 
     describe "with message" do
@@ -63,7 +57,7 @@ describe Snitcher do
 
   describe ".snitch" do
     it "returns true on a successfuly check-in" do
-      stub_request(:get, "https://nosnch.in/#{token}").to_return(status: 200)
+      stub_request(:get, "https://nosnch.in/#{token}").to_return(status: 202)
 
       result = Snitcher.snitch(token)
       expect(result).to be(true)
