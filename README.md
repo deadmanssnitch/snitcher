@@ -89,14 +89,15 @@ Returns an array of Snitches.
 
 ### Create a Snitch
 
-Required attributes are name and interval. Optional attributes are notes and
-tags.
+Both `:name` and `:interval` are required. Optional attributes include `:notes`,
+and `:tags`. For a full list see [the API documentation](https://deadmanssnitch.com/docs/api/v1#creating-a-snitch).
 
 ```ruby
-attributes = { "name": "Nightly User Data Backups",
-  "interval": "daily",
-  "notes": "User login and usage data",
-  "tags": ["users", "critical"]
+attributes = {
+  name: "Nightly User Data Backups",
+  interval: "daily",
+  notes: "User login and usage data",
+  tags: ["users", "critical"],
 }
 client.create_snitch(attributes)
 ```
@@ -110,8 +111,8 @@ change. The rest of a Snitch's attributes will remain the same.
 
 ```ruby
 token = "c2354d53d2"
-new_attributes = { "name": "Important Nightly User Data Backups" }
-client.update_snitch(token, new_attributes)
+attrs = { "name": "Important Nightly User Data Backups" }
+client.update_snitch(token, attrs)
 ```
 
 Returns the edited Snitch.
@@ -122,7 +123,7 @@ This function adds tags to a Snitch, retaining whatever tags it already has.
 
 ```ruby
 token = "c2354d53d2"
-tags = ["spring_campaign", "support"]
+tags  = ["spring_campaign", "support"]
 client.add_tags(token, tags)
 ```
 
@@ -139,6 +140,20 @@ client.remove_tag(token, tag)
 ```
 
 Returns an array of all of the Snitch's remaining tags.
+
+### Setting the Tags on a Snitch
+
+```ruby
+token = "c2354d53d2"
+client.update_snitch(token, tags: [ "production", "critical" ])
+```
+
+### Removing all Tags from a Snitch
+
+```ruby
+token = "c2354d53d2"
+client.update_snitch(token, tags: [])
+```
 
 ### Pause a Snitch
 
