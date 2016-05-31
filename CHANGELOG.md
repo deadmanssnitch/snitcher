@@ -1,5 +1,6 @@
 ## 0.4.0 / TBD
-* [FEATURE] Add Snitcher::API for integrating with the DMS API ([[@danabrit](https://github.com/danabrit))
+* [FEATURE] Added Snitcher::API for integrating with the DMS API ([@danabrit](https://github.com/danabrit))
+* [FEATURE] Added Snitcher.snitch! which raises exceptions on errors ([@gaffneyc](https://github.com/gaffneyc))
 
 ## 0.3.2 / 2015-08-13
 * [BUG] Fixed passing messaging during a check-in ([@ryoung](https://github.com/ryoung))
