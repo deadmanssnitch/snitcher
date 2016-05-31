@@ -68,7 +68,13 @@ class Snitcher::API::Client
       query[:tags] = tags.map(&:strip).compact.uniq.join(",")
     end
 
-    snitch_array(get("/v1/snitches", query))
+    # JSON array of Snitch attributes
+    response = get("/v1/snitches", query)
+
+    # Convert the attributes hashes into Objects
+    response.map! do |snitch|
+      Snitcher::API::Snitch.new(snitch)
+    end
   end
 
   # Get a single Snitch by it's unique token.
@@ -353,15 +359,5 @@ class Snitcher::API::Client
     path    = URI.encode(path)
     request = Net::HTTP::Delete.new(path)
     execute_request(request)
-  end
-
-  private
-
-  def snitch_array(json_payload)
-    arr = []
-    json_payload.each do |payload|
-      arr << Snitcher::API::Snitch.new(payload)
-    end
-    arr
   end
 end
