@@ -59,22 +59,16 @@ class Snitcher::API::Client
   #
   # @return [Array<Snitcher::API::Snitch>] the snitches on the account.
   def snitches(filters = {})
-    path  = "/v1/snitches"
     query = {}
 
     # Tags allow for labeling Snitches for better categorization. This allows
     # filtering by a set of tags.
-    if filters[:tags]
-      tags = Array(filters[:tags]).flatten
+    if tags = filters[:tags]
+      tags = Array(tags).flatten
       query[:tags] = tags.map(&:strip).compact.uniq.join(",")
     end
 
-    # Only add the query param if any valid filters were given.
-    if query.any?
-      path = "#{path}?#{URI.encode_www_form(query)}"
-    end
-
-    snitch_array(get(path))
+    snitch_array(get("/v1/snitches", query))
   end
 
   # Get a single Snitch by it's unique token.
@@ -126,10 +120,10 @@ class Snitcher::API::Client
   # @raise [Snitcher::API::Error] if any other API errors occur.
   #
   # @return [Snitcher::API::Snitch] the new Snitch.
-  def create_snitch(attributes={})
-    if attributes.has_key?(:interval)
+  def create_snitch(attributes = {})
+    if interval = attributes.delete(:interval)
       type = attributes[:type] ||= {}
-      type[:interval] ||= attributes.delete(:interval)
+      type[:interval] ||= interval
     end
 
     response = post("/v1/snitches", attributes)
@@ -174,14 +168,15 @@ class Snitcher::API::Client
   # @raise [Snitcher::API::Error] if any other API errors occur.
   #
   # Raise Timeout::Error if the API request times out
-  def update_snitch(token, attributes={})
+  def update_snitch(token, attributes = {})
     if attributes.has_key?(:tags)
       attributes[:tags] = [attributes[:tags]].flatten.compact
     end
 
-    if attributes.has_key?(:interval)
+    # Expand the interval key to the full structure required by the API
+    if interval = attributes.delete(:interval)
       type = attributes[:type] ||= {}
-      type[:interval] ||= attributes.delete(:interval)
+      type[:interval] ||= interval
     end
 
     payload = patch("/v1/snitches/#{token}", attributes)
@@ -207,9 +202,8 @@ class Snitcher::API::Client
   # @raise [Snitcher::API::Error] if an API errors occur.
   #
   # @return [Array<String>] full list of tags on the Snitch.
-  def add_tags(token, tags=[])
-    tags = [tags].flatten
-    post("/v1/snitches/#{token}/tags", tags)
+  def add_tags(token, tags = [])
+    post("/v1/snitches/#{token}/tags", Array(tags).flatten)
   end
 
   # Remove a tag from a Snitch.
@@ -227,8 +221,7 @@ class Snitcher::API::Client
   #
   # @return [Array<String>] list of the remaining tags on the Snitch.
   def remove_tag(token, tag)
-    path = "/v1/snitches/#{token}/tags/#{tag}"
-    delete(URI.encode(path))
+    delete("/v1/snitches/#{token}/tags/#{tag}")
   end
 
   # Pauses a Snitch if it can be paused. Snitches can only be paused if their
@@ -279,7 +272,7 @@ class Snitcher::API::Client
     "Snitcher; #{engine}/#{RUBY_VERSION}; #{RUBY_PLATFORM}; v#{::Snitcher::VERSION}"
   end
 
-  def execute_request(request, options={})
+  def execute_request(request)
     http_options = {
       open_timeout: @timeout,
       read_timeout: @timeout,
@@ -295,7 +288,7 @@ class Snitcher::API::Client
       if request.body
         request["Content-Type"] = "application/json"
 
-        # Some trickiery to allow pushing the JSON rendering down as far as
+        # Some trickery to allow pushing the JSON rendering down as far as
         # possible.
         if !request.body.is_a?(String)
           request.body = JSON.generate(request.body)
@@ -326,28 +319,40 @@ class Snitcher::API::Client
     end
   end
 
-  def get(path, options={})
+  def get(path, query = {})
+    path = URI.encode(path)
+
+    # Only add the query param if any valid filters were given.
+    if query.any?
+      path = "#{path}?#{URI.encode_www_form(query)}"
+    end
+
     request = Net::HTTP::Get.new(path)
-    execute_request(request, options)
+    execute_request(request)
   end
 
-  def post(path, data=nil, options={})
+  def post(path, data = nil)
+    path = URI.encode(path)
+
     request = Net::HTTP::Post.new(path)
     request.body = data
 
-    execute_request(request, options)
+    execute_request(request)
   end
 
-  def patch(path, data, options={})
+  def patch(path, data)
+    path = URI.encode(path)
+
     request = Net::HTTP::Patch.new(path)
     request.body = data
 
-    execute_request(request, options)
+    execute_request(request)
   end
 
-  def delete(path, options={})
+  def delete(path)
+    path    = URI.encode(path)
     request = Net::HTTP::Delete.new(path)
-    execute_request(request, options)
+    execute_request(request)
   end
 
   private
