@@ -3,17 +3,17 @@ $:.unshift File.expand_path("../../lib", __FILE__)
 # Need to require the API separately as it is not required by Snitcher itself.
 require "snitcher/api"
 
-if !(ENV["DMS_USER"] && ENV["DMS_PASS"])
-  puts "Set DMS_USER and DMS_PASS environment variables to your"
-  puts "deadmanssnitch.com credentials before running this example"
+if !ENV["DMS_API_KEY"]
+  puts "Set DMS_API_KEY environment variable to your deadmanssnitch.com API key"
+  puts "before running this example."
   puts
-  puts "example: DMS_USER=email DMS_PASS=pass ruby examples/api.rb"
+  puts "example: DMS_API_KEY=c23452notarealkeyhello! ruby examples/api.rb"
 
   exit 1
 end
 
 # Get an API key for a given user with password
-key = Snitcher::API.get_key(ENV["DMS_USER"], ENV["DMS_PASS"])
+key = ENV["DMS_API_KEY"]
 
 # Create a new API client
 client = Snitcher::API::Client.new(key)
