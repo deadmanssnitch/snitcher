@@ -17,3 +17,9 @@ rvm:
   - 2.3
   - jruby
   - ruby-head
+
+notifications:
+  webhooks:
+    urls:
+      - http://buildlight.collectiveidea.com/
+    on_start: always
