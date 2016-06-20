@@ -1,4 +1,4 @@
-## 0.4.0 / TBD
+## 0.4.0 / 2016-06-20
 * [FEATURE] Added Snitcher::API for integrating with the DMS API ([@danabrit](https://github.com/danabrit))
 * [FEATURE] Added Snitcher.snitch! which raises exceptions on errors ([@gaffneyc](https://github.com/gaffneyc))
 
