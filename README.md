@@ -23,6 +23,14 @@ You also may provide a message with the check in:
 Snitcher.snitch("c2354d53d2", message: "Finished in 23.8 seconds.")
 ```
 
+Errors can be reported by providing the `status` option. A status of `nil`,
+`0`, or `""` are all considered a success. Any other status is treated as a
+failure.
+
+```ruby
+Snitcher.snitch("c2354d53d2", status: 1)
+```
+
 The default timeout of 5 seconds can be overridden:
 
 ```ruby
