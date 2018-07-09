@@ -48,6 +48,19 @@ describe Snitcher do
       end
     end
 
+    specify "with status" do
+      Snitcher.snitch!(token, status: "0")
+      expect(a_request(:get, "https://nosnch.in/#{token}?s=0")).to have_been_made
+
+      Snitcher.snitch!(token, status: 1237)
+      expect(a_request(:get, "https://nosnch.in/#{token}?s=1237")).to have_been_made
+
+      # Both nil and "" avoid adding the `s` query param.
+      Snitcher.snitch!(token, status: nil)
+      Snitcher.snitch!(token, status: "")
+      expect(a_request(:get, "https://nosnch.in/#{token}")).to have_been_made.twice
+    end
+
     it "raises a Timeout::Error if the request timesout" do
       stub_request(:get, "https://nosnch.in/#{token}").to_timeout
 

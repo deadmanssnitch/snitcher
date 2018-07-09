@@ -17,6 +17,9 @@ module Snitcher
   # @option opts [String] :message Text message to include with the check-in.
   #   The message is limited to 256 characters.
   #
+  # @option opts [String, Fixnum, nil] :status Exit code for the check-in. A
+  #   status of "", nil, or 0 are all treated as the job finishing successfully.
+  #
   # @option opts [Float, Fixnum] :timeout Number of seconds to wait for a
   #   response from the server. Default is 5 seconds.
   #
@@ -26,8 +29,18 @@ module Snitcher
   #
   # @return [Boolean] if the check-in succeeded.
   def snitch!(token, opts = {})
-    uri       = URI.parse(checkin_url(opts, token))
-    uri.query = URI.encode_www_form(m: opts[:message]) if opts[:message]
+    params = {}
+    params[:m] = opts[:message] if opts[:message]
+
+    # It's unnecessary to send an empty status
+    if opts[:status] && opts[:status] != ""
+      params[:s] = opts[:status]
+    end
+
+    uri = URI.parse(checkin_url(opts, token))
+    if params.any?
+      uri.query = URI.encode_www_form(params)
+    end
 
     opts = initialize_opts(opts, uri)
 
@@ -50,6 +63,9 @@ module Snitcher
   #
   # @option opts [String] :message Text message to include with the check-in.
   #   The message is limited to 256 characters.
+  #
+  # @option opts [String, Fixnum, nil] :status Exit code for the check-in. A
+  #   status of "", nil, or 0 are all treated as the job finishing successfully.
   #
   # @option opts [Float, Fixnum] :timeout Number of seconds to wait for a
   #   response from the server. Default is 5 seconds.
@@ -74,7 +90,7 @@ module Snitcher
       open_timeout: timeout,
       read_timeout: timeout,
       ssl_timeout:  timeout,
-      use_ssl:      use_ssl?(uri)
+      use_ssl:      use_ssl?(uri),
     }
   end
 
