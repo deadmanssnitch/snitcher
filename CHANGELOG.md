@@ -1,9 +1,12 @@
+## 0.4.1 / 2018-07-09
+* [FEATURE] Added :status option to Snitcher.snitch! ([@gaffneyc](https://github.com/gaffneyc))
+*
 ## 0.4.0 / 2016-06-20
 * [FEATURE] Added Snitcher::API for integrating with the DMS API ([@danabrit](https://github.com/danabrit))
 * [FEATURE] Added Snitcher.snitch! which raises exceptions on errors ([@gaffneyc](https://github.com/gaffneyc))
 
 ## 0.3.2 / 2015-08-13
-* [BUG] Fixed passing messaging during a check-in ([@ryoung](https://github.com/ryoung))
+* [BUG] Fixed passing messages during a check-in ([@ryoung](https://github.com/ryoung))
 
 ## 0.3.1 / 2015-06-23
 * [ENHANCEMENT] Add a custom User-Agent
