@@ -78,10 +78,14 @@ describe Snitcher::API::Client do
     end
 
     context "when Net::HTTPInternalServerError" do
-      it 'raise ::Snitcher::API::InternalServerError' do
+      it "raise ::Snitcher::API::InternalServerError" do
         stub_request(:any, "#{snitch_url}?tags=phoenix")
           .to_return(body: "Server Error", status: 500)
-        expect { client.snitches(tags: ["phoenix"]) }.to raise_error(::Snitcher::API::InternalServerError)
+
+        expect { client.snitches(tags: ["phoenix"]) }.to raise_error do |error|
+          expect(error).to be_a(::Snitcher::API::InternalServerError)
+          expect(error.message).to eq("Server Error")
+        end
       end
     end
   end
