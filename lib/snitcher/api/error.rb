@@ -13,14 +13,15 @@ module Snitcher::API
       klass =
         case type.to_s
           # sign_in_incorrect is only returned when using username + password.
-          when "sign_in_incorrect";  AuthenticationError
+          when "sign_in_incorrect";     AuthenticationError
           # api_key_invalid is only returned when using the API key.
-          when "api_key_invalid";    AuthenticationError
-          when "plan_limit_reached"; PlanLimitReachedError
-          when "account_on_hold";    AccountOnHoldError
-          when "resource_not_found"; ResourceNotFoundError
-          when "resource_invalid";   ResourceInvalidError
-          else                       Error
+          when "api_key_invalid";       AuthenticationError
+          when "plan_limit_reached";    PlanLimitReachedError
+          when "account_on_hold";       AccountOnHoldError
+          when "resource_not_found";    ResourceNotFoundError
+          when "resource_invalid";      ResourceInvalidError
+          when "internal_server_error"; InternalServerError
+          else                          Error
         end
 
       error = klass.allocate
