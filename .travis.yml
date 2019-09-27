@@ -6,19 +6,26 @@ matrix:
     - rvm: ruby-head
 
 before_install:
-  - gem install bundler -v '< 2'
+  - gem install bundler -v ${BUNDLER_VERSION:-'>= 2'}
 
 rvm:
-  - 1.9.3
-  - 2.0.0
-  - 2.1
-  - 2.2
   - 2.3
   - 2.4
   - 2.5
   - 2.6
   - jruby
   - ruby-head
+
+matrix:
+  include:
+    - rvm: 1.9.3
+      env: BUNDLER_VERSION='< 2'
+    - rvm: 2.0
+      env: BUNDLER_VERSION='< 2'
+    - rvm: 2.1
+      env: BUNDLER_VERSION='< 2'
+    - rvm: 2.2
+      env: BUNDLER_VERSION='< 2'
 
 notifications:
   webhooks:
