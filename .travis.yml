@@ -19,13 +19,13 @@ rvm:
 matrix:
   include:
     - rvm: 1.9.3-p551
-      env: BUNDLER_VERSION="<2"
+      env: BUNDLER_VERSION="1.17.3"
     - rvm: 2.0.0-p648
-      env: BUNDLER_VERSION="<2"
+      env: BUNDLER_VERSION="1.17.3"
     - rvm: 2.1.10
-      env: BUNDLER_VERSION="<2"
+      env: BUNDLER_VERSION="1.17.3"
     - rvm: 2.2.10
-      env: BUNDLER_VERSION="<2"
+      env: BUNDLER_VERSION="1.17.3"
 
 notifications:
   webhooks:
