@@ -2,6 +2,13 @@ dist: xenial
 
 language: ruby
 matrix:
+  include:
+    - rvm: 2.0.0-p648
+      env: BUNDLER_VERSION="1.17.3"
+    - rvm: 2.1.10
+      env: BUNDLER_VERSION="1.17.3"
+    - rvm: 2.2.10
+      env: BUNDLER_VERSION="1.17.3"
   allow_failures:
     - rvm: ruby-head
 
@@ -16,15 +23,6 @@ rvm:
   - 2.7
   - jruby
   - ruby-head
-
-matrix:
-  include:
-    - rvm: 2.0.0-p648
-      env: BUNDLER_VERSION="1.17.3"
-    - rvm: 2.1.10
-      env: BUNDLER_VERSION="1.17.3"
-    - rvm: 2.2.10
-      env: BUNDLER_VERSION="1.17.3"
 
 notifications:
   webhooks:
