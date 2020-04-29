@@ -12,6 +12,14 @@ class Snitcher::API::Snitch
   #   "pending", "healthy", "paused", "failed", or "errored".
   attr_accessor :status
 
+  # alert_email is a list of email addresses that will be notified when this
+  # Snitch goes missing, errors, or becomes healthy again. When this is set,
+  # only the email addresses in the list will be notified. When the list is
+  # empty then all team members will be alerted by default.
+  #
+  # @return [Array<String>] override list of email addresses
+  attr_accessor :alert_email
+
   # @return [String] when the Snitch last checked_in
   attr_accessor :checked_in_at
 
@@ -37,6 +45,7 @@ class Snitcher::API::Snitch
   #     "token" => "c2354d53d3",
   #     "href" => "/v1/snitches/c2354d53d3",
   #     "name" => "Daily Backups",
+  #     "alert_email" => [],
   #     "tags" => [
   #       "production",
   #       "critical"
@@ -64,6 +73,7 @@ class Snitcher::API::Snitch
     @notes     = payload["notes"]
 
     @created_at    = payload["created_at"]
+    @alert_email   = payload["alert_email"] || []
     @check_in_url  = payload["check_in_url"]
     @checked_in_at = payload["checked_in_at"]
   end
