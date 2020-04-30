@@ -87,7 +87,7 @@ module Snitcher
     timeout = options.fetch(:timeout, 5)
 
     [
-      options.fetch(:p_addr, :ENV),
+      options.fetch(:p_addr, RUBY_VERSION < '2.5' ? nil : :ENV),
       options.fetch(:p_port, nil),
       options.fetch(:p_user, nil),
       options.fetch(:p_pass, nil),
