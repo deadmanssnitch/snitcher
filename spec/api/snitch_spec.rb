@@ -2,7 +2,7 @@ require "spec_helper"
 require "snitcher/api"
 require "snitcher/api/snitch"
 
-describe Snitcher::API::Snitch do
+RSpec.describe Snitcher::API::Snitch do
   describe "#new" do
     let(:snitch) do
       payload = {

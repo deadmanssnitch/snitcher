@@ -3,7 +3,7 @@ require "snitcher/api/client"
 require "base64"
 require "securerandom"
 
-describe Snitcher::API::Client do
+RSpec.describe Snitcher::API::Client do
   subject(:client) do
     Snitcher::API::Client.new("key", endpoint: "http://api.dms.dev")
   end

@@ -1,4 +1,7 @@
-describe Snitcher::API::Error do
+require "spec_helper"
+require "snitcher/api"
+
+RSpec.describe Snitcher::API::Error do
   it "returns a AuthenticationError for 'sign_in_incorrect'" do
     error = Snitcher::API::Error.new({
       "type"  => "sign_in_incorrect",
@@ -58,5 +61,4 @@ describe Snitcher::API::Error do
     expect(error).to be_a(Snitcher::API::ResourceNotFoundError)
     expect(error.message).to eq("I can't find that!!")
   end
-
 end
