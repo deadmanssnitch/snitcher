@@ -1,6 +1,10 @@
+## 0.4.2 / 2021-06-07
+* [BUG] Fixed Ruby 3.0 support ([@gaffneyc](https://github.com/gaffneyc))
+
 ## 0.4.1 / 2018-07-09
 * [FEATURE] Added :status option to Snitcher.snitch! ([@gaffneyc](https://github.com/gaffneyc))
 *
+
 ## 0.4.0 / 2016-06-20
 * [FEATURE] Added Snitcher::API for integrating with the DMS API ([@danabrit](https://github.com/danabrit))
 * [FEATURE] Added Snitcher.snitch! which raises exceptions on errors ([@gaffneyc](https://github.com/gaffneyc))
