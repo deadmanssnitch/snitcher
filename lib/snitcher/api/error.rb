@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Snitcher::API
   # Error is the base class for all API specific errors. For a full list of
   # errors and how they can happen please refer to the API documentation.

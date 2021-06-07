@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Snitcher::API::Snitch
   # @return [String] unique token used to identify a Snitch.
   attr_accessor :token
