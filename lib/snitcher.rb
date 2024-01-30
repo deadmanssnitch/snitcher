@@ -42,7 +42,7 @@ module Snitcher
     block_error = nil
     if block_given?
       begin
-        result = yield
+        yield
         opts[:status] ||= 0
       rescue StandardError => e
         block_error = e
