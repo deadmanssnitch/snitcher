@@ -78,8 +78,8 @@ describe Snitcher do
 
       it "sets code to 1 and message to exception if the block errors" do
         expect(user_code).to receive(:do_something_bad).and_raise(ArgumentError, "bad argument")
-        Snitcher.snitch!(token) { user_code.do_something_bad }
-        expect(a_request(:get, "https://nosnch.in/#{token}?m=bad%20argument&s=1")).to have_been_made.once
+        expect { Snitcher.snitch!(token) { user_code.do_something_bad } }.to raise_error(ArgumentError, "bad argument")
+        expect(a_request(:get, "https://nosnch.in/#{token}?m=%23%3CArgumentError:%20bad%20argument%3E&s=1")).to have_been_made.once
       end
     end
   end

@@ -23,20 +23,31 @@ module Snitcher
   # @option opts [Float, Fixnum] :timeout Number of seconds to wait for a
   #   response from the server. Default is 5 seconds.
   #
+  # @yield When a block is given, the block is executed. If the block raises an
+  #   exception, the exception message is used as the check-in message and the stauts
+  #   is set to 1. If the block succeeds, the status is set to 0.
+  #
   # @example
   #   Snitch.snitch("c2354d53d2")
   #   # => true
   #
+  # @example
+  #   Snitch.snitch("c2354d53d2") do
+  #     # do something
+  #   end
+  #
   # @return [Boolean] if the check-in succeeded.
   def snitch!(token, opts = {})
+    # Run the block if given, and set status/message based on the result
+    block_error = nil
     if block_given?
-      snitch_start = Time.now
       begin
         result = yield
-        opts[:status] = 0
+        opts[:status] ||= 0
       rescue StandardError => e
-        opts[:message] = e.message
-        opts[:status] = 1
+        block_error = e
+        opts[:message] ||= e.inspect
+        opts[:status] ||= 1
       end
     end
 
@@ -55,13 +66,18 @@ module Snitcher
 
     opts = initialize_opts(opts, uri)
 
-    Net::HTTP.start(uri.host, uri.port, opts) do |http|
+    result = Net::HTTP.start(uri.host, uri.port, opts) do |http|
       request = Net::HTTP::Get.new(uri.request_uri)
       request["User-Agent"] = user_agent
 
       response = http.request(request)
       response.is_a?(Net::HTTPSuccess)
     end
+
+    # Re-raise a block error if needed
+    raise block_error if block_error
+
+    result
   end
 
   # Check-in to Dead Man's Snitch.
@@ -81,9 +97,18 @@ module Snitcher
   # @option opts [Float, Fixnum] :timeout Number of seconds to wait for a
   #   response from the server. Default is 5 seconds.
   #
+  # @yield When a block is given, the block is executed. If the block raises an
+  #   exception, the exception message is used as the check-in message and the stauts
+  #   is set to 1. If the block succeeds, the status is set to 0.
+  # 
   # @example
   #   Snitch.snitch("c2354d53d2")
   #   # => true
+  #
+  # @example
+  #   Snitch.snitch("c2354d53d2") do 
+  #     # do something
+  #   end
   #
   # @return [Boolean] if the check-in succeeded.
   def snitch(*args)
