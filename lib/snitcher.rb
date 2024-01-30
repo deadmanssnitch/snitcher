@@ -29,6 +29,17 @@ module Snitcher
   #
   # @return [Boolean] if the check-in succeeded.
   def snitch!(token, opts = {})
+    if block_given?
+      snitch_start = Time.now
+      begin
+        result = yield
+        opts[:status] = 0
+      rescue StandardError => e
+        opts[:message] = e.message
+        opts[:status] = 1
+      end
+    end
+
     params = {}
     params[:m] = opts[:message] if opts[:message]
 

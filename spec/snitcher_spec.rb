@@ -66,6 +66,22 @@ describe Snitcher do
 
       expect { Snitcher.snitch!(token) }.to raise_error(Timeout::Error)
     end
+
+    describe "with a block" do
+      let(:user_code) { double("block", do_something: true) }
+
+      it "sets code to 0 if the block succeeds" do
+        Snitcher.snitch!(token) { user_code.do_something }
+        expect(user_code).to have_received(:do_something)
+        expect(a_request(:get, "https://nosnch.in/#{token}?s=0")).to have_been_made.once
+      end
+
+      it "sets code to 1 and message to exception if the block errors" do
+        expect(user_code).to receive(:do_something_bad).and_raise(ArgumentError, "bad argument")
+        Snitcher.snitch!(token) { user_code.do_something_bad }
+        expect(a_request(:get, "https://nosnch.in/#{token}?m=bad%20argument&s=1")).to have_been_made.once
+      end
+    end
   end
 
   describe ".snitch" do
