@@ -44,7 +44,7 @@ module Snitcher
 
     opts = initialize_opts(opts, uri)
 
-    Net::HTTP.start(uri.host, uri.port, opts) do |http|
+    Net::HTTP.start(uri.host, uri.port, *opts) do |http|
       request = Net::HTTP::Get.new(uri.request_uri)
       request["User-Agent"] = user_agent
 
@@ -86,12 +86,18 @@ module Snitcher
   def initialize_opts(options, uri)
     timeout = options.fetch(:timeout, 5)
 
-    {
-      open_timeout: timeout,
-      read_timeout: timeout,
-      ssl_timeout:  timeout,
-      use_ssl:      use_ssl?(uri),
-    }
+    [
+      options.fetch(:p_addr, RUBY_VERSION < '2.5' ? nil : :ENV),
+      options.fetch(:p_port, nil),
+      options.fetch(:p_user, nil),
+      options.fetch(:p_pass, nil),
+      {
+        open_timeout: timeout,
+        read_timeout: timeout,
+        ssl_timeout:  timeout,
+        use_ssl:      use_ssl?(uri),
+      }
+    ]
   end
 
   def checkin_url(opts, token)
