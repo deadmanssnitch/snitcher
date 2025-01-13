@@ -173,7 +173,7 @@ RSpec.describe Snitcher::API::Client do
     it "takes interval as a top level key" do
       # The API as designed requires `type: { interval: "" }` with the
       # expectation that there will be more types of Snitches. This hasn't
-      # happend as of 2016 and it's expected that interval will be required
+      # happened as of 2016 and it's expected that interval will be required
       # regardless of future changes.
       #
       # Allowing interval as a top level key makes using the API easier.

@@ -13,7 +13,7 @@ require "snitcher/api/error"
 class Snitcher::API::Client
   DEFAULT_ENDPOINT = "https://api.deadmanssnitch.com"
 
-  # Create a new API Client for taling to Dead Man's Snitch's API.
+  # Create a new API Client for talking to Dead Man's Snitch's API.
   #
   # @param key [String] API access key (available at
   #   https://deadmanssnitch.com/account/keys).

@@ -61,7 +61,7 @@ describe Snitcher do
       expect(a_request(:get, "https://nosnch.in/#{token}")).to have_been_made.twice
     end
 
-    it "raises a Timeout::Error if the request timesout" do
+    it "raises a Timeout::Error if the request times out" do
       stub_request(:get, "https://nosnch.in/#{token}").to_timeout
 
       expect { Snitcher.snitch!(token) }.to raise_error(Timeout::Error)
@@ -69,7 +69,7 @@ describe Snitcher do
   end
 
   describe ".snitch" do
-    it "returns true on a successfuly check-in" do
+    it "returns true on a successfully check-in" do
       stub_request(:get, "https://nosnch.in/#{token}").to_return(status: 202)
 
       result = Snitcher.snitch(token)
