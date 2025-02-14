@@ -23,34 +23,22 @@ module Snitcher
   # @option opts [Float, Fixnum] :timeout Number of seconds to wait for a
   #   response from the server. Default is 5 seconds.
   #
+  # @yield When a block is given, the block is executed. If the block raises an
+  #   exception, the exception message is used as the check-in message and the stauts
+  #   is set to 1. If the block succeeds, the status is set to 0.
+  #
   # @example
   #   Snitch.snitch("c2354d53d2")
   #   # => true
   #
+  # @example
+  #   Snitch.snitch("c2354d53d2") do
+  #     # do something
+  #   end
+  #
   # @return [Boolean] if the check-in succeeded.
-  def snitch!(token, opts = {})
-    params = {}
-    params[:m] = opts[:message] if opts[:message]
-
-    # It's unnecessary to send an empty status
-    if opts[:status] && opts[:status] != ""
-      params[:s] = opts[:status]
-    end
-
-    uri = URI.parse(checkin_url(opts, token))
-    if params.any?
-      uri.query = URI.encode_www_form(params)
-    end
-
-    opts = initialize_opts(opts, uri)
-
-    Net::HTTP.start(uri.host, uri.port, opts) do |http|
-      request = Net::HTTP::Get.new(uri.request_uri)
-      request["User-Agent"] = user_agent
-
-      response = http.request(request)
-      response.is_a?(Net::HTTPSuccess)
-    end
+  def snitch!(token, opts = {}, &block)
+    process_snitch(true, token, opts, &block)
   end
 
   # Check-in to Dead Man's Snitch.
@@ -70,15 +58,22 @@ module Snitcher
   # @option opts [Float, Fixnum] :timeout Number of seconds to wait for a
   #   response from the server. Default is 5 seconds.
   #
+  # @yield When a block is given, the block is executed. If the block raises an
+  #   exception, the exception message is used as the check-in message and the stauts
+  #   is set to 1. If the block succeeds, the status is set to 0.
+  # 
   # @example
   #   Snitch.snitch("c2354d53d2")
   #   # => true
   #
+  # @example
+  #   Snitch.snitch("c2354d53d2") do 
+  #     # do something
+  #   end
+  #
   # @return [Boolean] if the check-in succeeded.
-  def snitch(*args)
-    snitch!(*args)
-  rescue StandardError
-    false
+  def snitch(token, opts = {}, &block)
+    process_snitch(false, token, opts, &block)
   end
 
   private
@@ -111,6 +106,55 @@ module Snitcher
     engine = defined?(::RUBY_ENGINE) ? ::RUBY_ENGINE : "Ruby"
 
     "Snitcher; #{engine}/#{RUBY_VERSION}; #{RUBY_PLATFORM}; v#{::Snitcher::VERSION}"
+  end
+
+  def process_snitch(raise_reporting_error, token, opts = {})
+    result = false
+
+    # Run the block if given, and set status/message based on the result
+    block_error = nil
+    if block_given?
+      begin
+        yield
+        opts[:status] ||= 0
+      rescue StandardError => e
+        block_error = e
+        opts[:message] ||= e.inspect
+        opts[:status] ||= 1
+      end
+    end
+
+    begin
+      params = {}
+      params[:m] = opts[:message] if opts[:message]
+
+      # It's unnecessary to send an empty status
+      if opts[:status] && opts[:status] != ""
+        params[:s] = opts[:status]
+      end
+
+      uri = URI.parse(checkin_url(opts, token))
+      if params.any?
+        uri.query = URI.encode_www_form(params)
+      end
+
+      opts = initialize_opts(opts, uri)
+
+      result = Net::HTTP.start(uri.host, uri.port, opts) do |http|
+        request = Net::HTTP::Get.new(uri.request_uri)
+        request["User-Agent"] = user_agent
+
+        response = http.request(request)
+        response.is_a?(Net::HTTPSuccess)
+      end
+    rescue StandardError => e
+      raise(e) if raise_reporting_error
+    end
+
+    # Re-raise a block error if needed
+    raise block_error if block_error
+
+    result
   end
 end
 

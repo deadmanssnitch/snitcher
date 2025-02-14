@@ -37,6 +37,16 @@ The default timeout of 5 seconds can be overridden:
 Snitcher.snitch("c2354d53d2", timeout: 10)
 ```
 
+Passing a block will set the `status` to `0` on success. If the block raises 
+an execption, `status` will get set to `1` and `message` will get set to the 
+exceptions's message.
+
+```ruby
+Snitcher.snitch("c2354d53d2") do
+  # your code here
+end
+```
+
 ## API Access
 
 ### Setup
